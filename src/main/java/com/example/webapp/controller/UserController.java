@@ -6,7 +6,8 @@ import com.example.webapp.service.MailService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,10 +20,11 @@ public class UserController {
     // Temporary storage for OTPs & pending users
     private final Map<String, String> otpStorage = new HashMap<>();
     private final Map<String, User> pendingUsers = new HashMap<>();
-
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     public UserController(UserRepository userRepo, MailService mailService) {
         this.userRepo = userRepo;
         this.mailService = mailService;
+
     }
 
     // Index page
@@ -50,6 +52,9 @@ public class UserController {
                 model.addAttribute("error", "Email already registered!");
                 return "register";
             }
+
+            // Hash the password before saving
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
 
             String otp = String.valueOf((int) (Math.random() * 900000) + 100000);
             otpStorage.put(user.getEmail(), otp);

@@ -2,18 +2,121 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Verify OTP</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 50%, #2c5aa0 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .otp-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            backdrop-filter: blur(5px);
+        }
+
+        h2 {
+            color: #2d3748;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        p {
+            color: #4a5568;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        input[type="text"] {
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #4299e1;
+        }
+
+        button {
+            padding: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #4299e1, #3182ce);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(66, 153, 225, 0.4);
+            background: linear-gradient(135deg, #3182ce, #2c5aa0);
+        }
+
+        .error {
+            color: #e53e3e;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 480px) {
+            .otp-container {
+                padding: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-<h2>Verify OTP</h2>
+<div class="otp-container">
+    <h2>Verify OTP</h2>
 
-<p th:text="'An OTP has been sent to ' + ${email}"></p>
+    <p th:text="'An OTP has been sent to ' + ${email}"></p>
 
-<form th:action="@{/verify-otp}" method="post">
-    <input type="hidden" name="email" th:value="${email}" />
-    <input type="text" name="otp" placeholder="Enter OTP" required />
-    <button type="submit">Verify</button>
-</form>
+    <form th:action="@{/verify-otp}" method="post">
+        <input type="hidden" name="email" th:value="${email}" />
+        <input type="text" name="otp" placeholder="Enter OTP" required />
+        <button type="submit">Verify</button>
+    </form>
 
-<p th:if="${error}" th:text="${error}" style="color:red"></p>
+    <p th:if="${error}" th:text="${error}" class="error"></p>
+</div>
 </body>
 </html>
