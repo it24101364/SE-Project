@@ -120,6 +120,37 @@
                 width: 100%; /* Ensure full width on smaller screens if not already */
             }
         }
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            width: 250px;
+            padding: 15px;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+            text-align: center;
+            background: #fff;
+        }
+        .card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .card h3 {
+            margin: 10px 0;
+        }
+        .card p {
+            color: #666;
+        }
+        .price {
+            font-weight: bold;
+            color: #007bff;
+        }
     </style>
 </head>
 <body>
@@ -151,113 +182,22 @@
                 </div>
             </div>
 
-            <!-- Stats cards -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-3">
-                    <div class="card p-3 text-center">
-                        <h5>Total Revenue</h5>
-                        <div class="value">$58,947</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card p-3 text-center">
-                        <h5>Today's Sales</h5>
-                        <div class="value">127</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card p-3 text-center">
-                        <h5>Conversion</h5>
-                        <div class="value">0.58%</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card p-3 text-center">
-                        <h5>Today's Visits</h5>
-                        <div class="value">78.41k</div>
-                    </div>
+            <h1>Welcome to Spare Parts Store</h1>
+
+            <div class="card-container">
+                <div th:each="product : ${products}">
+                    <a th:href="@{'/product/' + ${product.id}}">
+                        <div class="card">
+                            <img th:src="${product.imageUrl}" alt="Product Image"/>
+                            <h3 th:text="${product.name}">Product Name</h3>
+                            <p class="price">Rs. <span th:text="${product.price}">0.00</span></p>
+                        </div>
+                    </a>
                 </div>
             </div>
 
-            <!-- Analytics & Reports -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-4 text-center">
-                    <div class="card p-4">
-                        <h5>Analytics</h5>
-                        <div class="progress-circle mx-auto mt-3">2.36</div>
-                        <p class="mt-2">Invoices</p>
-                        <p>Total Paid: 234 | Total Overdue: 514 | Total Unpaid: 345</p>
-                    </div>
-                </div>
-                <div class="col-md-5">
-                    <div class="card p-3">
-                        <h5>Reports</h5>
-                        <canvas id="barChart"></canvas>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card p-3 text-center">
-                        <h5>Budget</h5>
-                        <p>$26,956</p>
-                        <p>Budget: 57,900</p>
-                        <button class="btn btn-primary btn-sm">Increase Budget</button>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Recent Orders & Transactions -->
-            <div class="row g-3">
-                <div class="col-md-8">
-                    <div class="card p-3">
-                        <h5>Recent Orders</h5>
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th>Company</th>
-                                <th>Category</th>
-                                <th>Views</th>
-                                <th>Revenue</th>
-                                <th>Sales</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>Motels</td>
-                                <td>Grocery</td>
-                                <td>78k</td>
-                                <td>$668.51</td>
-                                <td>97%</td>
-                            </tr>
-                            <tr>
-                                <td>Dixons</td>
-                                <td>Technology</td>
-                                <td>23.4k</td>
-                                <td>$891.2</td>
-                                <td>68%</td>
-                            </tr>
-                            <tr>
-                                <td>Owning</td>
-                                <td>Technology</td>
-                                <td>214</td>
-                                <td>$291.01</td>
-                                <td>88%</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card p-3">
-                        <h5>Transactions</h5>
-                        <ul class="transactions list-unstyled">
-                            <li>Wallet <span class="text-danger">- $74</span></li>
-                            <li>Bank Transfer <span class="text-success">+ $480</span></li>
-                            <li>Paypal <span class="text-success">+ $590</span></li>
-                            <li>Mastercard <span class="text-danger">- $23</span></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+
         </div>
     </div>
 </div>
@@ -265,34 +205,5 @@
 <!-- Bootstrap JS & Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const ctx = document.getElementById('barChart').getContext('2d');
-    const barChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
-            datasets: [
-                {
-                    label: 'Earning',
-                    data: [100, 200, 300, 250, 150, 200, 100, 250, 300],
-                    backgroundColor: '#007bff'
-                },
-                {
-                    label: 'Expense',
-                    data: [-50, -100, -150, -125, -75, -100, -50, -125, -150],
-                    backgroundColor: '#dc3545'
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-</script>
 </body>
 </html>
