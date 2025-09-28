@@ -9,6 +9,16 @@
 
 <div class="container mt-5">
     <h2 class="mb-4 text-center">All Products</h2>
+    <!-- Cart Count Badge -->
+    <div class="text-end mb-3">
+        <a th:href="@{/cart}" class="btn btn-outline-primary position-relative">
+            Cart
+            <span th:text="${cartItemCount}"
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                0
+            </span>
+        </a>
+    </div>
 
     <div class="row row-cols-1 row-cols-md-3 g-4">
         <div class="col" th:each="product : ${products}">
@@ -23,11 +33,18 @@
                 <!-- Buttons -->
                 <div class="mt-auto d-flex justify-content-between">
                     <form th:action="@{/cart/add/{id}(id=${product.id})}" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                         <button type="submit" class="btn btn-success">Add to Cart</button>
                     </form>
+
+
+
                     <form th:action="@{/buy-now/{id}(id=${product.id})}" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                         <button type="submit" class="btn btn-primary">Buy Now</button>
                     </form>
+
+
                 </div>
             </div>
         </div>

@@ -114,16 +114,4 @@ public class UserController {
         return "login";
     }
 
-    // Login user
-    @PostMapping("/login")
-    public String loginUser(@ModelAttribute User user, Model model) {
-        User existingUser = userRepo.findByUsername(user.getUsername());
-        if (existingUser != null && passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
-            model.addAttribute("user", existingUser);
-            return "welcome";
-        }
-
-        model.addAttribute("error", "Invalid username or password!");
-        return "login";
-    }
 }

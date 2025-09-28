@@ -196,7 +196,7 @@
 
     <form th:action="@{/login}" th:object="${user}" method="post">
         <div class="input-group">
-            <input type="text" th:field="*{username}" placeholder="Username" required />
+            <input type="text" name="username" placeholder="Email" required />
             <div class="input-icon"></div>
         </div>
 
