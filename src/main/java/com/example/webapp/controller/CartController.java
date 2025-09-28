@@ -55,6 +55,17 @@ public class CartController {
         cartService.removeItem(cartId);
         return "redirect:/cart";
     }
+    @PostMapping("/buy-now/{productId}")
+    public String buyNow(@PathVariable Long productId, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login"; // must be logged in
+        }
+        String userEmail = principal.getName();
+        cartService.buyNow(userEmail, productId);
+        return "redirect:/cart"; // go directly to cart page
+    }
+
+
 
 }
 

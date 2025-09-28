@@ -52,5 +52,23 @@ public class CartService {
         List<CartItem> items = cartRepository.findByUserEmail(userEmail);
         cartRepository.deleteAll(items);
     }
+    public void buyNow(String userEmail, Long productId) {
+        // Always clear current cart (empty or not)
+        List<CartItem> existingItems = cartRepository.findByUserEmail(userEmail);
+        if (!existingItems.isEmpty()) {
+            cartRepository.deleteAll(existingItems);
+        }
+
+        // Add the selected product as the only item in cart
+        Product product = productRepository.findById(productId).orElseThrow();
+        CartItem item = new CartItem();
+        item.setUserEmail(userEmail);
+        item.setProduct(product);
+        item.setQuantity(1);
+
+        cartRepository.save(item);
+    }
+
+
 }
 

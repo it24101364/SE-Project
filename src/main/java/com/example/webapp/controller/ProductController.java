@@ -1,8 +1,11 @@
 package com.example.webapp.controller;
 
 import com.example.webapp.model.Product;
+import com.example.webapp.model.ShippingForm;
+import com.example.webapp.model.User;
 import com.example.webapp.service.CartService;
 import com.example.webapp.service.ProductService;
+import com.example.webapp.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +17,15 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
     private final CartService cartService; // this must exist
+    private final UserService userService;
 
-    public ProductController(ProductService productService, CartService cartService) {
+
+    public ProductController(ProductService productService, CartService cartService,UserService userService) {
         this.productService = productService;
         this.cartService = cartService;  // now it works
+        this.userService = userService;
+
+
     }
 
 
@@ -48,16 +56,24 @@ public class ProductController {
         return "add-product"; // stay on the same page
     }
     @GetMapping("/products")
-    public String showAllProducts(Model model, Principal principal) {
+    public String showProducts(Model model, Principal principal) {
         List<Product> products = productService.getAllProducts();
         model.addAttribute("products", products);
 
         int cartItemCount = 0;
+        User user = null;
+
         if (principal != null) {
-            String userEmail = principal.getName();
-            cartItemCount = cartService.getCartItems(userEmail).size();
+            String email = principal.getName(); // email from logged-in user
+            var items = cartService.getCartItems(email);
+            cartItemCount = (items != null) ? items.size() : 0;
+            user = userService.findByEmail(email); // use email instead of username
+            model.addAttribute("user", user);
         }
+
+
         model.addAttribute("cartItemCount", cartItemCount);
+        model.addAttribute("user", user);
 
         return "products";
     }
