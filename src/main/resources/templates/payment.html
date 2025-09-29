@@ -2,83 +2,649 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Payment</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - Spare Parts Store</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .card-type {
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --dark-bg: #1a1a2e;
+            --accent-color: #00d9ff;
+            --success-color: #28a745;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        /* Navbar Enhancement */
+        .navbar-custom {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
             font-weight: bold;
-            margin-top: 5px;
-            color: #007bff;
+            color: var(--accent-color) !important;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Container */
+        .payment-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--dark-bg);
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        /* Progress Steps */
+        .checkout-steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 50px;
+            padding: 0 20px;
+        }
+
+        .step {
+            flex: 1;
+            max-width: 200px;
+            text-align: center;
+            position: relative;
+        }
+
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 60%;
+            width: 80%;
+            height: 3px;
+            background: var(--success-color);
+            z-index: 0;
+        }
+
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--success-color);
+            border: 3px solid var(--success-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 1.2rem;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step.active .step-icon {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        .step.completed .step-label {
+            color: var(--success-color);
+        }
+
+        .step.active .step-label {
+            color: var(--primary-color);
+        }
+
+        /* Payment Card */
+        .payment-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .payment-card h4 {
+            color: var(--dark-bg);
+            font-weight: bold;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .payment-card h4 i {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        /* Credit Card Visual */
+        .credit-card-visual {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            color: white;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .credit-card-visual::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+
+        .card-chip {
+            width: 50px;
+            height: 40px;
+            background: linear-gradient(135deg, #f9d423, #ff4e50);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .card-number-display {
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .card-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .card-info-item {
+            flex: 1;
+        }
+
+        .card-info-label {
+            font-size: 0.7rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .card-info-value {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .card-logo {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2.5rem;
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-bg);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-label i {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+        }
+
+        .form-select {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+        }
+
+        /* Card Type Display */
+        .card-type-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        /* Summary Card */
+        .summary-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px;
+        }
+
+        .summary-card h4 {
+            color: var(--dark-bg);
+            font-weight: bold;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .summary-card h4 i {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: var(--dark-bg);
+        }
+
+        .total-amount {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .total-amount .summary-label,
+        .total-amount .summary-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* Shipping Details */
+        .shipping-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .shipping-details h6 {
+            color: var(--dark-bg);
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .shipping-details p {
+            margin-bottom: 8px;
+            color: #6c757d;
+            font-size: 0.95rem;
+        }
+
+        .shipping-details strong {
+            color: var(--dark-bg);
+        }
+
+        /* Buttons */
+        .btn-pay {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .btn-pay:hover {
+            background: linear-gradient(135deg, #20c997, #28a745);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+
+        /* Security Badge */
+        .security-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .security-info i {
+            font-size: 2rem;
+            color: var(--success-color);
+        }
+
+        .security-info-text {
+            flex: 1;
+        }
+
+        .security-info-text strong {
+            display: block;
+            color: var(--dark-bg);
+            margin-bottom: 3px;
+        }
+
+        .security-info-text small {
+            color: #6c757d;
+        }
+
+        /* Payment Methods */
+        .accepted-cards {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .accepted-cards i {
+            font-size: 2.5rem;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        .accepted-cards i:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .payment-card,
+        .summary-card {
+            animation: fadeInUp 0.5s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .checkout-steps {
+                margin-bottom: 30px;
+            }
+
+            .step-label {
+                font-size: 0.75rem;
+            }
+
+            .payment-card,
+            .summary-card {
+                padding: 25px;
+            }
+
+            .summary-card {
+                position: static;
+                margin-top: 30px;
+            }
+
+            .credit-card-visual {
+                padding: 20px;
+            }
+
+            .card-number-display {
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
-<body class="bg-light">
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+    <div class="container-fluid">
+        <a class="navbar-brand"><i class="fas fa-microchip"></i> Spare Parts Store</a>
+    </div>
+</nav>
 
-<div class="container mt-5">
-    <h2 class="mb-4 text-center">Payment</h2>
+<div class="payment-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1><i class="fas fa-credit-card"></i> Payment</h1>
+        <p>Secure payment gateway - Your information is safe with us</p>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="checkout-steps">
+        <div class="step completed">
+            <div class="step-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <div class="step-label">Cart</div>
+        </div>
+        <div class="step completed">
+            <div class="step-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <div class="step-label">Shipping</div>
+        </div>
+        <div class="step active">
+            <div class="step-icon">
+                <i class="fas fa-credit-card"></i>
+            </div>
+            <div class="step-label">Payment</div>
+        </div>
+    </div>
 
     <div class="row">
-        <!-- Card Input -->
-        <div class="col-md-6">
-            <h4>Card Details</h4>
-            <form th:action="@{/payment}" th:object="${paymentForm}" method="post" class="p-3 border rounded bg-white shadow-sm">
-                <input type="hidden" th:field="*{orderId}" th:value="${order.id}" />
+        <!-- Left: Payment Form -->
+        <div class="col-lg-7">
+            <div class="payment-card">
+                <h4><i class="fas fa-credit-card"></i> Card Details</h4>
 
-                <!-- Card Number -->
-                <div class="mb-3">
-                    <label for="cardNumber" class="form-label">Card Number</label>
-                    <input type="text" id="cardNumber" th:field="*{cardNumber}" class="form-control" maxlength="19" required />
-                    <div id="cardTypeDisplay" class="card-type mt-2">Card Type: Unknown</div>
-                </div>
-
-                <!-- Card Holder Name -->
-                <div class="mb-3">
-                    <label for="cardHolder" class="form-label">Card Holder Name</label>
-                    <input type="text" id="cardHolder" name="cardHolder" class="form-control" placeholder="As printed on card" required />
-                </div>
-
-                <!-- Expiry Month & Year -->
-                <div class="row mb-3">
-                    <div class="col">
-                        <label for="expiryMonth" class="form-label">Expiry Month</label>
-                        <select id="expiryMonth" name="expiryMonth" class="form-select" required>
-                            <option value="">MM</option>
-                            <option th:each="m : ${#numbers.sequence(1,12)}"
-                                    th:value="${m}" th:text="${m < 10 ? '0' + m : m}"></option>
-                        </select>
+                <!-- Credit Card Visual -->
+                <div class="credit-card-visual">
+                    <div class="card-logo" id="cardLogoDisplay">
+                        <i class="fas fa-credit-card"></i>
                     </div>
-                    <div class="col">
-                        <label for="expiryYear" class="form-label">Expiry Year</label>
-                        <select id="expiryYear" name="expiryYear" class="form-select" required>
-                            <option value="">YYYY</option>
-                            <option th:each="y : ${#numbers.sequence(2024,2035)}"
-                                    th:value="${y}" th:text="${y}"></option>
-                        </select>
+                    <div class="card-chip"></div>
+                    <div class="card-number-display" id="cardNumberDisplay">
+                        •••• •••• •••• ••••
+                    </div>
+                    <div class="card-info-row">
+                        <div class="card-info-item">
+                            <div class="card-info-label">Card Holder</div>
+                            <div class="card-info-value" id="cardHolderDisplay">YOUR NAME</div>
+                        </div>
+                        <div class="card-info-item">
+                            <div class="card-info-label">Expires</div>
+                            <div class="card-info-value" id="cardExpiryDisplay">MM/YY</div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- CVV -->
-                <div class="mb-3">
-                    <label for="cvv" class="form-label">CVV</label>
-                    <input type="password" id="cvv" name="cvv" class="form-control" maxlength="4" placeholder="XXX" required />
-                </div>
+                <form th:action="@{/payment}" th:object="${paymentForm}" method="post">
+                    <input type="hidden" th:field="*{orderId}" th:value="${order.id}" />
 
-                <!-- Pay Button -->
-                <button type="submit" class="btn btn-primary w-100">Pay</button>
-            </form>
+                    <!-- Card Number -->
+                    <div class="form-group">
+                        <label for="cardNumber" class="form-label">
+                            <i class="fas fa-credit-card"></i> Card Number
+                        </label>
+                        <input type="text" id="cardNumber" th:field="*{cardNumber}" class="form-control" maxlength="19" placeholder="1234 5678 9012 3456" required />
+                        <span id="cardTypeDisplay" class="card-type-badge">Unknown Card</span>
+                    </div>
+
+                    <!-- Card Holder Name -->
+                    <div class="form-group">
+                        <label for="cardHolder" class="form-label">
+                            <i class="fas fa-user"></i> Card Holder Name
+                        </label>
+                        <input type="text" id="cardHolder" name="cardHolder" class="form-control" placeholder="As printed on card" required />
+                    </div>
+
+                    <!-- Expiry Month & Year -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="expiryMonth" class="form-label">
+                                    <i class="fas fa-calendar"></i> Expiry Month
+                                </label>
+                                <select id="expiryMonth" name="expiryMonth" class="form-select" required>
+                                    <option value="">MM</option>
+                                    <option th:each="m : ${#numbers.sequence(1,12)}"
+                                            th:value="${m}" th:text="${m < 10 ? '0' + m : m}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="expiryYear" class="form-label">
+                                    <i class="fas fa-calendar-alt"></i> Expiry Year
+                                </label>
+                                <select id="expiryYear" name="expiryYear" class="form-select" required>
+                                    <option value="">YYYY</option>
+                                    <option th:each="y : ${#numbers.sequence(2024,2035)}"
+                                            th:value="${y}" th:text="${y}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="cvv" class="form-label">
+                                    <i class="fas fa-lock"></i> CVV
+                                </label>
+                                <input type="password" id="cvv" name="cvv" class="form-control" maxlength="4" placeholder="123" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Info -->
+                    <div class="security-info">
+                        <i class="fas fa-shield-alt"></i>
+                        <div class="security-info-text">
+                            <strong>Secure Payment</strong>
+                            <small>Your card information is encrypted and secure. We never store your CVV.</small>
+                        </div>
+                    </div>
+
+                    <!-- Pay Button -->
+                    <button type="submit" class="btn btn-pay">
+                        <i class="fas fa-lock me-2"></i> Pay Rs. <span th:text="${order.totalAmount}">0.00</span>
+                    </button>
+
+                    <!-- Accepted Cards -->
+                    <div class="accepted-cards">
+                        <i class="fab fa-cc-visa"></i>
+                        <i class="fab fa-cc-mastercard"></i>
+                        <i class="fab fa-cc-amex"></i>
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                </form>
+            </div>
         </div>
 
-        <!-- Order Summary -->
-        <div class="col-md-6">
-            <h4>Order Summary</h4>
-            <div class="p-3 border rounded bg-white shadow-sm">
-                <p><strong>Order ID:</strong> <span th:text="${order.id}">0</span></p>
-                <p><strong>Total Amount:</strong> Rs. <span th:text="${order.totalAmount}">0.00</span></p>
-                <p><strong>Shipping To:</strong> <span th:text="${order.fullName}">Name</span></p>
-                <p><strong>Address:</strong>
-                    <span th:text="${order.address + ', ' + order.city + ', ' + order.postalCode + ', ' + order.country}">Address</span>
-                </p>
-                <p><strong>Phone:</strong> <span th:text="${order.phone}">0000000</span></p>
+        <!-- Right: Order Summary -->
+        <div class="col-lg-5">
+            <div class="summary-card">
+                <h4><i class="fas fa-receipt"></i> Order Summary</h4>
+
+                <div class="summary-item">
+                    <span class="summary-label">Order ID</span>
+                    <span class="summary-value">#<span th:text="${order.id}">0</span></span>
+                </div>
+
+                <div class="total-amount">
+                    <div class="summary-item">
+                        <span class="summary-label">Total Amount</span>
+                        <span class="summary-value">Rs. <span th:text="${order.totalAmount}">0.00</span></span>
+                    </div>
+                </div>
+
+                <div class="shipping-details">
+                    <h6><i class="fas fa-shipping-fast me-2"></i>Shipping Information</h6>
+                    <p><strong>Name:</strong> <span th:text="${order.fullName}">Name</span></p>
+                    <p><strong>Address:</strong> <span th:text="${order.address}">Address</span></p>
+                    <p><strong>City:</strong> <span th:text="${order.city}">City</span>, <span th:text="${order.postalCode}">Code</span></p>
+                    <p><strong>Country:</strong> <span th:text="${order.country}">Country</span></p>
+                    <p><strong>Phone:</strong> <span th:text="${order.phone}">0000000</span></p>
+                </div>
             </div>
         </div>
     </div>
@@ -88,26 +654,56 @@
 <script>
     function detectCardType(number) {
         number = number.replace(/\s+/g, '');
-        if (/^4/.test(number)) return "Visa";
-        if (/^5[1-5]/.test(number)) return "MasterCard";
-        if (/^3[47]/.test(number)) return "American Express";
-        if (/^6(?:011|5)/.test(number)) return "Discover";
-        return "Unknown";
+        if (/^4/.test(number)) return { type: "Visa", icon: "fab fa-cc-visa", color: "#1A1F71" };
+        if (/^5[1-5]/.test(number)) return { type: "MasterCard", icon: "fab fa-cc-mastercard", color: "#EB001B" };
+        if (/^3[47]/.test(number)) return { type: "American Express", icon: "fab fa-cc-amex", color: "#006FCF" };
+        if (/^6(?:011|5)/.test(number)) return { type: "Discover", icon: "fab fa-cc-discover", color: "#FF6000" };
+        return { type: "Unknown Card", icon: "fas fa-credit-card", color: "#6c757d" };
     }
 
     const cardInput = document.getElementById('cardNumber');
     const cardTypeDisplay = document.getElementById('cardTypeDisplay');
+    const cardNumberDisplay = document.getElementById('cardNumberDisplay');
+    const cardLogoDisplay = document.getElementById('cardLogoDisplay');
+    const cardHolderInput = document.getElementById('cardHolder');
+    const cardHolderDisplay = document.getElementById('cardHolderDisplay');
+    const expiryMonthSelect = document.getElementById('expiryMonth');
+    const expiryYearSelect = document.getElementById('expiryYear');
+    const cardExpiryDisplay = document.getElementById('cardExpiryDisplay');
 
+    // Card number input
     cardInput.addEventListener('input', () => {
         // Auto-format: 1234 5678 9012 3456
         let val = cardInput.value.replace(/\D/g, '');
         val = val.match(/.{1,4}/g);
         cardInput.value = val ? val.join(' ') : '';
 
+        // Update visual display
+        cardNumberDisplay.textContent = cardInput.value || '•••• •••• •••• ••••';
+
         // Detect card type
-        const type = detectCardType(cardInput.value);
-        cardTypeDisplay.textContent = "Card Type: " + type;
+        const cardInfo = detectCardType(cardInput.value);
+        cardTypeDisplay.textContent = cardInfo.type;
+        cardTypeDisplay.style.background = `linear-gradient(135deg, ${cardInfo.color}, #764ba2)`;
+
+        // Update logo
+        cardLogoDisplay.innerHTML = `<i class="${cardInfo.icon}"></i>`;
     });
+
+    // Card holder input
+    cardHolderInput.addEventListener('input', () => {
+        cardHolderDisplay.textContent = cardHolderInput.value.toUpperCase() || 'YOUR NAME';
+    });
+
+    // Expiry date
+    function updateExpiry() {
+        const month = expiryMonthSelect.value || 'MM';
+        const year = expiryYearSelect.value ? expiryYearSelect.value.slice(-2) : 'YY';
+        cardExpiryDisplay.textContent = `${month}/${year}`;
+    }
+
+    expiryMonthSelect.addEventListener('change', updateExpiry);
+    expiryYearSelect.addEventListener('change', updateExpiry);
 </script>
 </body>
 </html>
