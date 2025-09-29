@@ -18,30 +18,68 @@
     <h2 class="mb-4 text-center">Payment</h2>
 
     <div class="row">
+        <!-- Card Input -->
         <div class="col-md-6">
             <h4>Card Details</h4>
-            <form th:action="@{/payment}" th:object="${paymentForm}" method="post">
+            <form th:action="@{/payment}" th:object="${paymentForm}" method="post" class="p-3 border rounded bg-white shadow-sm">
                 <input type="hidden" th:field="*{orderId}" th:value="${order.id}" />
 
-                <div>
-                    <label for="cardNumber">Card Number</label>
-                    <input type="text" th:field="*{cardNumber}" required />
+                <!-- Card Number -->
+                <div class="mb-3">
+                    <label for="cardNumber" class="form-label">Card Number</label>
+                    <input type="text" id="cardNumber" th:field="*{cardNumber}" class="form-control" maxlength="19" required />
+                    <div id="cardTypeDisplay" class="card-type mt-2">Card Type: Unknown</div>
                 </div>
 
-                <button type="submit">Pay</button>
-            </form>
+                <!-- Card Holder Name -->
+                <div class="mb-3">
+                    <label for="cardHolder" class="form-label">Card Holder Name</label>
+                    <input type="text" id="cardHolder" name="cardHolder" class="form-control" placeholder="As printed on card" required />
+                </div>
 
+                <!-- Expiry Month & Year -->
+                <div class="row mb-3">
+                    <div class="col">
+                        <label for="expiryMonth" class="form-label">Expiry Month</label>
+                        <select id="expiryMonth" name="expiryMonth" class="form-select" required>
+                            <option value="">MM</option>
+                            <option th:each="m : ${#numbers.sequence(1,12)}"
+                                    th:value="${m}" th:text="${m < 10 ? '0' + m : m}"></option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="expiryYear" class="form-label">Expiry Year</label>
+                        <select id="expiryYear" name="expiryYear" class="form-select" required>
+                            <option value="">YYYY</option>
+                            <option th:each="y : ${#numbers.sequence(2024,2035)}"
+                                    th:value="${y}" th:text="${y}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- CVV -->
+                <div class="mb-3">
+                    <label for="cvv" class="form-label">CVV</label>
+                    <input type="password" id="cvv" name="cvv" class="form-control" maxlength="4" placeholder="XXX" required />
+                </div>
+
+                <!-- Pay Button -->
+                <button type="submit" class="btn btn-primary w-100">Pay</button>
+            </form>
         </div>
 
+        <!-- Order Summary -->
         <div class="col-md-6">
             <h4>Order Summary</h4>
-            <p><strong>Order ID:</strong> <span th:text="${order.id}">0</span></p>
-            <p><strong>Total Amount:</strong> Rs. <span th:text="${order.totalAmount}">0.00</span></p>
-            <p><strong>Shipping To:</strong> <span th:text="${order.fullName}">Name</span></p>
-            <p><strong>Address:</strong>
-                <span th:text="${order.address + ', ' + order.city + ', ' + order.postalCode + ', ' + order.country}">Address</span>
-            </p>
-            <p><strong>Phone:</strong> <span th:text="${order.phone}">0000000</span></p>
+            <div class="p-3 border rounded bg-white shadow-sm">
+                <p><strong>Order ID:</strong> <span th:text="${order.id}">0</span></p>
+                <p><strong>Total Amount:</strong> Rs. <span th:text="${order.totalAmount}">0.00</span></p>
+                <p><strong>Shipping To:</strong> <span th:text="${order.fullName}">Name</span></p>
+                <p><strong>Address:</strong>
+                    <span th:text="${order.address + ', ' + order.city + ', ' + order.postalCode + ', ' + order.country}">Address</span>
+                </p>
+                <p><strong>Phone:</strong> <span th:text="${order.phone}">0000000</span></p>
+            </div>
         </div>
     </div>
 </div>
@@ -61,10 +99,12 @@
     const cardTypeDisplay = document.getElementById('cardTypeDisplay');
 
     cardInput.addEventListener('input', () => {
+        // Auto-format: 1234 5678 9012 3456
         let val = cardInput.value.replace(/\D/g, '');
         val = val.match(/.{1,4}/g);
         cardInput.value = val ? val.join(' ') : '';
 
+        // Detect card type
         const type = detectCardType(cardInput.value);
         cardTypeDisplay.textContent = "Card Type: " + type;
     });
