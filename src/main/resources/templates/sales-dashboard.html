@@ -133,37 +133,48 @@
     </div>
 </div>
 
-<script>
-    // Product Sales Chart
+<canvas id="productSalesChart" width="800" height="400"></canvas>
+<canvas id="monthlySalesChart" width="800" height="400"></canvas>
+
+
+<script th:inline="javascript">
     const productSalesCtx = document.getElementById('productSalesChart').getContext('2d');
     const productSalesChart = new Chart(productSalesCtx, {
         type: 'bar',
         data: {
-            labels: [[${productNames}]], // Thymeleaf will replace with ["Prod1", "Prod2", ...]
+            labels: [[${productNames}]],
             datasets: [{
                 label: 'Sales Amount',
-                data: [[${productSalesAmounts}]], // [1200, 3400, ...]
+                data: [[${productSalesAmounts}]],
                 backgroundColor: 'rgba(54, 162, 235, 0.5)'
             }]
+        },
+        options: {
+            responsive: false,       // Disable responsive resizing
+            maintainAspectRatio: false,
+            animations: false
         }
     });
 
-
-    // Monthly Sales Chart
     const monthlySalesCtx = document.getElementById('monthlySalesChart').getContext('2d');
     const monthlySalesChart = new Chart(monthlySalesCtx, {
         type: 'line',
         data: {
-            labels: [[${months}]], // ["Jan", "Feb", ...]
+            labels: [[${months}]],
             datasets: [{
                 label: 'Monthly Sales',
-                data: [[${monthlyAmounts}]], // [12000, 19000, ...]
+                data: [[${monthlyAmounts}]],
                 borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75,192,192,0.2)',
                 tension: 0.1
             }]
+        },
+        options: {
+            responsive: false,       // Disable responsive resizing
+            maintainAspectRatio: false,
+            animations: false
         }
     });
-
 </script>
 </body>
 </html>

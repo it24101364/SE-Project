@@ -7,8 +7,8 @@ import com.example.webapp.repository.SaleRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
+import java.time.format.TextStyle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,6 +19,8 @@ public class SaleService {
     public SaleService(SaleRepository saleRepository) {
         this.saleRepository = saleRepository;
     }
+
+    // ================= Basic Sale Operations =================
 
     public List<Sale> getAllSales() {
         return saleRepository.findAll();
@@ -40,15 +42,36 @@ public class SaleService {
                 .sum();
     }
 
-    public Map<String, Double> getSalesByProduct() {
+    public long getTotalUnitsSold() {
         return saleRepository.findAll().stream()
-                .collect(Collectors.groupingBy(
-                        Sale::getProductName,
-                        Collectors.summingDouble(Sale::getTotalAmount)
-                ));
+                .mapToLong(Sale::getQuantity)
+                .sum();
     }
 
-    public Map<String, Long> getTopSellingProducts() {
+    public double getAverageOrderValue() {
+        List<Sale> sales = saleRepository.findAll();
+        if (sales.isEmpty()) return 0.0;
+        return sales.stream()
+                .mapToDouble(Sale::getTotalAmount)
+                .average()
+                .orElse(0.0);
+    }
+
+    public void addSaleFromOrderItem(OrderItem item, Order order) {
+        Sale sale = new Sale();
+        sale.setOrderId(order.getId());
+        sale.setProductId(item.getProductId());
+        sale.setProductName(item.getProductName());
+        sale.setQuantity(item.getQuantity());
+        sale.setPrice(item.getPrice());
+        sale.setTotalAmount(item.getQuantity() * item.getPrice());
+        saleRepository.save(sale);
+    }
+
+    // ================= Map-based Methods (internal/analytics) =================
+
+    // Renamed to avoid conflict with DTO method
+    public Map<String, Long> getTopSellingProductsMap() {
         return saleRepository.findAll().stream()
                 .collect(Collectors.groupingBy(
                         Sale::getProductName,
@@ -61,42 +84,76 @@ public class SaleService {
                         Map.Entry::getKey,
                         Map.Entry::getValue,
                         (e1, e2) -> e1,
-                        java.util.LinkedHashMap::new
+                        LinkedHashMap::new
                 ));
     }
 
-    public Map<String, Double> getMonthlySales() {
+    // Renamed to avoid conflict with DTO method
+    public Map<String, Double> getMonthlySalesMap() {
         return saleRepository.findAll().stream()
                 .collect(Collectors.groupingBy(
-                        sale -> sale.getSaleDate().getMonth().toString() + " " + sale.getSaleDate().getYear(),
+                        sale -> sale.getSaleDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH),
                         Collectors.summingDouble(Sale::getTotalAmount)
                 ));
     }
 
-    public long getTotalUnitsSold() {
+    public Map<String, Double> getSalesByProduct() {
         return saleRepository.findAll().stream()
-                .mapToLong(Sale::getQuantity)
-                .sum();
+                .collect(Collectors.groupingBy(
+                        Sale::getProductName,
+                        Collectors.summingDouble(Sale::getTotalAmount)
+                ));
     }
 
-    public double getAverageOrderValue() {
-        List<Sale> sales = saleRepository.findAll();
-        if (sales.isEmpty()) return 0.0;
+    // ================= DTO-based Methods (for charts / frontend) =================
 
-        return sales.stream()
-                .mapToDouble(Sale::getTotalAmount)
-                .average()
-                .orElse(0.0);
+    public List<com.example.webapp.dto.ProductSalesDTO> getTopSellingProducts() {
+        Map<String, Double> map = getAllSales().stream()
+                .collect(Collectors.groupingBy(
+                        Sale::getProductName,
+                        Collectors.summingDouble(Sale::getTotalAmount)
+                ));
+
+        return map.entrySet().stream()
+                .map(e -> new com.example.webapp.dto.ProductSalesDTO(e.getKey(), e.getValue()))
+                .sorted((a, b) -> Double.compare(b.getTotalAmount(), a.getTotalAmount()))
+                .limit(5)
+                .collect(Collectors.toList());
     }
-    public void addSaleFromOrderItem(OrderItem item, Order order) {
-        Sale sale = new Sale();
-        sale.setOrderId(order.getId());
-        sale.setProductId(item.getProductId());
-        sale.setProductName(item.getProductName());
-        sale.setQuantity(item.getQuantity());
-        sale.setPrice(item.getPrice());
-        sale.setTotalAmount(item.getQuantity() * item.getPrice());
 
-        saleRepository.save(sale);
+    public List<String> getTopSellingProductsNames() {
+        return getTopSellingProducts().stream()
+                .map(com.example.webapp.dto.ProductSalesDTO::getProductName)
+                .collect(Collectors.toList());
+    }
+
+    public List<Double> getTopSellingProductsAmounts() {
+        return getTopSellingProducts().stream()
+                .map(com.example.webapp.dto.ProductSalesDTO::getTotalAmount)
+                .collect(Collectors.toList());
+    }
+
+    public List<com.example.webapp.dto.MonthlySalesDTO> getMonthlySales() {
+        Map<String, Double> monthMap = new TreeMap<>();
+        getAllSales().forEach(sale -> {
+            String month = sale.getSaleDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+            monthMap.put(month, monthMap.getOrDefault(month, 0.0) + sale.getTotalAmount());
+        });
+
+        return monthMap.entrySet().stream()
+                .map(e -> new com.example.webapp.dto.MonthlySalesDTO(e.getKey(), e.getValue()))
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getMonthlySalesMonths() {
+        return getMonthlySales().stream()
+                .map(com.example.webapp.dto.MonthlySalesDTO::getMonthName)
+                .collect(Collectors.toList());
+    }
+
+    public List<Double> getMonthlySalesAmounts() {
+        return getMonthlySales().stream()
+                .map(com.example.webapp.dto.MonthlySalesDTO::getTotalAmount)
+                .collect(Collectors.toList());
     }
 }

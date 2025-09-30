@@ -40,6 +40,13 @@ public class SalesController {
         model.addAttribute("sales", saleService.getAllSales());
         model.addAttribute("filteredTotal", saleService.getTotalSales());
 
+        // Chart data
+        model.addAttribute("productNames", saleService.getTopSellingProductsNames());
+        model.addAttribute("productSalesAmounts", saleService.getTopSellingProductsAmounts());
+        model.addAttribute("months", saleService.getMonthlySalesMonths());
+        model.addAttribute("monthlyAmounts", saleService.getMonthlySalesAmounts());
+
+
         return "sales-dashboard";
     }
 
