@@ -3,6 +3,7 @@ package com.example.webapp.controller;
 import com.example.webapp.model.Order;
 import com.example.webapp.model.PaymentForm;
 import com.example.webapp.service.OrderService;
+import com.example.webapp.service.OrderEmailService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -11,9 +12,11 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
 
     private final OrderService orderService;
+    private final OrderEmailService orderEmailService;
 
-    public PaymentController(OrderService orderService) {
+    public PaymentController(OrderService orderService, OrderEmailService orderEmailService) {
         this.orderService = orderService;
+        this.orderEmailService = orderEmailService;
     }
 
     @PostMapping("/payment")
@@ -22,7 +25,6 @@ public class PaymentController {
         Order order = orderService.getOrderById(paymentForm.getOrderId());
         if (order == null) {
             model.addAttribute("error", "Order not found!");
-            model.addAttribute("order", order);
             return "payment";
         }
 
@@ -33,6 +35,9 @@ public class PaymentController {
         order.setPaymentType(cardType);
         order.setPaid(true);
         orderService.saveOrder(order);
+
+        // ✅ Send order summary email
+        orderEmailService.sendOrderSummary(order);
 
         model.addAttribute("order", order);
         return "payment-success";

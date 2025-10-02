@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -28,6 +29,11 @@ public class Order {
     // Payment details
     private String paymentType; // e.g., Visa, MasterCard
     private boolean paid = false;
+
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<OrderItem> items;   // ✅ this must exist
+
 
     // Getters and Setters
     public Long getId() { return id; }
@@ -67,4 +73,7 @@ public class Order {
 
     public boolean isPaid() { return paid; }
     public void setPaid(boolean paid) { this.paid = paid; }
+
+    public List<OrderItem> getItems() { return items; }
+    public void setItems(List<OrderItem> items) { this.items = items; }
 }

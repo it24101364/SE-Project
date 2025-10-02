@@ -11,7 +11,14 @@
     <p>Order ID: <span th:text="${order.id}">0</span></p>
     <p>Total Amount Paid: Rs. <span th:text="${order.totalAmount}">0.00</span></p>
     <p>Payment Method: <span th:text="${order.paymentType}">Unknown</span></p>
+
+    <div class="alert alert-info mt-3">
+        A detailed order summary has been sent to your email:
+        <b><span th:text="${order.userEmail}"></span></b>
+    </div>
+
     <a class="btn btn-primary mt-3" th:href="@{/products}">Go to Home</a>
 </div>
+
 </body>
 </html>
