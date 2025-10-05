@@ -4,6 +4,5 @@ import com.example.webapp.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    User findByUsername(String username);
-    User findByEmail(String email);  // ✅ Added for OTP/email validation
+    User findByEmail(String email);
 }

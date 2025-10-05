@@ -3,40 +3,245 @@
 <head>
     <title>Sales Report</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .report-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .report-header {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .report-header h2 {
+            color: #2d3748;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        /* -------------------- Info Cards -------------------- */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-card {
+            position: relative;
+            background: #fff;
+            border-radius: 20px;
+            padding: 1.8rem 1.5rem;
+            color: #2d3748;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            opacity: 0.1;
+            transform: rotate(45deg);
+            transition: opacity 0.3s ease;
+        }
+
+        .info-card:hover::before {
+            opacity: 0.2;
+        }
+
+        .info-card strong {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            opacity: 0.85;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-card span {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .info-card .icon {
+            font-size: 1.5rem;
+            color: #667eea;
+        }
+
+        /* -------------------- Table -------------------- */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .table thead th {
+            border: none;
+            padding: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f7fafc;
+            transform: scale(1.01);
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-color: #e2e8f0;
+        }
+
+        /* -------------------- Action Buttons -------------------- */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-danger, .btn-secondary, .btn-primary {
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+            box-shadow: 0 4px 15px rgba(245, 101, 101, 0.4);
+        }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 101, 101, 0.6);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+            box-shadow: 0 4px 15px rgba(113, 128, 150, 0.4);
+        }
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(113, 128, 150, 0.6);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            .info-card span {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
-<body class="container mt-5">
+<body>
 
-<h2>Sales Report</h2>
-<p><strong>Generated At:</strong> <span th:text="${reportDate}"></span></p>
-<p><strong>Report Period:</strong> <span th:text="${reportRange}"></span></p>
-<p><strong>Total Amount:</strong> $<span th:text="${totalAmount}"></span></p>
+<div class="container">
+    <div class="report-container">
+        <!-- Header -->
+        <div class="report-header">
+            <h2>📊 Sales Report</h2>
+        </div>
 
-<table class="table table-bordered">
-    <thead>
-    <tr>
-        <th>Order ID</th>
-        <th>Product</th>
-        <th>Quantity</th>
-        <th>Price</th>
-        <th>Total</th>
-        <th>Date</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="sale : ${sales}">
-        <td th:text="${sale.orderId}"></td>
-        <td th:text="${sale.productName}"></td>
-        <td th:text="${sale.quantity}"></td>
-        <td th:text="${sale.price}"></td>
-        <td th:text="${sale.totalAmount}"></td>
-        <td th:text="${#temporals.format(sale.saleDate, 'yyyy-MM-dd HH:mm')}"></td>
-    </tr>
-    </tbody>
-</table>
-<div class="mb-3">
-    <a th:href="@{/sales/report-pdf(startDate=${param.startDate}, endDate=${param.endDate})}"
-       class="btn btn-danger">Download PDF</a>
-    <button onclick="window.print()" class="btn btn-secondary">Print Report</button>
+        <!-- Info Cards -->
+        <div class="info-grid">
+            <div class="info-card">
+                <strong><i class="fas fa-clock icon"></i> Generated At</strong>
+                <span th:text="${reportDate}"></span>
+            </div>
+            <div class="info-card">
+                <strong><i class="fas fa-calendar-alt icon"></i> Report Period</strong>
+                <span th:text="${reportRange}">All Time</span>
+            </div>
+            <div class="info-card">
+                <strong><i class="fas fa-dollar-sign icon"></i> Total Amount</strong>
+                $<span th:text="${totalAmount}">0.00</span>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                    <th>Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="sale : ${sales}">
+                    <td th:text="${sale.orderId}"></td>
+                    <td th:text="${sale.productName}"></td>
+                    <td th:text="${sale.quantity}"></td>
+                    <td th:text="${sale.price}"></td>
+                    <td th:text="${sale.totalAmount}"></td>
+                    <td th:text="${#temporals.format(sale.saleDate, 'yyyy-MM-dd HH:mm')}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a th:href="@{/sales/dashboard}" class="btn btn-primary">🏠 Back to Dashboard</a>
+            <a th:href="@{/sales/report-pdf(startDate=${param.startDate}, endDate=${param.endDate})}"
+               class="btn btn-danger">📄 Download PDF</a>
+            <button onclick="window.print()" class="btn btn-secondary">🖨️ Print Report</button>
+        </div>
+    </div>
 </div>
 
 </body>

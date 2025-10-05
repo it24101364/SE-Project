@@ -156,4 +156,78 @@ public class SaleService {
                 .map(com.example.webapp.dto.MonthlySalesDTO::getTotalAmount)
                 .collect(Collectors.toList());
     }
+
+    public Sale getSaleById(Long id) {
+        return saleRepository.findById(id).orElseThrow(() -> new RuntimeException("Sale not found"));
+    }
+
+    public void updateSale(Sale sale) {
+        saleRepository.save(sale);
+    }
+
+    public void deleteSale(Long id) {
+        saleRepository.deleteById(id);
+    }
+
+    // ================= Filtered Analytics =================
+
+    // Top-selling products names for filtered sales
+    public List<String> getTopSellingProductsNames(List<Sale> sales) {
+        return sales.stream()
+                .collect(Collectors.groupingBy(Sale::getProductName, Collectors.summingDouble(Sale::getTotalAmount)))
+                .entrySet().stream()
+                .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    // Top-selling products amounts for filtered sales
+    public List<Double> getTopSellingProductsAmounts(List<Sale> sales) {
+        return sales.stream()
+                .collect(Collectors.groupingBy(Sale::getProductName, Collectors.summingDouble(Sale::getTotalAmount)))
+                .entrySet().stream()
+                .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
+    }
+
+    // Monthly sales months for filtered sales
+    public List<String> getMonthlySalesMonths(List<Sale> sales) {
+        Map<Integer, Double> monthMap = new TreeMap<>();
+        for (Sale sale : sales) {
+            int month = sale.getSaleDate().getMonthValue();
+            monthMap.put(month, monthMap.getOrDefault(month, 0.0) + sale.getTotalAmount());
+        }
+        return monthMap.keySet().stream()
+                .map(m -> java.time.Month.of(m).getDisplayName(TextStyle.SHORT, Locale.ENGLISH))
+                .collect(Collectors.toList());
+    }
+
+    // Monthly sales amounts for filtered sales
+    public List<Double> getMonthlySalesAmounts(List<Sale> sales) {
+        Map<Integer, Double> monthMap = new TreeMap<>();
+        for (Sale sale : sales) {
+            int month = sale.getSaleDate().getMonthValue();
+            monthMap.put(month, monthMap.getOrDefault(month, 0.0) + sale.getTotalAmount());
+        }
+        return new ArrayList<>(monthMap.values());
+    }
+
+    // Total sales for filtered sales
+    public double getTotalSales(List<Sale> sales) {
+        return sales.stream().mapToDouble(Sale::getTotalAmount).sum();
+    }
+
+    // Total units sold for filtered sales
+    public int getTotalUnitsSold(List<Sale> sales) {
+        return sales.stream().mapToInt(Sale::getQuantity).sum();
+    }
+
+    // Average order value for filtered sales
+    public double getAverageOrderValue(List<Sale> sales) {
+        if (sales.isEmpty()) return 0.0;
+        return sales.stream().mapToDouble(Sale::getTotalAmount).average().orElse(0.0);
+    }
+
+
 }

@@ -7,26 +7,29 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepo;
+    private final UserRepository userRepository;
 
-    public CustomUserDetailsService(UserRepository userRepo) {
-        this.userRepo = userRepo;
+    public CustomUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepo.findByEmail(email);
+        User user = userRepository.findByEmail(email);
         if (user == null) {
-            throw new UsernameNotFoundException("User not found: " + email);
+            throw new UsernameNotFoundException("No user found with email: " + email);
         }
 
-        return org.springframework.security.core.userdetails.User
-                .withUsername(user.getEmail())
-                .password(user.getPassword()) // must be BCrypt hashed
-                .roles("USER")
+        // Create a UserDetails object
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getEmail())  // must match form input name
+                .password(user.getPassword())
+                .authorities(Collections.emptyList()) // no roles for now
                 .build();
     }
 }
