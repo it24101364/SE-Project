@@ -5,58 +5,1018 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Feedbacks</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-50 min-h-screen">
+<style>
+    :root {
+        --primary-color: #0d6efd;
+        --secondary-color: #6c757d;
+        --dark-bg: #1a1a2e;
+        --accent-color: #00d9ff;
+    }
 
-<div class="max-w-4xl mx-auto py-8">
-    <h1 class="text-3xl font-bold mb-6 text-center">Customer Feedbacks</h1>
+    /* Light Theme Variables */
+    [data-theme="light"] {
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8f9fa;
+        --bg-card: #ffffff;
+        --text-primary: #1a1a2e;
+        --text-secondary: #6c757d;
+        --border-color: rgba(0, 0, 0, 0.1);
+        --shadow-color: rgba(0, 0, 0, 0.1);
+        --particle-color: rgba(0, 217, 255, 0.3);
+        --circuit-opacity: 0.05;
+    }
 
-    <div th:if="${feedbacks.isEmpty()}" class="text-gray-500 text-center mb-4">
-        No feedbacks yet.
-    </div>
+    /* Dark Theme Variables */
+    [data-theme="dark"] {
+        --bg-primary: #0a0e27;
+        --bg-secondary: #1a1a2e;
+        --bg-card: rgba(255, 255, 255, 0.05);
+        --text-primary: #ffffff;
+        --text-secondary: rgba(255, 255, 255, 0.7);
+        --border-color: rgba(255, 255, 255, 0.1);
+        --shadow-color: rgba(0, 0, 0, 0.3);
+        --particle-color: rgba(0, 217, 255, 0.6);
+        --circuit-opacity: 0.03;
+    }
 
-    <div th:each="feedback : ${feedbacks}" class="mb-6 border rounded-lg p-4 shadow-sm bg-white">
-        <div class="flex justify-between items-center mb-2">
-            <span class="font-medium" th:text="${feedback.name}">User Name</span>
-            <span th:each="i : ${#numbers.sequence(1,5)}">
-                <i class="fas fa-star" th:classappend="${i <= feedback.rating} ? 'text-yellow-400' : 'text-gray-300'"></i>
-            </span>
-        </div>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        <p class="text-gray-700 mb-2" th:text="${feedback.message}">Feedback message here</p>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        overflow-x: hidden;
+        transition: background-color 0.3s ease;
+        min-height: 100vh;
+    }
 
-        <div th:if="${feedback.adminReply != null}" class="mt-2 p-3 bg-gray-100 rounded">
-            <span class="font-semibold text-gray-800">Admin Reply:</span>
-            <p class="text-gray-700" th:text="${feedback.adminReply}">Reply here</p>
-        </div>
-    </div>
+    /* Animated Background */
+    .tech-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-primary) 100%);
+        overflow: hidden;
+        transition: background 0.3s ease;
+    }
 
-    <!-- Optional: Feedback Form for users to submit -->
-    <div class="mt-8 bg-white p-6 rounded-lg shadow">
-        <h2 class="text-2xl font-bold mb-4">Submit Your Feedback</h2>
-        <form th:action="@{/feedback/submit}" method="post" class="space-y-4">
-            <input type="text" name="name" placeholder="Your Name" required
-                   class="border rounded px-2 py-1 w-full">
-            <input type="email" name="email" placeholder="Your Email" required
-                   class="border rounded px-2 py-1 w-full">
-            <textarea name="message" placeholder="Your Feedback" required
-                      class="border rounded px-2 py-1 w-full"></textarea>
-            <select name="rating" required class="border rounded px-2 py-1 w-full">
-                <option value="">Select Rating</option>
-                <option value="5">5 Stars</option>
-                <option value="4">4 Stars</option>
-                <option value="3">3 Stars</option>
-                <option value="2">2 Stars</option>
-                <option value="1">1 Star</option>
-            </select>
-            <button type="submit"
-                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                Submit Feedback
-            </button>
-        </form>
-    </div>
+    [data-theme="dark"] .tech-background {
+        background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+    }
+
+    .circuit-board {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: var(--circuit-opacity);
+        background-image:
+                repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(0, 217, 255, 0.1) 50px, rgba(0, 217, 255, 0.1) 51px),
+                repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(0, 217, 255, 0.1) 50px, rgba(0, 217, 255, 0.1) 51px);
+        transition: opacity 0.3s ease;
+    }
+
+    .floating-particles {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    .particle {
+        position: absolute;
+        background: var(--particle-color);
+        border-radius: 50%;
+        animation: float 20s infinite;
+        transition: background 0.3s ease;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
+    }
+
+    /* Theme Toggle Button */
+    .theme-toggle {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent-color), #667eea);
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        box-shadow: 0 5px 25px rgba(0, 217, 255, 0.4);
+        transition: all 0.3s ease;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .theme-toggle:hover {
+        transform: scale(1.1) rotate(180deg);
+        box-shadow: 0 8px 35px rgba(0, 217, 255, 0.6);
+    }
+
+    /* Page Header */
+    .page-header {
+        text-align: center;
+        padding: 60px 0 40px;
+        position: relative;
+    }
+
+    .page-header h1 {
+        font-size: 3rem;
+        font-weight: bold;
+        background: linear-gradient(135deg, var(--text-primary), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 15px;
+        animation: fadeInUp 0.8s ease;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .page-header::after {
+        content: '';
+        display: block;
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        margin: 20px auto;
+        border-radius: 2px;
+        box-shadow: 0 0 20px var(--accent-color);
+    }
+
+    /* Feedback Cards */
+    .feedback-card {
+        background: var(--bg-card);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 25px;
+        box-shadow: 0 8px 32px var(--shadow-color);
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    [data-theme="light"] .feedback-card {
+        background: white;
+    }
+
+    .feedback-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.1), transparent);
+        transition: left 0.5s;
+    }
+
+    .feedback-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 50px rgba(0, 217, 255, 0.3);
+        border-color: var(--accent-color);
+    }
+
+    .feedback-card:hover::before {
+        left: 100%;
+    }
+
+    .feedback-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .user-name {
+        font-weight: 600;
+        font-size: 1.2rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .user-name i {
+        color: var(--accent-color);
+        font-size: 1.3rem;
+    }
+
+    .rating-display {
+        display: flex;
+        gap: 5px;
+    }
+
+    .rating-display i {
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+    }
+
+    .rating-display i.text-yellow-400 {
+        color: #ffc107;
+        text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+    }
+
+    .rating-display i.text-gray-300 {
+        color: rgba(128, 128, 128, 0.3);
+    }
+
+    [data-theme="dark"] .rating-display i.text-gray-300 {
+        color: rgba(255, 255, 255, 0.2);
+    }
+
+    .feedback-message {
+        color: var(--text-secondary);
+        font-size: 1.05rem;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: rgba(0, 217, 255, 0.03);
+        border-left: 3px solid var(--accent-color);
+        border-radius: 8px;
+    }
+
+    .admin-reply-section {
+        background: var(--bg-secondary);
+        padding: 20px;
+        border-radius: 15px;
+        margin-top: 20px;
+        border: 1px solid var(--border-color);
+        position: relative;
+    }
+
+    [data-theme="light"] .admin-reply-section {
+        background: #f8f9fa;
+    }
+
+    .admin-reply-header {
+        font-weight: 600;
+        color: var(--accent-color);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1.1rem;
+    }
+
+    .admin-reply-header i {
+        font-size: 1.2rem;
+    }
+
+    .admin-reply-text {
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+
+    .no-feedback {
+        text-align: center;
+        padding: 60px 20px;
+        background: var(--bg-card);
+        border-radius: 20px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 8px 32px var(--shadow-color);
+    }
+
+    [data-theme="light"] .no-feedback {
+        background: white;
+    }
+
+    .no-feedback i {
+        font-size: 4rem;
+        color: var(--accent-color);
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+
+    .no-feedback p {
+        color: var(--text-secondary);
+        font-size: 1.2rem;
+    }
+
+    /* Feedback Section */
+    .feedback-section {
+        padding: 80px 0;
+        background: var(--bg-secondary);
+        backdrop-filter: blur(10px);
+        position: relative;
+        border-top: 1px solid rgba(0, 217, 255, 0.2);
+        border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+        transition: background 0.3s ease;
+        margin-top: 40px;
+    }
+
+    .feedback-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: var(--bg-card);
+        padding: 50px;
+        border-radius: 30px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 15px 50px var(--shadow-color);
+        transition: all 0.3s ease;
+    }
+
+    [data-theme="light"] .feedback-container {
+        background: white;
+    }
+
+    .feedback-title {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .feedback-title h2 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        background: linear-gradient(135deg, var(--text-primary), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+    }
+
+    .feedback-title p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+    }
+
+    .form-control, .form-select {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        padding: 12px 20px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    [data-theme="light"] .form-control,
+    [data-theme="light"] .form-select {
+        background: #f8f9fa;
+    }
+
+    .form-control:focus, .form-select:focus {
+        background: var(--bg-card);
+        border-color: var(--accent-color);
+        box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        color: var(--text-primary);
+    }
+
+    [data-theme="light"] .form-control:focus,
+    [data-theme="light"] .form-select:focus {
+        background: white;
+    }
+
+    .form-control::placeholder {
+        color: var(--text-secondary);
+    }
+
+    .form-select option {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+    }
+
+    .form-label {
+        color: var(--text-primary);
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    .rating-stars {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin: 20px 0;
+    }
+
+    .star {
+        font-size: 2rem;
+        color: rgba(255, 255, 255, 0.3);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    [data-theme="light"] .star {
+        color: rgba(128, 128, 128, 0.3);
+    }
+
+    .star:hover, .star.active {
+        color: #ffc107;
+        transform: scale(1.2);
+        text-shadow: 0 0 20px #ffc107;
+    }
+
+    .btn-submit-feedback {
+        background: linear-gradient(135deg, var(--accent-color), #667eea);
+        border: none;
+        color: white;
+        padding: 15px 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .btn-submit-feedback:hover {
+        background: linear-gradient(135deg, #667eea, var(--accent-color));
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 217, 255, 0.5);
+    }
+
+    /* Navbar Enhancement */
+    .navbar-custom {
+        background: rgba(26, 26, 46, 0.95);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 20px var(--shadow-color);
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    [data-theme="light"] .navbar-custom {
+        background: rgba(255, 255, 255, 0.95);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-brand {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--accent-color) !important;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+    }
+
+    .navbar-brand i {
+        margin-right: 8px;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+
+    .nav-link {
+        color: #fff !important;
+        margin: 0 10px;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    [data-theme="light"] .nav-link {
+        color: #1a1a2e !important;
+    }
+
+    .nav-link:hover {
+        color: var(--accent-color) !important;
+        transform: translateY(-2px);
+    }
+
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -5px;
+        left: 50%;
+        background-color: var(--accent-color);
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+        box-shadow: 0 0 10px var(--accent-color);
+    }
+
+    .nav-link:hover::after {
+        width: 80%;
+    }
+
+    /* User Welcome Badge */
+    .user-badge {
+        background: rgba(0, 217, 255, 0.2);
+        padding: 10px 25px;
+        border-radius: 25px;
+        margin-right: 15px;
+        color: white;
+        border: 1px solid rgba(0, 217, 255, 0.3);
+        backdrop-filter: blur(10px);
+    }
+
+    [data-theme="light"] .user-badge {
+        color: #1a1a2e;
+        background: rgba(0, 217, 255, 0.15);
+    }
+
+    .navbar-theme-toggle {
+        background: linear-gradient(135deg, var(--accent-color), #667eea);
+        border: none;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 25px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-left: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        height: 45px;
+    }
+
+    .navbar-theme-toggle:hover {
+        transform: scale(1.1) rotate(180deg);
+        box-shadow: 0 5px 20px rgba(0, 217, 255, 0.4);
+    }
+
+    .logout-btn {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        border: none;
+        padding: 10px 25px;
+        border-radius: 25px;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+    }
+
+    .logout-btn:hover {
+        background: linear-gradient(135deg, #c82333, #dc3545);
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(220, 53, 69, 0.5);
+    }
+
+    /* Footer */
+    .footer {
+        background: var(--bg-secondary);
+        backdrop-filter: blur(10px);
+        color: var(--text-primary);
+        padding: 60px 0 20px;
+        position: relative;
+        border-top: 1px solid rgba(0, 217, 255, 0.2);
+        transition: all 0.3s ease;
+        margin-top: 80px;
+    }
+
+    [data-theme="light"] .footer {
+        background: #f8f9fa;
+    }
+
+    .footer h5 {
+        color: var(--accent-color);
+        margin-bottom: 25px;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+    }
+
+    .footer-links {
+        list-style: none;
+        padding: 0;
+    }
+
+    .footer-links li {
+        margin-bottom: 12px;
+    }
+
+    .footer-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .footer-links a:hover {
+        color: var(--accent-color);
+        padding-left: 10px;
+        text-shadow: 0 0 10px var(--accent-color);
+    }
+
+    .social-icons a {
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        margin-right: 15px;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .social-icons a:hover {
+        color: var(--accent-color);
+        transform: translateY(-5px) rotate(360deg);
+        text-shadow: 0 0 20px var(--accent-color);
+    }
+
+    .footer-bottom {
+        border-top: 1px solid var(--border-color);
+        margin-top: 40px;
+        padding-top: 25px;
+        text-align: center;
+        color: var(--text-secondary);
+    }
+
+    /* Go to Top Button */
+    .go-to-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        box-shadow: 0 5px 25px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .go-to-top.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .go-to-top:hover {
+        transform: scale(1.1) translateY(-5px);
+        box-shadow: 0 8px 35px rgba(102, 126, 234, 0.6);
+    }
+
+    @media (max-width: 768px) {
+        .page-header h1 {
+            font-size: 2rem;
+        }
+
+        .feedback-container {
+            padding: 30px 20px;
+        }
+
+        .feedback-card {
+            padding: 20px;
+        }
+    }
+</style>
+<body>
+<!-- Animated Tech Background -->
+<div class="tech-background">
+    <div class="circuit-board"></div>
+    <div class="floating-particles" id="particles"></div>
 </div>
 
+<!-- Theme Toggle Button -->
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+    <i class="fas fa-moon" id="themeIcon"></i>
+</button>
+
+<!-- Go to Top Button -->
+<button class="go-to-top" id="goToTop" aria-label="Go to top">
+    <i class="fas fa-arrow-up"></i>
+</button>
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/welcome}"><i class="fas fa-microchip"></i>Spare Parts Store</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/welcome}"><i class="fas fa-home"></i> Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/products}"><i class="fas fa-box-open"></i> Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Cart</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/feedback}"><i class="fas fa-comments"></i> Feedback</a>
+                </li>
+            </ul>
+
+            <span class="user-badge">
+                <i class="fas fa-user-circle"></i> <span th:text="${user != null ? user.username : 'Guest'}">Guest</span>
+            </span>
+            <button class="navbar-theme-toggle" id="navbarThemeToggle" aria-label="Toggle theme">
+                <i class="fas fa-moon" id="navbarThemeIcon"></i>
+            </button>
+            <a class="btn logout-btn" th:href="@{/login}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="max-w-4xl mx-auto py-8 px-4">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1><i class="fas fa-comments me-3"></i>Customer Feedbacks</h1>
+    </div>
+
+    <!-- No Feedback Message -->
+    <div th:if="${feedbacks.isEmpty()}" class="no-feedback">
+        <i class="fas fa-comment-slash"></i>
+        <p>No feedbacks yet.</p>
+    </div>
+
+    <!-- Feedback Cards -->
+    <div th:each="feedback : ${feedbacks}" class="feedback-card">
+        <div class="feedback-header">
+            <span class="user-name">
+                <i class="fas fa-user-circle"></i>
+                <span th:text="${feedback.name}">User Name</span>
+            </span>
+            <div class="rating-display">
+                <span th:each="i : ${#numbers.sequence(1,5)}">
+                    <i class="fas fa-star" th:classappend="${i <= feedback.rating} ? 'text-yellow-400' : 'text-gray-300'"></i>
+                </span>
+            </div>
+        </div>
+
+        <p class="feedback-message" th:text="${feedback.message}">Feedback message here</p>
+
+        <div th:if="${feedback.adminReply != null}" class="admin-reply-section">
+            <div class="admin-reply-header">
+                <i class="fas fa-reply"></i>
+                <span>Admin Reply:</span>
+            </div>
+            <p class="admin-reply-text" th:text="${feedback.adminReply}">Reply here</p>
+        </div>
+    </div>
+
+    <!-- Feedback Form Section -->
+    <section class="feedback-section" id="feedback">
+        <div class="container">
+            <div class="feedback-container">
+                <div class="feedback-title">
+                    <h2><i class="fas fa-comments me-2"></i>We Value Your Feedback</h2>
+                    <p>Help us improve your shopping experience</p>
+                </div>
+                <form id="feedbackForm" th:action="@{/feedback/submit}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <div class="mb-4">
+                        <label for="customerName" class="form-label"><i class="fas fa-user me-2"></i>Your Name</label>
+                        <input type="text" class="form-control" id="customerName" name="name" placeholder="Enter your name" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="customerEmail" class="form-label"><i class="fas fa-envelope me-2"></i>Email Address</label>
+                        <input type="email" class="form-control" id="customerEmail" name="email" placeholder="your.email@example.com" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label"><i class="fas fa-star me-2"></i>Rate Your Experience</label>
+                        <div class="rating-stars" id="ratingStars">
+                            <i class="fas fa-star star" data-rating="1"></i>
+                            <i class="fas fa-star star" data-rating="2"></i>
+                            <i class="fas fa-star star" data-rating="3"></i>
+                            <i class="fas fa-star star" data-rating="4"></i>
+                            <i class="fas fa-star star" data-rating="5"></i>
+                        </div>
+                        <input type="hidden" id="rating" name="rating" value="0">
+                    </div>
+                    <div class="mb-4">
+                        <label for="feedbackCategory" class="form-label"><i class="fas fa-list me-2"></i>Feedback Category</label>
+                        <select class="form-select" id="feedbackCategory" name="category" required>
+                            <option value="">Select a category</option>
+                            <option value="product">Product Quality</option>
+                            <option value="service">Customer Service</option>
+                            <option value="delivery">Delivery Experience</option>
+                            <option value="website">Website Experience</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="feedbackMessage" class="form-label"><i class="fas fa-comment-dots me-2"></i>Your Feedback</label>
+                        <textarea class="form-control" id="feedbackMessage" name="message" rows="5" placeholder="Share your thoughts..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-submit-feedback">
+                        <i class="fas fa-paper-plane me-2"></i>Submit Feedback
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <h5><i class="fas fa-microchip me-2"></i>Spare Parts Store</h5>
+                <p class="mt-3">Your trusted source for premium computer components and spare parts. Quality products, competitive prices, and excellent customer service.</p>
+                <div class="social-icons mt-4">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h5>Quick Links</h5>
+                <ul class="footer-links">
+                    <li><a th:href="@{/welcome}">Home</a></li>
+                    <li><a th:href="@{/products}">Products</a></li>
+                    <li><a th:href="@{/cart}">Cart</a></li>
+                    <li><a th:href="@{/feedback}">Feedback</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <h5>Categories</h5>
+                <ul class="footer-links">
+                    <li><a href="#">Processors</a></li>
+                    <li><a href="#">Graphics Cards</a></li>
+                    <li><a href="#">Memory (RAM)</a></li>
+                    <li><a href="#">Storage Devices</a></li>
+                    <li><a href="#">Motherboards</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <h5>Contact Info</h5>
+                <ul class="footer-links">
+                    <li><i class="fas fa-map-marker-alt me-2"></i>123 Tech Street, City</li>
+                    <li><i class="fas fa-phone me-2"></i>+94 77 123 4567</li>
+                    <li><i class="fas fa-envelope me-2"></i>info@spareparts.lk</li>
+                    <li><i class="fas fa-clock me-2"></i>Mon-Sat: 9AM - 8PM</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p class="mb-0">&copy; 2025 Spare Parts Store. All Rights Reserved. | Designed with <i class="fas fa-heart text-danger"></i> for Tech Enthusiasts</p>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Theme Toggle Functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const navbarThemeToggle = document.getElementById('navbarThemeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const navbarThemeIcon = document.getElementById('navbarThemeIcon');
+    const html = document.documentElement;
+
+    // Check for saved theme preference or default to 'light'
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    html.setAttribute('data-theme', currentTheme);
+    updateThemeIcon(currentTheme);
+
+    // Theme toggle for fixed button
+    themeToggle.addEventListener('click', function() {
+        toggleTheme();
+    });
+
+    // Theme toggle for navbar button
+    navbarThemeToggle.addEventListener('click', function() {
+        toggleTheme();
+    });
+
+    function toggleTheme() {
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme);
+    }
+
+    function updateThemeIcon(theme) {
+        if (theme === 'dark') {
+            themeIcon.className = 'fas fa-sun';
+            navbarThemeIcon.className = 'fas fa-sun';
+        } else {
+            themeIcon.className = 'fas fa-moon';
+            navbarThemeIcon.className = 'fas fa-moon';
+        }
+    }
+
+    // Go to Top Button Functionality
+    const goToTopBtn = document.getElementById('goToTop');
+
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 300) {
+            goToTopBtn.classList.add('show');
+        } else {
+            goToTopBtn.classList.remove('show');
+        }
+
+        // Navbar scroll effect
+        const navbar = document.querySelector('.navbar-custom');
+        if (window.scrollY > 50) {
+            navbar.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.5)';
+        } else {
+            navbar.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+        }
+    });
+
+    goToTopBtn.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+
+    // Floating Particles Animation
+    function createParticles() {
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 30;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.width = Math.random() * 4 + 2 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = Math.random() * 10 + 15 + 's';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            particlesContainer.appendChild(particle);
+        }
+    }
+    createParticles();
+
+    // Rating stars
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('rating');
+    let selectedRating = 0;
+
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            selectedRating = parseInt(this.getAttribute('data-rating'));
+            ratingInput.value = selectedRating;
+            updateStars(selectedRating);
+        });
+        star.addEventListener('mouseenter', function() {
+            const hoverRating = parseInt(this.getAttribute('data-rating'));
+            updateStars(hoverRating);
+        });
+    });
+
+    document.getElementById('ratingStars').addEventListener('mouseleave', function() {
+        updateStars(selectedRating);
+    });
+
+    function updateStars(rating) {
+        stars.forEach(star => {
+            const starRating = parseInt(star.getAttribute('data-rating'));
+            if (starRating <= rating) {
+                star.classList.add('active');
+            } else {
+                star.classList.remove('active');
+            }
+        });
+    }
+
+    // Feedback form submission
+    document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+        // Let the form submit normally to Spring Boot backend
+        // Rating value is now correctly updated in hidden input
+        console.log('Submitting rating:', ratingInput.value);
+    });
+</script>
 </body>
-</html>
+</html></document_content>
+</invoke>
