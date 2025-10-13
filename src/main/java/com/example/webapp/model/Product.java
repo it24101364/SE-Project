@@ -14,6 +14,7 @@ public class Product {
     private String description;
     private Double price;
     private String imageUrl;
+
     @Column(name = "stock_count")
     private Integer stockCount;
 

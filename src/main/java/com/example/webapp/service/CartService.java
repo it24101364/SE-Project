@@ -37,29 +37,21 @@ public class CartService {
         cartRepository.save(item);
     }
 
-    public void updateQuantity(Long cartId, int quantity) {
-        CartItem item = cartRepository.findById(cartId).orElseThrow();
-        item.setQuantity(quantity);
-        cartRepository.save(item);
-    }
-
     public void removeItem(Long cartId) {
-        cartRepository.deleteById(cartId); // ✅ use built-in deleteById
+        cartRepository.deleteById(cartId);
     }
-
 
     public void clearCart(String userEmail) {
         List<CartItem> items = cartRepository.findByUserEmail(userEmail);
         cartRepository.deleteAll(items);
     }
+
     public void buyNow(String userEmail, Long productId) {
-        // Always clear current cart (empty or not)
         List<CartItem> existingItems = cartRepository.findByUserEmail(userEmail);
         if (!existingItems.isEmpty()) {
             cartRepository.deleteAll(existingItems);
         }
 
-        // Add the selected product as the only item in cart
         Product product = productRepository.findById(productId).orElseThrow();
         CartItem item = new CartItem();
         item.setUserEmail(userEmail);
@@ -69,6 +61,24 @@ public class CartService {
         cartRepository.save(item);
     }
 
+    // ✅ Final, correct version
+    public void updateQuantity(Long cartId, int quantity) {
+        CartItem item = cartRepository.findById(cartId).orElseThrow();
+        Product product = item.getProduct();
 
+        // Check against stock
+        if (quantity > product.getStockCount()) {
+            throw new IllegalArgumentException(
+                    "Quantity exceeds available stock (" + product.getStockCount() + ")"
+            );
+        }
+
+        // Prevent zero or negative quantity
+        if (quantity < 1) {
+            throw new IllegalArgumentException("Quantity must be at least 1");
+        }
+
+        item.setQuantity(quantity);
+        cartRepository.save(item);
+    }
 }
-

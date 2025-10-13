@@ -512,7 +512,13 @@
                                 </td>
                                 <td>
                                     <form th:action="@{/cart/update/{cartId}(cartId=${item.cartId})}" method="post" class="quantity-control">
-                                        <input type="number" name="quantity" th:value="${item.quantity}" min="1" class="form-control quantity-input">
+                                        <input type="number"
+                                               name="quantity"
+                                               th:value="${item.quantity}"
+                                               min="1"
+                                               th:attr="max=${item.product.stockCount}"
+                                               class="form-control quantity-input">
+
                                         <button type="submit" class="btn btn-update">
                                             <i class="fas fa-sync-alt"></i> Update
                                         </button>

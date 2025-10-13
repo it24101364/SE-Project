@@ -48,4 +48,11 @@ public class ProductService {
         }
         productRepository.deleteById(id);
     }
+
+    public void reduceStock(Long productId, int quantity) {
+        Product product = productRepository.findById(productId).orElseThrow();
+        int newStock = Math.max(product.getStockCount() - quantity, 0);
+        product.setStockCount(newStock);
+        productRepository.save(product);
+    }
 }

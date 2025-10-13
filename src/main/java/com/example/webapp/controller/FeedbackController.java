@@ -20,8 +20,8 @@ public class FeedbackController {
 
     @PostMapping("/submit")
     public String submitFeedback(@ModelAttribute Feedback feedback) {
-        service.saveFeedback(feedback);  // ✅ use 'service' instead of 'feedbackService'
-        return "redirect:/feedback/all";
+        service.saveFeedback(feedback);
+        return "redirect:/products";
     }
 
 

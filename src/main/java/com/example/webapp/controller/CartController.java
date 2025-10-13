@@ -5,6 +5,7 @@ import com.example.webapp.service.CartService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.List;
@@ -45,10 +46,18 @@ public class CartController {
 
 
     @PostMapping("/update/{cartId}")
-    public String updateQuantity(@PathVariable Long cartId, @RequestParam int quantity) {
-        cartService.updateQuantity(cartId, quantity);
+    public String updateQuantity(@PathVariable Long cartId,
+                                 @RequestParam int quantity,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            cartService.updateQuantity(cartId, quantity);
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
         return "redirect:/cart";
     }
+
+
 
     @PostMapping("/remove/{cartId}")
     public String removeItem(@PathVariable Long cartId) {

@@ -4,9 +4,12 @@ import com.example.webapp.model.Order;
 import com.example.webapp.model.OrderItem;
 import com.example.webapp.model.PaymentForm;
 import com.example.webapp.model.ShippingForm;
+import com.example.webapp.model.CartItem;
+import com.example.webapp.model.Product;
 import com.example.webapp.service.CartService;
 import com.example.webapp.service.OrderItemService;
 import com.example.webapp.service.OrderService;
+import com.example.webapp.service.ProductService;
 import com.example.webapp.service.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -29,15 +32,18 @@ public class CheckoutController {
     private final UserService userService;
     private final OrderService orderService;
     private final OrderItemService orderItemService;
+    private final ProductService productService; // ✅ NEW
 
     public CheckoutController(CartService cartService,
                               UserService userService,
                               OrderService orderService,
-                              OrderItemService orderItemService) {
+                              OrderItemService orderItemService,
+                              ProductService productService) { // ✅ include in constructor
         this.cartService = cartService;
         this.userService = userService;
         this.orderService = orderService;
         this.orderItemService = orderItemService;
+        this.productService = productService;
     }
 
     // ------------------- SHOW CHECKOUT PAGE -------------------
@@ -48,7 +54,7 @@ public class CheckoutController {
         }
 
         String email = principal.getName();
-        List<?> cartItems = cartService.getCartItems(email);
+        List<CartItem> cartItems = cartService.getCartItems(email);
 
         if (cartItems == null || cartItems.isEmpty()) {
             model.addAttribute("cartEmpty", true);
@@ -58,8 +64,7 @@ public class CheckoutController {
         model.addAttribute("cartItems", cartItems);
 
         double totalPrice = cartItems.stream()
-                .mapToDouble(item -> ((com.example.webapp.model.CartItem) item).getProduct().getPrice()
-                        * ((com.example.webapp.model.CartItem) item).getQuantity())
+                .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
                 .sum();
 
         model.addAttribute("totalPrice", totalPrice);
@@ -80,7 +85,7 @@ public class CheckoutController {
         }
 
         String email = principal.getName();
-        List<com.example.webapp.model.CartItem> cartItems = cartService.getCartItems(email);
+        List<CartItem> cartItems = cartService.getCartItems(email);
 
         if (cartItems == null || cartItems.isEmpty()) {
             model.addAttribute("error", "Your cart is empty!");
@@ -114,23 +119,31 @@ public class CheckoutController {
             order.setTotalAmount(totalPrice);
             orderService.saveOrder(order);
 
-            // Save each order item
-            for (com.example.webapp.model.CartItem item : cartItems) {
+            // Save each order item and reduce stock
+            for (CartItem item : cartItems) {
+                Product product = item.getProduct();
+
+                // ✅ Reduce product stock count safely
+                int newStock = Math.max(product.getStockCount() - item.getQuantity(), 0);
+                product.setStockCount(newStock);
+                productService.saveProduct(product);
+
+                // ✅ Save order item
                 OrderItem orderItem = new OrderItem();
                 orderItem.setOrder(order);
-                orderItem.setProductId(item.getProduct().getId());
-                orderItem.setProductName(item.getProduct().getName());
+                orderItem.setProductId(product.getId());
+                orderItem.setProductName(product.getName());
                 orderItem.setQuantity(item.getQuantity());
-                orderItem.setPrice(item.getProduct().getPrice());
+                orderItem.setPrice(product.getPrice());
                 orderItemService.saveOrderItem(orderItem);
             }
 
-            // Clear cart
+            // ✅ Clear the user's cart
             cartService.clearCart(email);
 
-            // Pass order info to payment page
+            // ✅ Prepare payment info
             PaymentForm paymentForm = new PaymentForm();
-            paymentForm.setOrderId(order.getId()); // ✅ fixed here
+            paymentForm.setOrderId(order.getId());
             model.addAttribute("order", order);
             model.addAttribute("paymentForm", paymentForm);
             model.addAttribute("user", userService.findByEmail(email));
@@ -143,5 +156,4 @@ public class CheckoutController {
             return "checkout";
         }
     }
-
 }
