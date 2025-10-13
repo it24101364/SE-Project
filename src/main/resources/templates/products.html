@@ -104,8 +104,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        opacity: 0;
-        visibility: hidden;
+        /*opacity: 0;*/
+        /*visibility: hidden;*/
     }
 
     .go-to-top.show {
@@ -1022,12 +1022,15 @@
         transform: translateY(120%);
         opacity: 0;
         transition: transform 0.5s ease, opacity 0.5s ease;
+        cursor: pointer;
+        pointer-events: none; /* disables clicks when hidden */
     }
 
     /* When visible */
     #whatsapp-chat.show {
         transform: translateY(0);
-        opacity: 1;
+        opacity: 0.8;
+        pointer-events: auto; /* enables clicks when visible */
     }
 
     /* Chat header */
@@ -1066,8 +1069,8 @@
     }
     #send-btn:hover {
         background: #1ebe5d;
+        opacity: 1;
     }
-
 </style>
 <body>
 <div class="tech-background">
@@ -1469,12 +1472,12 @@
 
     // Scroll event with lower threshold for better visibility
     window.addEventListener('scroll', function() {
-        // Changed from 300 to 100 for earlier appearance
-        if (window.pageYOffset > 100) {
-            goToTopBtn.classList.add('show');
-        } else {
-            goToTopBtn.classList.remove('show');
-        }
+        // // Changed from 300 to 100 for earlier appearance
+        // if (window.pageYOffset > 100) {
+        //     goToTopBtn.classList.add('show');
+        // } else {
+        //     goToTopBtn.classList.remove('show');
+        // }
         updateNavbarStyle();
     });
 
@@ -1490,7 +1493,6 @@
     // Initial navbar state and button check
     updateNavbarStyle();
 
-
     const whatsappBtn = document.getElementById('whatsapp-button');
     const whatsappChat = document.getElementById('whatsapp-chat');
     const chatClose = document.getElementById('chat-close');
@@ -1498,6 +1500,8 @@
     const chatInput = document.getElementById('chat-input');
 
     let typing = false;
+    let popupCount = 0; // Counter for automatic popups
+    const maxPopups = 3; // Limit to 3 times
 
     // Open chat box when icon clicked
     whatsappBtn.addEventListener('click', () => {
@@ -1527,20 +1531,26 @@
 
     // Automatic pop-up and hide
     function autoPopup() {
+        if (popupCount >= maxPopups) return; // Stop after 3 times
         if (!typing && !whatsappChat.classList.contains('show')) {
             whatsappChat.classList.add('show'); // show chat
+            popupCount++; // Increase count
             setTimeout(() => {
                 if (!typing) {
                     whatsappChat.classList.remove('show'); // hide chat
                 }
-            }, 8000); // hide after 8 seconds
+            }, 5000); // hide after 8 seconds
         }
     }
 
     // Start auto-popup after 5 seconds
-    setTimeout(autoPopup, 5000);
+    setTimeout(autoPopup, 10000);
     // Repeat the pop-up every 20 seconds
-    setInterval(autoPopup, 20000);
+    const popupInterval = setInterval(() => {
+        if (popupCount >= maxPopups) clearInterval(popupInterval); // Stop interval after 3 times
+        else autoPopup();
+    }, 20000);
+
 </script>
 
 </body>
