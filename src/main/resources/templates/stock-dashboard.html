@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Stock Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: rgba(0, 0, 0, 0.8) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #667eea !important;
+        }
+
+        .nav-link.active {
+            color: #667eea !important;
+            font-weight: 600;
+        }
+
+        .navbar-text {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: #764ba2;
+        }
+
+        .dashboard-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 2.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .dashboard-header h2 {
+            margin: 0;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .stats-card .icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stats-card.total .icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .stats-card.low .icon {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .stats-card h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            color: #2d3748;
+        }
+
+        .stats-card p {
+            margin: 0;
+            color: #718096;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-section {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-select, .form-control {
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus, .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .btn {
+            border-radius: 10px;
+            padding: 0.6rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(56, 239, 125, 0.4);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            color: white;
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(58, 123, 213, 0.4);
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 0.5rem 1rem;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-danger:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .table {
+            margin: 0;
+        }
+
+        .table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .table thead th {
+            border: none;
+            padding: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f7fafc;
+            transform: scale(1.01);
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+            padding: 1rem;
+            border-color: #e2e8f0;
+        }
+
+        .table-danger {
+            background-color: #fff5f5 !important;
+            border-left: 4px solid #f5576c;
+        }
+
+        .table-danger:hover {
+            background-color: #fed7d7 !important;
+        }
+
+        .input-group-restock {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .input-group-restock input {
+            max-width: 120px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dashboard-container {
+            animation: fadeIn 0.6s ease;
+        }
+
+        .badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="#">Admin Dashboard</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/sales/dashboard}">
+                        <i class="fas fa-chart-line me-1"></i> Sales Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/feedback/dashboard}">
+                        <i class="fas fa-comments me-1"></i> Feedback Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/stock/dashboard}">
+                        <i class="fas fa-boxes me-1"></i> Stock Dashboard
+                    </a>
+                </li>
+            </ul>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3" th:text="'Admin: ' + ${session.adminEmail}"></span>
+                <a class="nav-link" th:href="@{/admin-logout}"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h2>
+                <i class="fas fa-boxes"></i>
+                Stock Management Dashboard
+            </h2>
+        </div>
+
+        <!-- Stock summary -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="stats-card total">
+                    <div class="icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <h3 th:text="${totalStock}">0</h3>
+                    <p>Total Stock</p>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="stats-card low">
+                    <div class="icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3 th:text="${lowStockCount}">0</h3>
+                    <p>Low Stock Items</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <form class="d-flex flex-wrap gap-2">
+                <select name="filter" class="form-select flex-grow-1" th:value="${filter}" style="max-width: 300px;">
+                    <option value="all" th:selected="${filter == 'all'}">All Products</option>
+                    <option value="low" th:selected="${filter == 'low'}">Low Stock</option>
+                </select>
+                <button type="submit" class="btn btn-secondary">
+                    <i class="fas fa-filter"></i> Apply Filter
+                </button>
+                <a th:href="@{/stock/export(filter=${filter})}" class="btn btn-success">
+                    <i class="fas fa-download"></i> Export CSV
+                </a>
+                <a th:href="@{/product/add}" class="btn btn-info">
+                    <i class="fas fa-plus-square"></i> Add Product
+                </a>
+            </form>
+
+        </div>
+
+        <div class="table-container">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th><i class="fas fa-hashtag"></i> ID</th>
+                    <th><i class="fas fa-tag"></i> Name</th>
+                    <th><i class="fas fa-cubes"></i> Stock</th>
+                    <th><i class="fas fa-plus-circle"></i> Restock</th>
+                    <th><i class="fas fa-cog"></i> Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="product : ${products}" th:classappend="${product.stockCount < 5} ? 'table-danger'">
+                    <td th:text="${product.id}"></td>
+                    <td th:text="${product.name}"></td>
+                    <td>
+                        <span th:if="${product.stockCount < 5}" class="badge bg-danger">
+                            <span th:text="${product.stockCount}"></span>
+                        </span>
+                        <span th:if="${product.stockCount >= 5}" class="badge bg-success">
+                            <span th:text="${product.stockCount}"></span>
+                        </span>
+                    </td>
+                    <td>
+                        <form th:action="@{/stock/restock}" method="post" class="input-group-restock">
+                            <input type="hidden" name="productId" th:value="${product.id}">
+                            <input type="number" name="addStock" min="1" class="form-control" placeholder="Qty" required>
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i> Add
+                            </button>
+                        </form>
+                    </td>
+                    <td>
+                        <form th:action="@{/product/delete/{id}(id=${product.id})}" method="post" th:object="${product}" style="display:inline;">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this product?');">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<footer class="text-center">
+    <div class="container">
+        <p class="mb-2">&copy; 2024 Stock Management System. All rights reserved.</p>
+        <p class="mb-0">
+            <a href="#"><i class="fas fa-envelope me-1"></i> Contact Support</a> |
+            <a href="#"><i class="fas fa-info-circle me-1"></i> Help Center</a>
+        </p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
