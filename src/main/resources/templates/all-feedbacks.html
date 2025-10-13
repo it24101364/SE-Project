@@ -468,6 +468,7 @@
         transition: all 0.3s ease;
     }
 
+    /* ✅ Fix for light mode visibility */
     [data-theme="light"] .navbar-custom {
         background: rgba(255, 255, 255, 0.95);
         border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -492,11 +493,13 @@
         50% { transform: scale(1.1); }
     }
 
+    /* ✅ Make nav-links visible in both themes */
     .nav-link {
         color: #fff !important;
         margin: 0 10px;
         transition: all 0.3s ease;
         position: relative;
+        font-weight: 500;
     }
 
     [data-theme="light"] .nav-link {
@@ -525,7 +528,12 @@
         width: 80%;
     }
 
-    /* User Welcome Badge */
+    /* ✅ Fix for active link visibility */
+    .nav-link.active {
+        color: var(--accent-color) !important;
+    }
+
+    /* User Badge */
     .user-badge {
         background: rgba(0, 217, 255, 0.2);
         padding: 10px 25px;
@@ -541,6 +549,7 @@
         background: rgba(0, 217, 255, 0.15);
     }
 
+    /* Theme Toggle Button */
     .navbar-theme-toggle {
         background: linear-gradient(135deg, var(--accent-color), #667eea);
         border: none;
@@ -562,6 +571,15 @@
         transform: scale(1.1) rotate(180deg);
         box-shadow: 0 5px 20px rgba(0, 217, 255, 0.4);
     }
+
+    /* ✅ Ensure visibility on all pages */
+    .navbar-dark .navbar-nav .nav-link {
+        color: #ffffff !important;
+    }
+    [data-theme="light"] .navbar-dark .navbar-nav .nav-link {
+        color: #1a1a2e !important;
+    }
+
 
     .logout-btn {
         background: linear-gradient(135deg, #dc3545, #c82333);
@@ -693,6 +711,33 @@
             padding: 20px;
         }
     }
+
+/*    */
+    /* ===== FIX NAV LINK VISIBILITY ===== */
+    .navbar-custom .nav-link {
+        color: #ffffff !important;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    [data-theme="light"] .navbar-custom .nav-link {
+        color: #1a1a2e !important;
+    }
+
+    .navbar-custom .nav-link:hover,
+    .navbar-custom .nav-link.active {
+        color: var(--accent-color) !important;
+        text-shadow: 0 0 10px var(--accent-color);
+    }
+
+    /* Also fix the toggler icon (mobile) visibility */
+    .navbar-custom .navbar-toggler-icon {
+        filter: brightness(0) invert(1); /* white icon for dark mode */
+    }
+    [data-theme="light"] .navbar-custom .navbar-toggler-icon {
+        filter: brightness(0); /* dark icon for light mode */
+    }
+
 </style>
 <body>
 <!-- Animated Tech Background -->
@@ -712,12 +757,21 @@
 </button>
 
 <!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-custom">
     <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/welcome}"><i class="fas fa-microchip"></i>Spare Parts Store</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-                aria-label="Toggle navigation">
+        <a class="navbar-brand" th:href="@{/welcome}">
+            <i class="fas fa-microchip"></i> Spare Parts Store
+        </a>
+        <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+        >
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -738,15 +792,21 @@
             </ul>
 
             <span class="user-badge">
-                <i class="fas fa-user-circle"></i> <span th:text="${user != null ? user.username : 'Guest'}">Guest</span>
-            </span>
+        <i class="fas fa-user-circle"></i>
+        <span th:text="${user != null ? user.username : 'Guest'}">Guest</span>
+      </span>
+
             <button class="navbar-theme-toggle" id="navbarThemeToggle" aria-label="Toggle theme">
                 <i class="fas fa-moon" id="navbarThemeIcon"></i>
             </button>
-            <a class="btn logout-btn" th:href="@{/login}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+
+            <a class="btn logout-btn" th:href="@{/login}">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
         </div>
     </div>
 </nav>
+
 
 <div class="max-w-4xl mx-auto py-8 px-4">
     <!-- Page Header -->
@@ -1018,5 +1078,4 @@
     });
 </script>
 </body>
-</html></document_content>
-</invoke>
+</html>
