@@ -34,28 +34,13 @@ public class SalesController {
         }
 
         addAnalyticsData(model);
-
         model.addAttribute("sales", saleService.getAllSales());
         model.addAttribute("filteredTotal", saleService.getTotalSales());
 
-        // Chart data
         model.addAttribute("productNames", saleService.getTopSellingProductsNames());
         model.addAttribute("productSalesAmounts", saleService.getTopSellingProductsAmounts());
         model.addAttribute("months", saleService.getMonthlySalesMonths());
         model.addAttribute("monthlyAmounts", saleService.getMonthlySalesAmounts());
-
-
-        return "sales-dashboard";
-    }
-
-    @GetMapping
-    public String getSales(HttpSession session, Model model) {
-        if (session.getAttribute("adminEmail") == null) {
-            return "redirect:/admin-login";
-        }
-
-        List<Sale> sales = saleService.getAllSales();
-        model.addAttribute("sales", sales);
 
         return "sales-dashboard";
     }
@@ -78,65 +63,54 @@ public class SalesController {
         model.addAttribute("sales", filteredSales);
         model.addAttribute("filteredTotal", saleService.getTotalSales(filteredSales));
 
-        // Add filtered chart data
         model.addAttribute("productNames", saleService.getTopSellingProductsNames(filteredSales));
         model.addAttribute("productSalesAmounts", saleService.getTopSellingProductsAmounts(filteredSales));
         model.addAttribute("months", saleService.getMonthlySalesMonths(filteredSales));
         model.addAttribute("monthlyAmounts", saleService.getMonthlySalesAmounts(filteredSales));
 
-        // Metrics
         model.addAttribute("totalSales", saleService.getTotalSales(filteredSales));
         model.addAttribute("totalUnitsSold", saleService.getTotalUnitsSold(filteredSales));
         model.addAttribute("averageOrderValue", saleService.getAverageOrderValue(filteredSales));
 
-        // ✅ Add these two lines to pass dates to the model
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
 
         return "sales-dashboard";
     }
 
+    @GetMapping("/update/{id}")
+    public String updateSaleForm(@PathVariable Long id, HttpSession session, Model model) {
+        if (session.getAttribute("adminEmail") == null) {
+            return "redirect:/admin-login";
+        }
+        Sale sale = saleService.getSaleById(id);
+        model.addAttribute("sale", sale);
+        return "sales-update-form";
+    }
 
-
-    @GetMapping("/report")
-    public String generateReport(@RequestParam(required = false) String startDate,
-                                 @RequestParam(required = false) String endDate,
-                                 HttpSession session,
-                                 Model model) {
+    @PostMapping("/update")
+    public String updateSale(@ModelAttribute Sale sale, HttpSession session) {
         if (session.getAttribute("adminEmail") == null) {
             return "redirect:/admin-login";
         }
 
-        List<Sale> sales;
-        double totalAmount;
-        String reportRange = "All Time";
+        sale.setTotalAmount(sale.getQuantity() * sale.getPrice());
+        saleService.updateSale(sale); // ✅ Adjusts stock automatically
 
-        if (startDate != null && !startDate.isEmpty() && endDate != null && !endDate.isEmpty()) {
-            LocalDate startLocalDate = LocalDate.parse(startDate.replace(",", ""));
-            LocalDate endLocalDate = LocalDate.parse(endDate.replace(",", ""));
-
-            LocalDateTime start = startLocalDate.atStartOfDay();
-            LocalDateTime end = endLocalDate.atTime(23, 59, 59);
-
-            sales = saleService.getSalesByDate(start, end);
-            totalAmount = saleService.getTotalSalesByDate(start, end);
-
-            reportRange = "From " + startLocalDate + " to " + endLocalDate; // ✅ Set filtered range
-        } else {
-            sales = saleService.getAllSales();
-            totalAmount = saleService.getTotalSales();
-        }
-
-        model.addAttribute("sales", sales);
-        model.addAttribute("totalAmount", totalAmount);
-        model.addAttribute("reportDate", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-        model.addAttribute("reportRange", reportRange); // ✅ Now dynamic
-
-        return "sales-report";
+        return "redirect:/sales/dashboard";
     }
 
+    @GetMapping("/delete/{id}")
+    public String deleteSale(@PathVariable Long id, HttpSession session) {
+        if (session.getAttribute("adminEmail") == null) {
+            return "redirect:/admin-login";
+        }
 
-    // ✅ PDF DOWNLOAD ENDPOINT
+        saleService.deleteSale(id); // ✅ Restores product stock automatically
+
+        return "redirect:/sales/dashboard";
+    }
+
     @GetMapping("/report-pdf")
     public void generatePdfReport(@RequestParam(required = false) String startDate,
                                   @RequestParam(required = false) String endDate,
@@ -149,19 +123,17 @@ public class SalesController {
 
         List<Sale> sales;
         double totalAmount;
-        String reportRange = "All Time"; // ✅ Initialize
+        String reportRange = "All Time";
 
         if (startDate != null && !startDate.isEmpty() && endDate != null && !endDate.isEmpty()) {
             LocalDate startLocalDate = LocalDate.parse(startDate.replace(",", ""));
             LocalDate endLocalDate = LocalDate.parse(endDate.replace(",", ""));
-
             LocalDateTime start = startLocalDate.atStartOfDay();
             LocalDateTime end = endLocalDate.atTime(23, 59, 59);
 
             sales = saleService.getSalesByDate(start, end);
             totalAmount = saleService.getTotalSalesByDate(start, end);
-
-            reportRange = "From " + startLocalDate + " to " + endLocalDate; // ✅ set range
+            reportRange = "From " + startLocalDate + " to " + endLocalDate;
         } else {
             sales = saleService.getAllSales();
             totalAmount = saleService.getTotalSales();
@@ -202,7 +174,6 @@ public class SalesController {
         document.close();
     }
 
-
     private void addAnalyticsData(Model model) {
         model.addAttribute("totalSales", saleService.getTotalSales());
         model.addAttribute("totalUnitsSold", saleService.getTotalUnitsSold());
@@ -211,40 +182,4 @@ public class SalesController {
         model.addAttribute("topSellingProducts", saleService.getTopSellingProducts());
         model.addAttribute("monthlySales", saleService.getMonthlySales());
     }
-
-    @GetMapping("/delete/{id}")
-    public String deleteSale(@PathVariable Long id, HttpSession session) {
-        if (session.getAttribute("adminEmail") == null) {
-            return "redirect:/admin-login";
-        }
-        saleService.deleteSale(id);
-        return "redirect:/sales/dashboard";
-    }
-
-    @GetMapping("/update/{id}")
-    public String updateSaleForm(@PathVariable Long id, HttpSession session, Model model) {
-        if (session.getAttribute("adminEmail") == null) {
-            return "redirect:/admin-login";
-        }
-        Sale sale = saleService.getSaleById(id);
-        model.addAttribute("sale", sale);
-        return "sales-update-form"; // a new Thymeleaf page
-    }
-
-    @PostMapping("/update")
-    public String updateSale(@ModelAttribute Sale sale, HttpSession session) {
-        if (session.getAttribute("adminEmail") == null) {
-            return "redirect:/admin-login";
-        }
-
-        // Recalculate total
-        sale.setTotalAmount(sale.getQuantity() * sale.getPrice());
-
-        saleService.updateSale(sale);
-        return "redirect:/sales/dashboard";
-    }
-
-
-
-
 }

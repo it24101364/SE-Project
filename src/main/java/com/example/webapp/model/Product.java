@@ -18,6 +18,17 @@ public class Product {
     @Column(name = "stock_count")
     private Integer stockCount;
 
+    @Column(name = "category")
+    private String category;  // ADD THIS
+
+    // Add getter and setter
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
     // Add getter and setter
     public Integer getStockCount() {
         return stockCount;

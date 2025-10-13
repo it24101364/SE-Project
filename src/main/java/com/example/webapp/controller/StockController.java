@@ -7,15 +7,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
+@RequestMapping("/stock")
 public class StockController {
 
     private final StockService stockService;
@@ -24,16 +24,26 @@ public class StockController {
         this.stockService = stockService;
     }
 
-    // GET mapping for stock dashboard with optional filter
-    @GetMapping("/stock/dashboard")
+    // --- STOCK DASHBOARD (with filter + category support) ---
+    @GetMapping("/dashboard")
     public String stockDashboard(Model model,
-                                 @RequestParam(required = false, defaultValue = "all") String filter) {
+                                 @RequestParam(value = "filter", defaultValue = "all") String filter,
+                                 @RequestParam(value = "category", defaultValue = "") String category) {
 
-        List<Product> products;
+        List<Product> products = stockService.getAllProducts();
+
+        // Filter by stock level
         if ("low".equals(filter)) {
-            products = stockService.getLowStockProducts();
-        } else {
-            products = stockService.getAllProducts();
+            products = products.stream()
+                    .filter(p -> p.getStockCount() < 5)
+                    .collect(Collectors.toList());
+        }
+
+        // Filter by category if selected
+        if (!category.isEmpty()) {
+            products = products.stream()
+                    .filter(p -> category.equalsIgnoreCase(p.getCategory()))
+                    .collect(Collectors.toList());
         }
 
         long lowStockCount = stockService.getLowStockProducts().size();
@@ -43,50 +53,68 @@ public class StockController {
         model.addAttribute("lowStockCount", lowStockCount);
         model.addAttribute("totalStock", totalStock);
         model.addAttribute("filter", filter);
+        model.addAttribute("selectedCategory", category);
 
         return "stock-dashboard";
     }
 
-    // POST mapping to add new product
-    @PostMapping("/stock/add")
+    // --- ADD PRODUCT ---
+    @PostMapping("/add")
     public String addProduct(@RequestParam String name,
                              @RequestParam int stockCount) {
         stockService.addProduct(name, stockCount);
         return "redirect:/stock/dashboard";
     }
 
-    // POST mapping to delete product
-    @PostMapping("/stock/delete")
+    // --- DELETE PRODUCT ---
+    @PostMapping("/delete")
     public String deleteProduct(@RequestParam Long productId) {
         stockService.deleteProduct(productId);
         return "redirect:/stock/dashboard";
     }
 
-    // POST mapping to restock (add quantity to current stock)
-    @PostMapping("/stock/restock")
+    // --- RESTOCK PRODUCT ---
+    @PostMapping("/restock")
     public String restockProduct(@RequestParam Long productId,
                                  @RequestParam int addStock) {
         stockService.restockProduct(productId, addStock);
         return "redirect:/stock/dashboard";
     }
 
-    @GetMapping("/stock/export")
-    public ResponseEntity<String> exportStockCsv(@RequestParam(required = false, defaultValue = "all") String filter) {
-        List<Product> products = stockService.filterProducts(filter);
+    // --- EXPORT TO CSV ---
+    @GetMapping("/export")
+    public ResponseEntity<String> exportStockCsv(@RequestParam(required = false, defaultValue = "all") String filter,
+                                                 @RequestParam(required = false, defaultValue = "") String category) {
+        List<Product> products = stockService.getAllProducts();
+
+        // Apply same filters for export
+        if ("low".equals(filter)) {
+            products = products.stream()
+                    .filter(p -> p.getStockCount() < 5)
+                    .collect(Collectors.toList());
+        }
+
+        if (!category.isEmpty()) {
+            products = products.stream()
+                    .filter(p -> category.equalsIgnoreCase(p.getCategory()))
+                    .collect(Collectors.toList());
+        }
 
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
-        pw.println("ID,Name,Stock Count,Price,Description"); // CSV header
+        pw.println("ID,Name,Category,Stock Count,Price,Description"); // CSV header
 
         for (Product p : products) {
-            pw.printf("%d,%s,%d,%.2f,%s%n",
+            pw.printf("%d,%s,%s,%d,%.2f,%s%n",
                     p.getId(),
                     p.getName(),
+                    p.getCategory() != null ? p.getCategory() : "",
                     p.getStockCount(),
                     p.getPrice(),
                     p.getDescription() != null ? p.getDescription().replaceAll(",", " ") : ""
             );
         }
+
         pw.flush();
 
         return ResponseEntity.ok()
@@ -94,6 +122,4 @@ public class StockController {
                 .contentType(MediaType.TEXT_PLAIN)
                 .body(sw.toString());
     }
-
-
 }

@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -65,5 +66,14 @@ public class ProductService {
         int newStock = Math.max(product.getStockCount() - quantity, 0);
         product.setStockCount(newStock);
         productRepository.save(product);
+    }
+
+    public List<String> getAllCategories() {
+        return productRepository.findAll().stream()
+                .map(Product::getCategory)
+                .filter(cat -> cat != null && !cat.isEmpty())
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
     }
 }

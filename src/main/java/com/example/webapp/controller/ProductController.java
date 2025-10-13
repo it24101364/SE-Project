@@ -10,7 +10,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class ProductController {
@@ -25,11 +27,51 @@ public class ProductController {
         this.userService = userService;
     }
 
-    // Show all products page
     @GetMapping("/products")
-    public String showProducts(Model model, Principal principal) {
+    public String showProducts(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String sort,
+            Model model,
+            Principal principal) {
+
+        // Get all products
         List<Product> products = productService.getAllProducts();
+
+        // Get featured products for carousel (random 6 products)
+        List<Product> featuredProducts = products.stream()
+                .limit(6)
+                .collect(Collectors.toList());
+        model.addAttribute("featuredProducts", featuredProducts);
+
+        // Filter by category
+        if (category != null && !category.isEmpty()) {
+            products = products.stream()
+                    .filter(p -> category.equals(p.getCategory()))
+                    .collect(Collectors.toList());
+        }
+
+        // Filter by search query
+        if (search != null && !search.isEmpty()) {
+            String searchLower = search.toLowerCase();
+            products = products.stream()
+                    .filter(p -> p.getName().toLowerCase().contains(searchLower) ||
+                            (p.getDescription() != null && p.getDescription().toLowerCase().contains(searchLower)))
+                    .collect(Collectors.toList());
+        }
+
+        // Sort by price
+        if ("low-high".equals(sort)) {
+            products.sort(Comparator.comparing(Product::getPrice));
+        } else if ("high-low".equals(sort)) {
+            products.sort(Comparator.comparing(Product::getPrice).reversed());
+        }
+
         model.addAttribute("products", products);
+
+        // Get all unique categories
+        List<String> categories = productService.getAllCategories();
+        model.addAttribute("categories", categories);
 
         int cartItemCount = 0;
         User user = null;

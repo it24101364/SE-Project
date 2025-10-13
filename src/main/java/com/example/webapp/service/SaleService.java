@@ -2,9 +2,12 @@ package com.example.webapp.service;
 
 import com.example.webapp.model.Order;
 import com.example.webapp.model.OrderItem;
+import com.example.webapp.model.Product;
 import com.example.webapp.model.Sale;
+import com.example.webapp.repository.ProductRepository;
 import com.example.webapp.repository.SaleRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
@@ -15,9 +18,11 @@ import java.util.stream.Collectors;
 public class SaleService {
 
     private final SaleRepository saleRepository;
+    private final ProductRepository productRepository;
 
-    public SaleService(SaleRepository saleRepository) {
+    public SaleService(SaleRepository saleRepository, ProductRepository productRepository) {
         this.saleRepository = saleRepository;
+        this.productRepository = productRepository;
     }
 
     // ================= Basic Sale Operations =================
@@ -57,7 +62,11 @@ public class SaleService {
                 .orElse(0.0);
     }
 
+    // ================= Stock-aware Sale Operations =================
+
+    @Transactional
     public void addSaleFromOrderItem(OrderItem item, Order order) {
+        // Create sale record
         Sale sale = new Sale();
         sale.setOrderId(order.getId());
         sale.setProductId(item.getProductId());
@@ -66,11 +75,55 @@ public class SaleService {
         sale.setPrice(item.getPrice());
         sale.setTotalAmount(item.getQuantity() * item.getPrice());
         saleRepository.save(sale);
+
+        // Reduce product stock
+        adjustProductStock(item.getProductId(), -item.getQuantity());
     }
 
-    // ================= Map-based Methods (internal/analytics) =================
+    @Transactional
+    public void updateSale(Sale updatedSale) {
+        Sale existingSale = saleRepository.findById(updatedSale.getId())
+                .orElseThrow(() -> new RuntimeException("Sale not found"));
 
-    // Renamed to avoid conflict with DTO method
+        int oldQty = existingSale.getQuantity();
+        int newQty = updatedSale.getQuantity();
+        int difference = newQty - oldQty;
+
+        // Update sale details
+        existingSale.setQuantity(newQty);
+        existingSale.setPrice(updatedSale.getPrice());
+        existingSale.setTotalAmount(updatedSale.getTotalAmount());
+        existingSale.setSaleDate(updatedSale.getSaleDate());
+        saleRepository.save(existingSale);
+
+        // Adjust stock difference
+        adjustProductStock(existingSale.getProductId(), -difference);
+    }
+
+    @Transactional
+    public void deleteSale(Long id) {
+        Sale sale = saleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sale not found"));
+
+        // Restore product stock
+        adjustProductStock(sale.getProductId(), sale.getQuantity());
+
+        saleRepository.deleteById(id);
+    }
+
+    // ================= Helper Method =================
+
+    private void adjustProductStock(Long productId, int quantityChange) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        int newStock = product.getStockCount() + quantityChange;
+        product.setStockCount(Math.max(newStock, 0)); // no negative stock
+        productRepository.save(product);
+    }
+
+    // ================= Analytics & DTO Methods =================
+
     public Map<String, Long> getTopSellingProductsMap() {
         return saleRepository.findAll().stream()
                 .collect(Collectors.groupingBy(
@@ -88,7 +141,6 @@ public class SaleService {
                 ));
     }
 
-    // Renamed to avoid conflict with DTO method
     public Map<String, Double> getMonthlySalesMap() {
         return saleRepository.findAll().stream()
                 .collect(Collectors.groupingBy(
@@ -105,7 +157,7 @@ public class SaleService {
                 ));
     }
 
-    // ================= DTO-based Methods (for charts / frontend) =================
+    // DTO Methods for frontend charts
 
     public List<com.example.webapp.dto.ProductSalesDTO> getTopSellingProducts() {
         Map<String, Double> map = getAllSales().stream()
@@ -161,17 +213,7 @@ public class SaleService {
         return saleRepository.findById(id).orElseThrow(() -> new RuntimeException("Sale not found"));
     }
 
-    public void updateSale(Sale sale) {
-        saleRepository.save(sale);
-    }
-
-    public void deleteSale(Long id) {
-        saleRepository.deleteById(id);
-    }
-
-    // ================= Filtered Analytics =================
-
-    // Top-selling products names for filtered sales
+    // For filtered reports (no change to stock)
     public List<String> getTopSellingProductsNames(List<Sale> sales) {
         return sales.stream()
                 .collect(Collectors.groupingBy(Sale::getProductName, Collectors.summingDouble(Sale::getTotalAmount)))
@@ -181,7 +223,6 @@ public class SaleService {
                 .collect(Collectors.toList());
     }
 
-    // Top-selling products amounts for filtered sales
     public List<Double> getTopSellingProductsAmounts(List<Sale> sales) {
         return sales.stream()
                 .collect(Collectors.groupingBy(Sale::getProductName, Collectors.summingDouble(Sale::getTotalAmount)))
@@ -191,7 +232,6 @@ public class SaleService {
                 .collect(Collectors.toList());
     }
 
-    // Monthly sales months for filtered sales
     public List<String> getMonthlySalesMonths(List<Sale> sales) {
         Map<Integer, Double> monthMap = new TreeMap<>();
         for (Sale sale : sales) {
@@ -203,7 +243,6 @@ public class SaleService {
                 .collect(Collectors.toList());
     }
 
-    // Monthly sales amounts for filtered sales
     public List<Double> getMonthlySalesAmounts(List<Sale> sales) {
         Map<Integer, Double> monthMap = new TreeMap<>();
         for (Sale sale : sales) {
@@ -213,21 +252,16 @@ public class SaleService {
         return new ArrayList<>(monthMap.values());
     }
 
-    // Total sales for filtered sales
     public double getTotalSales(List<Sale> sales) {
         return sales.stream().mapToDouble(Sale::getTotalAmount).sum();
     }
 
-    // Total units sold for filtered sales
     public int getTotalUnitsSold(List<Sale> sales) {
         return sales.stream().mapToInt(Sale::getQuantity).sum();
     }
 
-    // Average order value for filtered sales
     public double getAverageOrderValue(List<Sale> sales) {
         if (sales.isEmpty()) return 0.0;
         return sales.stream().mapToDouble(Sale::getTotalAmount).average().orElse(0.0);
     }
-
-
 }
