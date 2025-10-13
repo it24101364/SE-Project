@@ -6,6 +6,8 @@
     <title>Spare Parts Store - Computer Components & Accessories</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
 </head>
 <style>
     :root {
@@ -977,38 +979,93 @@
     .star { color: gray; cursor: pointer; }
     .star.checked { color: gold; }
 
-    #whatsappBtn {
-        display: none; /* hidden by default */
+    #whatsapp-widget {
         position: fixed;
-        bottom: 170px; /* moved higher to avoid Go to Top */
+        bottom: 170px;
         right: 30px;
+        z-index: 9999;
+        font-family: Arial, sans-serif;
+    }
+
+    /* WhatsApp floating button */
+    #whatsapp-button {
         width: 60px;
         height: 60px;
-        z-index: 1000;
-        cursor: pointer;
-        border-radius: 50%; /* round container */
-        background-color: #25D366; /* WhatsApp green */
+        background-color: #25D366;
+        color: white;
+        border-radius: 50%;
         display: flex;
-        align-items: center;
         justify-content: center;
+        align-items: center;
+        font-size: 30px;
+        cursor: pointer;
         box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        opacity: 0;
-        transform: translateY(50px);
-        transition: transform 0.4s ease, opacity 0.4s ease;
+        transition: transform 0.3s ease;
     }
-
-    #whatsappBtn img {
-        width: 35px;
-        height: 35px;
-    }
-
-    #whatsappBtn.show {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    #whatsappBtn:hover {
+    #whatsapp-button:hover {
         transform: scale(1.1);
+    }
+
+    /* Chat box */
+    #whatsapp-chat {
+        display: flex;
+        flex-direction: column;
+        width: 200px;
+        max-width: 90vw;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        overflow: hidden;
+        position: absolute;
+        bottom: 70px;
+        right: 0;
+        transform: translateY(120%);
+        opacity: 0;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    /* When visible */
+    #whatsapp-chat.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    /* Chat header */
+    #chat-header {
+        background: #25D366;
+        color: white;
+        padding: 10px;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Chat body */
+    #chat-body {
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+    }
+    #chat-input {
+        width: 100%;
+        height: 60px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        padding: 5px;
+        resize: none;
+    }
+    #send-btn {
+        margin-top: 5px;
+        background: #25D366;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        padding: 8px;
+    }
+    #send-btn:hover {
+        background: #1ebe5d;
     }
 
 </style>
@@ -1026,10 +1083,23 @@
     <i class="fas fa-arrow-up"></i>
 </button>
 
-<!-- WhatsApp Floating Button -->
-<a href="https://wa.me/94763848430?text=Hello!" target="_blank" id="whatsappBtn">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="Chat with us" />
-</a>
+<div id="whatsapp-widget">
+    <div id="whatsapp-button">
+        <i class="bi bi-whatsapp"></i>
+    </div>
+
+    <!-- Chat Box -->
+    <div id="whatsapp-chat">
+        <div id="chat-header">
+            <span>Chat with us</span>
+            <span id="chat-close">&times;</span>
+        </div>
+        <div id="chat-body">
+            <textarea id="chat-input" placeholder="Type your message..."></textarea>
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+</div>
 
 <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
     <div class="container-fluid">
@@ -1419,17 +1489,58 @@
 
     // Initial navbar state and button check
     updateNavbarStyle();
-    // Show button after scrolling down with animation
-    window.onscroll = function() {scrollFunction()};
 
-    function scrollFunction() {
-        const btn = document.getElementById("whatsappBtn");
-        if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
-            btn.classList.add("show");
-        } else {
-            btn.classList.remove("show");
+
+    const whatsappBtn = document.getElementById('whatsapp-button');
+    const whatsappChat = document.getElementById('whatsapp-chat');
+    const chatClose = document.getElementById('chat-close');
+    const sendBtn = document.getElementById('send-btn');
+    const chatInput = document.getElementById('chat-input');
+
+    let typing = false;
+
+    // Open chat box when icon clicked
+    whatsappBtn.addEventListener('click', () => {
+        whatsappChat.classList.add('show');
+        chatInput.focus();
+    });
+
+    // Close chat box manually
+    chatClose.addEventListener('click', () => {
+        whatsappChat.classList.remove('show');
+    });
+
+    // Detect typing
+    chatInput.addEventListener('focus', () => typing = true);
+    chatInput.addEventListener('blur', () => typing = false);
+
+    // Send message to WhatsApp
+    sendBtn.addEventListener('click', () => {
+        const message = encodeURIComponent(chatInput.value.trim());
+        if (message) {
+            const phone = '94763848430'; // Replace with your number
+            window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+            chatInput.value = '';
+            whatsappChat.classList.remove('show');
+        }
+    });
+
+    // Automatic pop-up and hide
+    function autoPopup() {
+        if (!typing && !whatsappChat.classList.contains('show')) {
+            whatsappChat.classList.add('show'); // show chat
+            setTimeout(() => {
+                if (!typing) {
+                    whatsappChat.classList.remove('show'); // hide chat
+                }
+            }, 8000); // hide after 8 seconds
         }
     }
+
+    // Start auto-popup after 5 seconds
+    setTimeout(autoPopup, 5000);
+    // Repeat the pop-up every 20 seconds
+    setInterval(autoPopup, 20000);
 </script>
 
 </body>
