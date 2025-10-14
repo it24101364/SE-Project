@@ -140,18 +140,18 @@
                 <div class="col-md-6 d-flex flex-wrap gap-2">
                     <button type="submit" class="btn btn-primary">Filter</button>
 
+                    <!-- Filtered Report Button - shows when dates are present -->
                     <a th:if="${startDate != null and endDate != null}"
-                       th:href="@{/sales/report(startDate=${startDate},endDate=${endDate})}"
-                       class="btn btn-primary">
-                        Generate Filtered Report
+                       th:href="@{/sales/report-pdf(startDate=${startDate},endDate=${endDate})}"
+                       class="btn btn-success">
+                        <i class="bi bi-file-earmark-pdf"></i> Generate Filtered Report
                     </a>
 
-
-
-                    <a th:if="${param.startDate == null or param.startDate == '' or param.endDate == null or param.endDate == ''}"
-                       th:href="@{/sales/report}"
+                    <!-- Full Report Button - shows when no dates are filtered -->
+                    <a th:if="${startDate == null or startDate == ''}"
+                       th:href="@{/sales/report-pdf}"
                        class="btn btn-secondary">
-                        Generate Full Report
+                        <i class="bi bi-file-earmark-pdf"></i> Generate Full Report
                     </a>
 
                     <a th:href="@{/sales/dashboard}" class="btn btn-warning">

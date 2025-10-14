@@ -115,64 +115,104 @@ public class SalesController {
     public void generatePdfReport(@RequestParam(required = false) String startDate,
                                   @RequestParam(required = false) String endDate,
                                   HttpServletResponse response,
-                                  HttpSession session) throws Exception {
-        if (session.getAttribute("adminEmail") == null) {
-            response.sendRedirect("/admin-login");
-            return;
+                                  HttpSession session) {
+        try {
+            // Check authentication
+            if (session.getAttribute("adminEmail") == null) {
+                response.sendRedirect("/admin-login");
+                return;
+            }
+
+            List<Sale> sales;
+            double totalAmount;
+            String reportRange = "All Time";
+
+            // Handle date filtering
+            if (startDate != null && !startDate.isEmpty() && endDate != null && !endDate.isEmpty()) {
+                try {
+                    // Remove any commas and parse dates
+                    LocalDate startLocalDate = LocalDate.parse(startDate.replace(",", "").trim());
+                    LocalDate endLocalDate = LocalDate.parse(endDate.replace(",", "").trim());
+                    LocalDateTime start = startLocalDate.atStartOfDay();
+                    LocalDateTime end = endLocalDate.atTime(23, 59, 59);
+
+                    sales = saleService.getSalesByDate(start, end);
+                    totalAmount = saleService.getTotalSalesByDate(start, end);
+                    reportRange = "From " + startLocalDate + " to " + endLocalDate;
+                } catch (Exception e) {
+                    System.err.println("Error parsing dates: " + e.getMessage());
+                    e.printStackTrace();
+                    sales = saleService.getAllSales();
+                    totalAmount = saleService.getTotalSales();
+                }
+            } else {
+                sales = saleService.getAllSales();
+                totalAmount = saleService.getTotalSales();
+            }
+
+            // Set response headers
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=sales-report.pdf");
+
+            // Prevent caching
+            response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            response.setHeader("Pragma", "no-cache");
+            response.setHeader("Expires", "0");
+
+            // Create PDF document
+            Document document = new Document();
+            PdfWriter.getInstance(document, response.getOutputStream());
+            document.open();
+
+            // Add content
+            document.add(new Paragraph("Sales Report"));
+            document.add(new Paragraph("Report Period: " + reportRange));
+            document.add(new Paragraph("Generated At: " +
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))));
+            document.add(new Paragraph("Total Amount: $" + String.format("%.2f", totalAmount)));
+            document.add(new Paragraph(" "));
+
+            // Create table
+            PdfPTable table = new PdfPTable(6);
+            table.setWidthPercentage(100);
+
+            // Add headers
+            table.addCell("Order ID");
+            table.addCell("Product");
+            table.addCell("Quantity");
+            table.addCell("Price");
+            table.addCell("Total");
+            table.addCell("Date");
+
+            // Add data
+            for (Sale sale : sales) {
+                table.addCell(String.valueOf(sale.getOrderId()));
+                table.addCell(sale.getProductName());
+                table.addCell(String.valueOf(sale.getQuantity()));
+                table.addCell("$" + String.format("%.2f", sale.getPrice()));
+                table.addCell("$" + String.format("%.2f", sale.getTotalAmount()));
+                table.addCell(sale.getSaleDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+            }
+
+            document.add(table);
+            document.close();
+
+            // Flush the response
+            response.getOutputStream().flush();
+
+        } catch (Exception e) {
+            System.err.println("Error generating PDF report: " + e.getMessage());
+            e.printStackTrace();
+
+            try {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "Error generating PDF report: " + e.getMessage());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
-
-        List<Sale> sales;
-        double totalAmount;
-        String reportRange = "All Time";
-
-        if (startDate != null && !startDate.isEmpty() && endDate != null && !endDate.isEmpty()) {
-            LocalDate startLocalDate = LocalDate.parse(startDate.replace(",", ""));
-            LocalDate endLocalDate = LocalDate.parse(endDate.replace(",", ""));
-            LocalDateTime start = startLocalDate.atStartOfDay();
-            LocalDateTime end = endLocalDate.atTime(23, 59, 59);
-
-            sales = saleService.getSalesByDate(start, end);
-            totalAmount = saleService.getTotalSalesByDate(start, end);
-            reportRange = "From " + startLocalDate + " to " + endLocalDate;
-        } else {
-            sales = saleService.getAllSales();
-            totalAmount = saleService.getTotalSales();
-        }
-
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=sales-report.pdf");
-
-        Document document = new Document();
-        PdfWriter.getInstance(document, response.getOutputStream());
-        document.open();
-
-        document.add(new Paragraph("Sales Report"));
-        document.add(new Paragraph("Report Period: " + reportRange));
-        document.add(new Paragraph("Generated At: " +
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))));
-        document.add(new Paragraph("Total Amount: $" + totalAmount));
-        document.add(new Paragraph(" "));
-
-        PdfPTable table = new PdfPTable(6);
-        table.addCell("Order ID");
-        table.addCell("Product");
-        table.addCell("Quantity");
-        table.addCell("Price");
-        table.addCell("Total");
-        table.addCell("Date");
-
-        for (Sale sale : sales) {
-            table.addCell(String.valueOf(sale.getOrderId()));
-            table.addCell(sale.getProductName());
-            table.addCell(String.valueOf(sale.getQuantity()));
-            table.addCell(String.valueOf(sale.getPrice()));
-            table.addCell(String.valueOf(sale.getTotalAmount()));
-            table.addCell(sale.getSaleDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-        }
-
-        document.add(table);
-        document.close();
     }
+
 
     private void addAnalyticsData(Model model) {
         model.addAttribute("totalSales", saleService.getTotalSales());
