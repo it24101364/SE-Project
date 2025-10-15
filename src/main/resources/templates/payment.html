@@ -1,836 +1,484 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment - Spare Parts Store</title>
+    <title>Payment</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary-color: #0d6efd;
-            --secondary-color: #6c757d;
-            --dark-bg: #1a1a2e;
-            --accent-color: #00d9ff;
-            --success-color: #28a745;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            padding: 40px 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Navbar Enhancement */
-        .navbar-custom {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            padding: 1rem 0;
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
         }
 
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--accent-color) !important;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Container */
-        .payment-container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        /* Page Header */
         .page-header {
-            text-align: center;
             margin-bottom: 40px;
-            padding: 30px 0;
+            text-align: center;
+            color: white;
         }
 
-        .page-header h1 {
+        .page-header h2 {
             font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--dark-bg);
+            font-weight: 700;
             margin-bottom: 10px;
         }
 
         .page-header p {
-            color: #6c757d;
             font-size: 1.1rem;
+            opacity: 0.9;
         }
 
-        /* Progress Steps */
-        .checkout-steps {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 50px;
-            padding: 0 20px;
+        .payment-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
         }
 
-        .step {
-            flex: 1;
-            max-width: 200px;
-            text-align: center;
-            position: relative;
-        }
-
-        .step:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            top: 25px;
-            left: 60%;
-            width: 80%;
-            height: 3px;
-            background: var(--success-color);
-            z-index: 0;
-        }
-
-        .step-icon {
-            width: 50px;
-            height: 50px;
-            background: var(--success-color);
-            border: 3px solid var(--success-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 10px;
-            font-size: 1.2rem;
-            color: white;
-            position: relative;
-            z-index: 1;
-        }
-
-        .step.active .step-icon {
-            background: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .step-label {
-            font-size: 0.9rem;
-            color: #6c757d;
-            font-weight: 600;
-        }
-
-        .step.completed .step-label {
-            color: var(--success-color);
-        }
-
-        .step.active .step-label {
-            color: var(--primary-color);
-        }
-
-        /* Payment Card */
-        .payment-card {
+        .payment-form, .order-summary {
             background: white;
-            border-radius: 20px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .payment-form {
             padding: 40px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .form-section {
             margin-bottom: 30px;
         }
 
-        .payment-card h4 {
-            color: var(--dark-bg);
-            font-weight: bold;
-            margin-bottom: 30px;
+        .form-section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #667eea;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .payment-card h4 i {
-            color: var(--primary-color);
-            font-size: 1.5rem;
+        .form-section-title i {
+            color: #667eea;
+            font-size: 1.4rem;
         }
 
-        /* Credit Card Visual */
-        .credit-card-visual {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 15px;
-            padding: 30px;
-            color: white;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            min-height: 200px;
+        .payment-method-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .payment-option {
             position: relative;
-            overflow: hidden;
         }
 
-        .credit-card-visual::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        .payment-option input[type="radio"] {
+            display: none;
         }
 
-        .card-chip {
-            width: 50px;
-            height: 40px;
-            background: linear-gradient(135deg, #f9d423, #ff4e50);
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .card-number-display {
-            font-size: 1.5rem;
-            letter-spacing: 3px;
-            margin: 20px 0;
-            font-family: 'Courier New', monospace;
-        }
-
-        .card-info-row {
+        .payment-option label {
             display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        .card-info-item {
-            flex: 1;
-        }
-
-        .card-info-label {
-            font-size: 0.7rem;
-            opacity: 0.8;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
-
-        .card-info-value {
-            font-size: 1rem;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
             font-weight: 600;
+            gap: 10px;
+            background: white;
         }
 
-        .card-logo {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 2.5rem;
+        .payment-option input[type="radio"]:checked + label {
+            border-color: #667eea;
+            background: #f0f4ff;
+            color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
         }
 
-        /* Form Styling */
-        .form-group {
-            margin-bottom: 25px;
+        .payment-option label i {
+            font-size: 1.3rem;
         }
 
         .form-label {
             font-weight: 600;
-            color: var(--dark-bg);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
         }
 
-        .form-label i {
-            color: var(--primary-color);
-            font-size: 0.9rem;
-        }
-
-        .form-control {
+        .form-control, .form-select {
             border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            border-radius: 8px;
             padding: 12px 15px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
         }
 
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+            background-color: white;
         }
 
-        .form-select {
-            border: 2px solid #e0e0e0;
+        .form-control::placeholder {
+            color: #999;
+        }
+
+        .form-text {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 6px;
+        }
+
+        .card-fields {
+            margin-top: 25px;
+        }
+
+        .card-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .card-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .card-row.expiry-cvv {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .mb-3 {
+            margin-bottom: 0;
+        }
+
+        #card-fields {
+            max-height: 1000px;
+            opacity: 1;
+            transition: all 0.4s ease;
+            overflow: hidden;
+        }
+
+        #card-fields.hidden {
+            max-height: 0;
+            opacity: 0;
+            margin-top: 0;
+        }
+
+        .btn-pay {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
             border-radius: 10px;
-            padding: 12px 15px;
-            transition: all 0.3s ease;
-        }
-
-        .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
-        }
-
-        /* Card Type Display */
-        .card-type-badge {
-            display: inline-block;
-            padding: 8px 20px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-top: 10px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 25px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
         }
 
-        /* Summary Card */
-        .summary-card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        .btn-pay:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-pay:active {
+            transform: translateY(0);
+        }
+
+        .order-summary {
+            padding: 35px;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            height: fit-content;
             position: sticky;
             top: 20px;
         }
 
-        .summary-card h4 {
-            color: var(--dark-bg);
-            font-weight: bold;
+        .order-summary h4 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
             margin-bottom: 25px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .summary-card h4 i {
-            color: var(--primary-color);
-            font-size: 1.5rem;
+        .order-summary h4 i {
+            color: #667eea;
         }
 
         .summary-item {
             display: flex;
             justify-content: space-between;
-            padding: 15px 0;
-            border-bottom: 1px solid #f0f0f0;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            font-size: 0.95rem;
         }
 
         .summary-item:last-child {
             border-bottom: none;
         }
 
-        .summary-label {
-            color: #6c757d;
+        .summary-item strong {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .summary-item span {
+            color: #666;
+        }
+
+        .summary-item.total-amount {
+            padding: 15px 0;
+            margin-top: 15px;
+            border-top: 2px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+            font-size: 1.3rem;
+        }
+
+        .summary-item.total-amount span {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+            margin-bottom: 25px;
+            padding: 15px 20px;
             font-weight: 500;
         }
 
-        .summary-value {
-            font-weight: 600;
-            color: var(--dark-bg);
-        }
-
-        .total-amount {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-        }
-
-        .total-amount .summary-label,
-        .total-amount .summary-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        /* Shipping Details */
-        .shipping-details {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-        }
-
-        .shipping-details h6 {
-            color: var(--dark-bg);
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        .shipping-details p {
-            margin-bottom: 8px;
-            color: #6c757d;
-            font-size: 0.95rem;
-        }
-
-        .shipping-details strong {
-            color: var(--dark-bg);
-        }
-
-        /* Delivery Timeline */
-        .delivery-timeline {
-            background: #ffffff;
-            padding: 25px;
-            border-radius: 12px;
-            margin-top: 20px;
-            border: 2px solid #f0f0f0;
-        }
-
-        .delivery-timeline h6 {
-            color: var(--dark-bg);
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .timeline {
-            position: relative;
-            padding-left: 0;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 20px;
-            top: 20px;
-            bottom: 20px;
-            width: 3px;
-            background: linear-gradient(to bottom, var(--primary-color) 0%, var(--accent-color) 100%);
-        }
-
-        .timeline-item {
-            position: relative;
-            padding-left: 60px;
-            padding-bottom: 30px;
-        }
-
-        .timeline-item:last-child {
-            padding-bottom: 0;
-        }
-
-        .timeline-icon {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1rem;
-            box-shadow: 0 3px 10px rgba(13, 110, 253, 0.3);
-            z-index: 1;
-        }
-
-        .timeline-content h6 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--dark-bg);
-            margin-bottom: 5px;
-        }
-
-        .timeline-content p {
-            font-size: 0.875rem;
-            color: #6c757d;
-            margin: 0;
-        }
-
-        /* Buttons */
-        .btn-pay {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            border: none;
-            color: white;
-            padding: 15px 40px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            width: 100%;
-            transition: all 0.3s ease;
-            margin-top: 20px;
-        }
-
-        .btn-pay:hover {
-            background: linear-gradient(135deg, #20c997, #28a745);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        .alert-danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
             color: white;
         }
 
-        /* Security Badge */
-        .security-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
+        .alert-success {
+            background: linear-gradient(135deg, #51cf66 0%, #69db7c 100%);
+            color: white;
         }
 
-        .security-info i {
-            font-size: 2rem;
-            color: var(--success-color);
-        }
-
-        .security-info-text {
-            flex: 1;
-        }
-
-        .security-info-text strong {
-            display: block;
-            color: var(--dark-bg);
-            margin-bottom: 3px;
-        }
-
-        .security-info-text small {
-            color: #6c757d;
-        }
-
-        /* Payment Methods */
-        .accepted-cards {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .accepted-cards i {
-            font-size: 2.5rem;
-            opacity: 0.6;
-            transition: all 0.3s ease;
-        }
-
-        .accepted-cards i:hover {
-            opacity: 1;
-            transform: scale(1.1);
-        }
-
-        /* Animation */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
+        @media (max-width: 992px) {
+            .payment-container {
+                grid-template-columns: 1fr;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+
+            .order-summary {
+                position: static;
             }
-        }
 
-        .payment-card,
-        .summary-card {
-            animation: fadeInUp 0.5s ease;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .page-header h1 {
+            .page-header h2 {
                 font-size: 2rem;
             }
 
-            .checkout-steps {
-                margin-bottom: 30px;
+            .card-row.expiry-cvv {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            body {
+                padding: 20px 10px;
             }
 
-            .step-label {
-                font-size: 0.75rem;
+            .payment-form {
+                padding: 25px 15px;
             }
 
-            .payment-card,
-            .summary-card {
-                padding: 25px;
+            .payment-method-group {
+                grid-template-columns: 1fr;
             }
 
-            .summary-card {
-                position: static;
-                margin-top: 30px;
+            .card-row {
+                grid-template-columns: 1fr;
             }
 
-            .credit-card-visual {
-                padding: 20px;
+            .card-row.expiry-cvv {
+                grid-template-columns: 1fr;
             }
 
-            .card-number-display {
-                font-size: 1.2rem;
-            }
-
-            .delivery-timeline {
-                padding: 20px;
-            }
-
-            .timeline-item {
-                padding-left: 50px;
-            }
-
-            .timeline-icon {
-                width: 36px;
-                height: 36px;
-                font-size: 0.9rem;
+            .page-header h2 {
+                font-size: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
-<!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
-    <div class="container-fluid">
-        <a class="navbar-brand"><i class="fas fa-microchip"></i> Spare Parts Store</a>
-    </div>
-</nav>
-
-<div class="payment-container">
-    <!-- Page Header -->
+<div class="container">
     <div class="page-header">
-        <h1><i class="fas fa-credit-card"></i> Payment</h1>
-        <p>Secure payment gateway - Your information is safe with us</p>
+        <h2><i class="fas fa-lock"></i> Secure Payment</h2>
+        <p>Complete your purchase with our secure payment gateway</p>
     </div>
 
-    <!-- Progress Steps -->
-    <div class="checkout-steps">
-        <div class="step completed">
-            <div class="step-icon">
-                <i class="fas fa-check"></i>
-            </div>
-            <div class="step-label">Cart</div>
-        </div>
-        <div class="step completed">
-            <div class="step-icon">
-                <i class="fas fa-check"></i>
-            </div>
-            <div class="step-label">Shipping</div>
-        </div>
-        <div class="step active">
-            <div class="step-icon">
-                <i class="fas fa-credit-card"></i>
-            </div>
-            <div class="step-label">Payment</div>
-        </div>
+    <div th:if="${error}" class="alert alert-danger">
+        <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+    </div>
+    <div th:if="${message}" class="alert alert-success">
+        <i class="fas fa-check-circle"></i> <span th:text="${message}"></span>
     </div>
 
-    <div class="row">
-        <!-- Left: Payment Form -->
-        <div class="col-lg-7">
-            <div class="payment-card">
-                <h4><i class="fas fa-credit-card"></i> Card Details</h4>
+    <div class="payment-container">
+        <!-- Payment Form -->
+        <form th:action="@{/payment}" th:object="${paymentForm}" method="post" class="payment-form" novalidate>
+            <input type="hidden" th:field="*{orderId}" th:value="${order.id}" />
 
-                <!-- Credit Card Visual -->
-                <div class="credit-card-visual">
-                    <div class="card-logo" id="cardLogoDisplay">
-                        <i class="fas fa-credit-card"></i>
-                    </div>
-                    <div class="card-chip"></div>
-                    <div class="card-number-display" id="cardNumberDisplay">
-                        •••• •••• •••• ••••
-                    </div>
-                    <div class="card-info-row">
-                        <div class="card-info-item">
-                            <div class="card-info-label">Card Holder</div>
-                            <div class="card-info-value" id="cardHolderDisplay">YOUR NAME</div>
-                        </div>
-                        <div class="card-info-item">
-                            <div class="card-info-label">Expires</div>
-                            <div class="card-info-value" id="cardExpiryDisplay">MM/YY</div>
-                        </div>
-                    </div>
+            <!-- Payment Method Section -->
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i class="fas fa-credit-card"></i> Payment Method
                 </div>
 
-                <form th:action="@{/payment}" th:object="${paymentForm}" method="post">
-                    <input type="hidden" th:field="*{orderId}" th:value="${order.id}" />
-
-                    <!-- Card Number -->
-                    <div class="form-group">
-                        <label for="cardNumber" class="form-label">
-                            <i class="fas fa-credit-card"></i> Card Number
+                <div class="payment-method-group">
+                    <div class="payment-option">
+                        <input type="radio" th:field="*{paymentMethod}" value="card" id="cardRadio" checked>
+                        <label for="cardRadio">
+                            <i class="fas fa-credit-card"></i> Card Payment
                         </label>
-                        <input type="text" id="cardNumber" th:field="*{cardNumber}" class="form-control" maxlength="19" placeholder="1234 5678 9012 3456" required />
-                        <span id="cardTypeDisplay" class="card-type-badge">Unknown Card</span>
                     </div>
-
-                    <!-- Card Holder Name -->
-                    <div class="form-group">
-                        <label for="cardHolder" class="form-label">
-                            <i class="fas fa-user"></i> Card Holder Name
+                    <div class="payment-option">
+                        <input type="radio" th:field="*{paymentMethod}" value="cod" id="codRadio">
+                        <label for="codRadio">
+                            <i class="fas fa-money-bill-wave"></i> Cash on Delivery
                         </label>
-                        <input type="text" id="cardHolder" name="cardHolder" class="form-control" placeholder="As printed on card" required />
                     </div>
-
-                    <!-- Expiry Month & Year -->
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="expiryMonth" class="form-label">
-                                    <i class="fas fa-calendar"></i> Expiry Month
-                                </label>
-                                <select id="expiryMonth" name="expiryMonth" class="form-select" required>
-                                    <option value="">MM</option>
-                                    <option th:each="m : ${#numbers.sequence(1,12)}"
-                                            th:value="${m}" th:text="${m < 10 ? '0' + m : m}"></option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="expiryYear" class="form-label">
-                                    <i class="fas fa-calendar-alt"></i> Expiry Year
-                                </label>
-                                <select id="expiryYear" name="expiryYear" class="form-select" required>
-                                    <option value="">YYYY</option>
-                                    <option th:each="y : ${#numbers.sequence(2024,2035)}"
-                                            th:value="${y}" th:text="${y}"></option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="cvv" class="form-label">
-                                    <i class="fas fa-lock"></i> CVV
-                                </label>
-                                <input type="password" id="cvv" name="cvv" class="form-control" maxlength="3" placeholder="123" required />
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Security Info -->
-                    <div class="security-info">
-                        <i class="fas fa-shield-alt"></i>
-                        <div class="security-info-text">
-                            <strong>Secure Payment</strong>
-                            <small>Your card information is encrypted and secure. We never store your CVV.</small>
-                        </div>
-                    </div>
-
-                    <!-- Pay Button -->
-                    <button type="submit" class="btn btn-pay">
-                        <i class="fas fa-lock me-2"></i> Pay Rs. <span th:text="${order.totalAmount}">0.00</span>
-                    </button>
-
-                    <!-- Accepted Cards -->
-                    <div class="accepted-cards">
-                        <i class="fab fa-cc-visa"></i>
-                        <i class="fab fa-cc-mastercard"></i>
-                        <i class="fab fa-cc-amex"></i>
-                        <i class="fas fa-credit-card"></i>
-                    </div>
-                </form>
+                </div>
             </div>
-        </div>
 
-        <!-- Right: Order Summary -->
-        <div class="col-lg-5">
-            <div class="summary-card">
-                <h4><i class="fas fa-receipt"></i> Order Summary</h4>
-
-                <div class="summary-item">
-                    <span class="summary-label">Order ID</span>
-                    <span class="summary-value">#<span th:text="${order.id}">0</span></span>
-                </div>
-
-                <div class="total-amount">
-                    <div class="summary-item">
-                        <span class="summary-label">Total Amount</span>
-                        <span class="summary-value">Rs. <span th:text="${order.totalAmount}">0.00</span></span>
+            <!-- Card Fields -->
+            <div id="card-fields" class="card-fields">
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-wallet"></i> Card Details
                     </div>
-                </div>
 
-                <div class="shipping-details">
-                    <h6><i class="fas fa-shipping-fast me-2"></i>Shipping Information</h6>
-                    <p><strong>Name:</strong> <span th:text="${order.fullName}">Name</span></p>
-                    <p><strong>Address:</strong> <span th:text="${order.address}">Address</span></p>
-                    <p><strong>City:</strong> <span th:text="${order.city}">City</span>, <span th:text="${order.postalCode}">Code</span></p>
-                    <p><strong>Country:</strong> <span th:text="${order.country}">Country</span></p>
-                    <p><strong>Phone:</strong> <span th:text="${order.phone}">0000000</span></p>
-                </div>
+                    <div class="card-row full">
+                        <div>
+                            <label for="cardNumber" class="form-label">Card Number</label>
+                            <input type="text" th:field="*{cardNumber}" id="cardNumber" class="form-control"
+                                   placeholder="1234 5678 1234 5678" maxlength="16" required>
+                            <div class="form-text"><i class="fas fa-shield-alt"></i> Your card details are encrypted</div>
+                        </div>
+                    </div>
 
-                <!-- Delivery Timeline -->
-                <div class="delivery-timeline">
-                    <h6><i class="fas fa-clock me-2"></i>Estimated Delivery Timeline</h6>
-                    <div class="timeline">
-                        <div class="timeline-item">
-                            <div class="timeline-icon">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="timeline-content">
-                                <h6>Order Confirmed</h6>
-                                <p>Within 24 hours</p>
-                            </div>
+                    <div class="card-row full">
+                        <div>
+                            <label for="cardHolderName" class="form-label">Card Holder Name</label>
+                            <input type="text" th:field="*{cardHolderName}" id="cardHolderName" class="form-control" placeholder="John Doe" required>
                         </div>
-                        <div class="timeline-item">
-                            <div class="timeline-icon">
-                                <i class="fas fa-box"></i>
-                            </div>
-                            <div class="timeline-content">
-                                <h6>Processing & Packaging</h6>
-                                <p>1-2 business days</p>
-                            </div>
+                    </div>
+
+                    <div class="card-row expiry-cvv">
+                        <div>
+                            <label for="expiryMonth" class="form-label">Month</label>
+                            <select th:field="*{expiryMonth}" class="form-select" required>
+                                <option value="" disabled selected>MM</option>
+                                <option th:each="m : ${#numbers.sequence(1,12)}" th:value="${m}" th:text="${m < 10 ? '0' + m : m}"></option>
+                            </select>
                         </div>
-                        <div class="timeline-item">
-                            <div class="timeline-icon">
-                                <i class="fas fa-truck"></i>
-                            </div>
-                            <div class="timeline-content">
-                                <h6>Shipped</h6>
-                                <p>3-5 business days</p>
-                            </div>
+
+                        <div>
+                            <label for="expiryYear" class="form-label">Year</label>
+                            <select th:field="*{expiryYear}" class="form-select" required>
+                                <option value="" disabled selected>YY</option>
+                                <option th:each="y : ${#numbers.sequence(T(java.time.LocalDate).now().getYear(), T(java.time.LocalDate).now().getYear()+10)}"
+                                        th:value="${y}" th:text="${#strings.substring(y + '', 2, 4)}"></option>
+                            </select>
                         </div>
-                        <div class="timeline-item">
-                            <div class="timeline-icon">
-                                <i class="fas fa-home"></i>
-                            </div>
-                            <div class="timeline-content">
-                                <h6>Delivered</h6>
-                                <p>5-7 business days</p>
-                            </div>
+
+                        <div>
+                            <label for="cvv" class="form-label">CVV</label>
+                            <input type="text" th:field="*{cvv}" id="cvv" class="form-control" placeholder="123" pattern="\d{3}" maxlength="3" required>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <button type="submit" class="btn-pay">
+                <i class="fas fa-lock"></i> Pay Now
+            </button>
+        </form>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <h4><i class="fas fa-list-check"></i> Order Summary</h4>
+            <div class="summary-item">
+                <strong>Order ID:</strong>
+                <span th:text="${order.id}"></span>
+            </div>
+            <div class="summary-item">
+                <strong>Total Items:</strong>
+                <span th:text="${order.items.size()}"></span>
+            </div>
+            <div class="summary-item total-amount">
+                <strong>Total:</strong>
+                <span>Rs. <span th:text="${order.totalAmount}"></span></span>
+            </div>
+            <div class="summary-item">
+                <strong><i class="fas fa-map-marker-alt"></i> Delivery:</strong>
+            </div>
+            <div style="padding: 12px 0; color: #666; word-break: break-word;">
+                <span th:text="${order.shippingAddress}"></span>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    function detectCardType(number) {
-        number = number.replace(/\s+/g, '');
-        if (/^4/.test(number)) return { type: "Visa", icon: "fab fa-cc-visa", color: "#1A1F71" };
-        if (/^5[1-5]/.test(number)) return { type: "MasterCard", icon: "fab fa-cc-mastercard", color: "#EB001B" };
-        if (/^3[47]/.test(number)) return { type: "American Express", icon: "fab fa-cc-amex", color: "#006FCF" };
-        if (/^6(?:011|5)/.test(number)) return { type: "Discover", icon: "fab fa-cc-discover", color: "#FF6000" };
-        return { type: "Unknown Card", icon: "fas fa-credit-card", color: "#6c757d" };
+    const cardRadio = document.getElementById('cardRadio');
+    const codRadio = document.getElementById('codRadio');
+    const cardFields = document.getElementById('card-fields');
+
+    function toggleCardFields() {
+        if (cardRadio.checked) {
+            cardFields.classList.remove('hidden');
+            cardFields.querySelectorAll('input, select').forEach(input => input.required = true);
+        } else {
+            cardFields.classList.add('hidden');
+            cardFields.querySelectorAll('input, select').forEach(input => input.required = false);
+        }
     }
 
-    const cardInput = document.getElementById('cardNumber');
-    const cardTypeDisplay = document.getElementById('cardTypeDisplay');
-    const cardNumberDisplay = document.getElementById('cardNumberDisplay');
-    const cardLogoDisplay = document.getElementById('cardLogoDisplay');
-    const cardHolderInput = document.getElementById('cardHolder');
-    const cardHolderDisplay = document.getElementById('cardHolderDisplay');
-    const expiryMonthSelect = document.getElementById('expiryMonth');
-    const expiryYearSelect = document.getElementById('expiryYear');
-    const cardExpiryDisplay = document.getElementById('cardExpiryDisplay');
+    cardRadio.addEventListener('change', toggleCardFields);
+    codRadio.addEventListener('change', toggleCardFields);
+    toggleCardFields();
 
-    // Card number input
-    cardInput.addEventListener('input', () => {
-        // Auto-format: 1234 5678 9012 3456
-        let val = cardInput.value.replace(/\D/g, '');
-        val = val.match(/.{1,4}/g);
-        cardInput.value = val ? val.join(' ') : '';
-
-        // Update visual display
-        cardNumberDisplay.textContent = cardInput.value || '•••• •••• •••• ••••';
-
-        // Detect card type
-        const cardInfo = detectCardType(cardInput.value);
-        cardTypeDisplay.textContent = cardInfo.type;
-        cardTypeDisplay.style.background = `linear-gradient(135deg, ${cardInfo.color}, #764ba2)`;
-
-        // Update logo
-        cardLogoDisplay.innerHTML = `<i class="${cardInfo.icon}"></i>`;
+    // Format card number input
+    document.getElementById('cardNumber').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s/g, '');
+        let formattedValue = value.replace(/(\d{4})/g, '$1 ').trim();
+        e.target.value = formattedValue.slice(0, 19);
     });
-
-    // Card holder input
-    cardHolderInput.addEventListener('input', () => {
-        cardHolderDisplay.textContent = cardHolderInput.value.toUpperCase() || 'YOUR NAME';
-    });
-
-    // Expiry date
-    function updateExpiry() {
-        const month = expiryMonthSelect.value || 'MM';
-        const year = expiryYearSelect.value ? expiryYearSelect.value.slice(-2) : 'YY';
-        cardExpiryDisplay.textContent = `${month}/${year}`;
-    }
-
-    expiryMonthSelect.addEventListener('change', updateExpiry);
-    expiryYearSelect.addEventListener('change', updateExpiry);
 </script>
 </body>
 </html>

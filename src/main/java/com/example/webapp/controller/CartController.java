@@ -1,7 +1,9 @@
 package com.example.webapp.controller;
 
 import com.example.webapp.model.CartItem;
+import com.example.webapp.model.User;
 import com.example.webapp.service.CartService;
+import com.example.webapp.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +18,11 @@ public class CartController {
 
     private final CartService cartService;
 
-    public CartController(CartService cartService) {
+    private final UserService userService;
+
+    public CartController(CartService cartService, UserService userService) {
         this.cartService = cartService;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -26,10 +31,12 @@ public class CartController {
             return "redirect:/login";
         }
         String userEmail = principal.getName();
+        User user = userService.findByEmail(userEmail); // ✅ get user
         List<CartItem> cartItems = cartService.getCartItems(userEmail);
         double total = cartItems.stream().mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity()).sum();
         model.addAttribute("cartItems", cartItems);
         model.addAttribute("total", total);
+        model.addAttribute("user", user); // ✅ add to model
         return "cart";
     }
 

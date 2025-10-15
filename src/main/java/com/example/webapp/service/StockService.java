@@ -23,7 +23,7 @@ public class StockService {
     public List<Product> getLowStockProducts() {
         return productRepository.findAll()
                 .stream()
-                .filter(p -> p.getStockCount() < 5) // low stock threshold
+                .filter(p -> p.getStockCount() < 10) // low stock threshold
                 .collect(Collectors.toList());
     }
 
@@ -49,12 +49,12 @@ public class StockService {
         if ("low".equals(filter)) {
             return productRepository.findAll()
                     .stream()
-                    .filter(p -> p.getStockCount() < 5)
+                    .filter(p -> p.getStockCount() < 10)
                     .toList();
         } else if ("high".equals(filter)) {
             return productRepository.findAll()
                     .stream()
-                    .filter(p -> p.getStockCount() >= 5)
+                    .filter(p -> p.getStockCount() >= 10)
                     .toList();
         } else {
             return getAllProducts();

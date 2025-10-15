@@ -305,18 +305,24 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/sales/dashboard}">
+                    <a class="nav-link " th:classappend="${page == 'sales' ? ' active' : ''}" th:href="@{/sales/dashboard}">
                         <i class="fas fa-chart-line me-1"></i> Sales Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/feedback/dashboard}">
+                    <a class="nav-link" th:classappend="${page == 'feedback' ? ' active' : ''}" th:href="@{/feedback/dashboard}">
                         <i class="fas fa-comments me-1"></i> Feedback Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" th:href="@{/stock/dashboard}">
+                    <a class="nav-link active" th:classappend="${page == 'stock' ? ' active' : ''}" th:href="@{/stock/dashboard}">
                         <i class="fas fa-boxes me-1"></i> Stock Dashboard
+                    </a>
+                </li>
+                <!-- New Order & Payment Dashboard nav item -->
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${page == 'orders' ? ' active' : ''}" th:href="@{/orders/dashboard}">
+                        <i class="fas fa-receipt me-1"></i> Orders Dashboard
                     </a>
                 </li>
             </ul>
@@ -414,7 +420,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="product : ${products}"
-                    th:classappend="${product.stockCount < 5} ? 'table-danger'">
+                    th:classappend="${product.stockCount < 10} ? 'table-danger'">
 
                     <!-- Product ID -->
                     <td th:text="${product.id}"></td>
@@ -431,10 +437,10 @@
 
                     <!-- Stock Count -->
                     <td>
-                <span th:if="${product.stockCount < 5}" class="badge bg-danger">
+                <span th:if="${product.stockCount < 10}" class="badge bg-danger">
                     <span th:text="${product.stockCount}"></span>
                 </span>
-                        <span th:if="${product.stockCount >= 5}" class="badge bg-success">
+                        <span th:if="${product.stockCount >= 10}" class="badge bg-success">
                     <span th:text="${product.stockCount}"></span>
                 </span>
                     </td>

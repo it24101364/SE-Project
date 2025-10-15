@@ -4,11 +4,15 @@ import com.example.webapp.model.Order;
 import com.example.webapp.model.PaymentForm;
 import com.example.webapp.service.OrderService;
 import com.example.webapp.service.OrderEmailService;
+import com.example.webapp.strategy.CardPaymentStrategy;
+import com.example.webapp.strategy.CashOnDeliveryStrategy;
+import com.example.webapp.strategy.PaymentContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RequestMapping("/payment")
 public class PaymentController {
 
     private final OrderService orderService;
@@ -19,27 +23,65 @@ public class PaymentController {
         this.orderEmailService = orderEmailService;
     }
 
-    @PostMapping("/payment")
-    public String processPayment(@ModelAttribute PaymentForm paymentForm, Model model) {
+    // --- Show payment page ---
+    @GetMapping("/{orderId}")
+    public String showPaymentPage(@PathVariable Long orderId, Model model) {
+        Order order = orderService.getOrderById(orderId);
+        if (order == null) {
+            model.addAttribute("error", "Order not found!");
+            return "redirect:/cart"; // or some error page
+        }
 
+        model.addAttribute("order", order);
+        model.addAttribute("paymentForm", new PaymentForm());
+        return "payment";
+    }
+
+    // --- Process payment ---
+    @PostMapping
+    public String processPayment(@ModelAttribute PaymentForm paymentForm, Model model) {
         Order order = orderService.getOrderById(paymentForm.getOrderId());
         if (order == null) {
             model.addAttribute("error", "Order not found!");
             return "payment";
         }
 
-        // Detect card type
-        String cardType = detectCardType(paymentForm.getCardNumber());
+        PaymentContext context = new PaymentContext();
+        String message;
 
-        // Update order payment
-        order.setPaymentType(cardType);
-        order.setPaid(true);
+        if ("card".equalsIgnoreCase(paymentForm.getPaymentMethod())) {
+
+            // Combine month and year to a string like MM/YY
+            String expiryDate = String.format("%02d/%d",
+                    paymentForm.getExpiryMonth(),
+                    paymentForm.getExpiryYear() % 100); // last 2 digits of year
+
+            context.setPaymentStrategy(new CardPaymentStrategy(
+                    paymentForm.getCardNumber(),
+                    paymentForm.getCardHolderName(),
+                    expiryDate,
+                    paymentForm.getCvv()
+            ));
+            order.setPaymentType("Card");
+            order.setPaid(true);
+        }
+        else if ("cod".equalsIgnoreCase(paymentForm.getPaymentMethod())) {
+            context.setPaymentStrategy(new CashOnDeliveryStrategy());
+            order.setPaymentType("Cash on Delivery");
+            order.setPaid(false); // COD is not yet paid
+        } else {
+            model.addAttribute("error", "Invalid payment method!");
+            model.addAttribute("order", order);
+            return "payment";
+        }
+
+        message = context.executePayment(order.getTotalAmount());
         orderService.saveOrder(order);
+        orderEmailService.sendOrderSummary(order, message);
 
-        // ✅ Send order summary email
-        orderEmailService.sendOrderSummary(order);
 
         model.addAttribute("order", order);
+        model.addAttribute("message", message);
         return "payment-success";
     }
 

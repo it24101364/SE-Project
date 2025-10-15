@@ -35,7 +35,7 @@ public class StockController {
         // Filter by stock level
         if ("low".equals(filter)) {
             products = products.stream()
-                    .filter(p -> p.getStockCount() < 5)
+                    .filter(p -> p.getStockCount() < 10)
                     .collect(Collectors.toList());
         }
 
@@ -90,7 +90,7 @@ public class StockController {
         // Apply same filters for export
         if ("low".equals(filter)) {
             products = products.stream()
-                    .filter(p -> p.getStockCount() < 5)
+                    .filter(p -> p.getStockCount() < 10)
                     .collect(Collectors.toList());
         }
 

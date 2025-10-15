@@ -176,7 +176,7 @@
         .nav-link:hover {
             color: #667eea !important;
         }
-        nav-link.active{
+        .nav-link.active {
             color: #667eea !important;
             font-weight: 600;
         }
@@ -218,34 +218,37 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand" href="#">Admin Dashboard</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/sales/dashboard}">
+                    <a class="nav-link " th:classappend="${page == 'sales' ? ' active' : ''}" th:href="@{/sales/dashboard}">
                         <i class="fas fa-chart-line me-1"></i> Sales Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link.active" th:href="@{/feedback/dashboard}">
+                    <a class="nav-link active" th:classappend="${page == 'feedback' ? ' active' : ''}" th:href="@{/feedback/dashboard}">
                         <i class="fas fa-comments me-1"></i> Feedback Dashboard
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/stock/dashboard}">
+                    <a class="nav-link" th:classappend="${page == 'stock' ? ' active' : ''}" th:href="@{/stock/dashboard}">
                         <i class="fas fa-boxes me-1"></i> Stock Dashboard
+                    </a>
+                </li>
+                <!-- New Order & Payment Dashboard nav item -->
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${page == 'orders' ? ' active' : ''}" th:href="@{/orders/dashboard}">
+                        <i class="fas fa-receipt me-1"></i> Orders Dashboard
                     </a>
                 </li>
             </ul>
             <div class="navbar-nav ms-auto">
-                <a class="nav-link" th:href="@{/products}">
-                    <i class="fas fa-shopping-bag me-1"></i> Products
-                </a>
-                <a class="nav-link" th:href="@{/admin-logout}">
-                    <i class="fas fa-sign-out-alt me-1"></i> Logout
-                </a>
+                <span class="navbar-text me-3" th:text="'Admin: ' + ${session.adminEmail}"></span>
+                <a class="nav-link" th:href="@{/admin-logout}"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
             </div>
         </div>
     </div>

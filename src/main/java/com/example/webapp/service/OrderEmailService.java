@@ -1,11 +1,9 @@
 package com.example.webapp.service;
 
 import com.example.webapp.model.Order;
-import com.example.webapp.model.OrderItem;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,44 +11,37 @@ public class OrderEmailService {
 
     private final JavaMailSender mailSender;
 
+    @Autowired
     public OrderEmailService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
 
-    public void sendOrderSummary(Order order) {
-        try {
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+    // Updated method — includes payment summary
+    public void sendOrderSummary(Order order, String paymentMessage) {
+        String subject = "Order Confirmation - Order #" + order.getId();
 
-            helper.setTo(order.getUserEmail());
-            helper.setSubject("Order Confirmation - Order #" + order.getId());
+        String body = "Dear " + order.getFullName() + ",\n\n" +
+                "Thank you for your purchase!\n\n" +
+                "Order Details:\n" +
+                "Order ID: " + order.getId() + "\n" +
+                "Total Amount: Rs. " + order.getTotalAmount() + "\n" +
+                "Payment Type: " + order.getPaymentType() + "\n" +
+                "Payment Status: " + (order.isPaid() ? "Paid" : "Pending") + "\n\n" +
+                "Payment Info:\n" + paymentMessage + "\n\n" +
+                "Shipping To:\n" +
+                order.getFullName() + "\n" +
+                order.getAddress() + ", " + order.getCity() + "\n" +
+                order.getCountry() + " - " + order.getPostalCode() + "\n" +
+                "Phone: " + order.getPhone() + "\n\n" +
+                "We'll notify you once your order has been shipped.\n\n" +
+                "Thank you for shopping with us!\n\n" +
+                "-- Spare Parts Store";
 
-            StringBuilder body = new StringBuilder();
-            body.append("<h2>Thank you for your order!</h2>");
-            body.append("<p>Your order has been placed successfully. Here are the details:</p>");
-            body.append("<p><b>Order ID:</b> ").append(order.getId()).append("</p>");
-            body.append("<p><b>Total Amount:</b> Rs. ").append(order.getTotalAmount()).append("</p>");
-            body.append("<p><b>Payment Method:</b> ").append(order.getPaymentType()).append("</p>");
-            body.append("<h3>Items:</h3>");
-            body.append("<table border='1' cellpadding='8' cellspacing='0'>");
-            body.append("<tr><th>Product</th><th>Quantity</th><th>Price</th></tr>");
-            for (OrderItem item : order.getItems()) {
-                body.append("<tr>")
-                        .append("<td>").append(item.getProductName()).append("</td>")
-                        .append("<td>").append(item.getQuantity()).append("</td>")
-                        .append("<td>Rs. ").append(item.getPrice()).append("</td>")
-                        .append("</tr>");
-            }
-            body.append("</table>");
-            body.append("<p>We’ll notify you once your order is shipped.</p>");
-            body.append("<br><p>Regards,<br/>Spare Parts Management System</p>");
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(order.getUserEmail());
+        message.setSubject(subject);
+        message.setText(body);
 
-            helper.setText(body.toString(), true);
-
-            mailSender.send(mimeMessage);
-
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+        mailSender.send(message);
     }
 }

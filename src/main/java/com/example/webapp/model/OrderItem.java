@@ -67,4 +67,10 @@ public class OrderItem {
     public void setPrice(double price) {
         this.price = price;
     }
+
+    @Transient
+    public double getSubtotal() {
+        return price * quantity;
+    }
+
 }

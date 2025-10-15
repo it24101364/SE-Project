@@ -1,10 +1,11 @@
 package com.example.webapp.model;
 
 import jakarta.persistence.*;
-
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Entity
 @Table(name = "orders")
@@ -30,12 +31,22 @@ public class Order {
     private String paymentType; // e.g., Visa, MasterCard
     private boolean paid = false;
 
+    // Order status
+    private String status = "Pending"; // Pending, Shipped, Delivered
+    private String trackingNumber;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<OrderItem> items;   // ✅ this must exist
+    private List<OrderItem> items = new ArrayList<>();
 
 
-    // Getters and Setters
+
+    // --- Getters and Setters ---
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public String getTrackingNumber() { return trackingNumber; }
+    public void setTrackingNumber(String trackingNumber) { this.trackingNumber = trackingNumber; }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -43,10 +54,8 @@ public class Order {
     public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
 
     public double getTotalAmount() { return totalAmount; }
+    public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
 
-    public void setTotalAmount(double totalAmount) {
-        this.totalAmount = totalAmount;
-    }
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }
 
@@ -76,4 +85,16 @@ public class Order {
 
     public List<OrderItem> getItems() { return items; }
     public void setItems(List<OrderItem> items) { this.items = items; }
+
+    // --- Computed properties for Thymeleaf ---
+    @Transient
+    public int getTotalItems() {
+        return items != null ? items.stream().mapToInt(OrderItem::getQuantity).sum() : 0;
+    }
+
+    @Transient
+    public String getShippingAddress() {
+        return address + ", " + city + ", " + postalCode + ", " + country;
+    }
+
 }

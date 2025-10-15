@@ -1,26 +1,18 @@
 package com.example.webapp.controller;
 
-import com.example.webapp.model.Order;
-import com.example.webapp.model.OrderItem;
-import com.example.webapp.model.PaymentForm;
-import com.example.webapp.model.ShippingForm;
-import com.example.webapp.model.CartItem;
-import com.example.webapp.model.Product;
-import com.example.webapp.service.CartService;
-import com.example.webapp.service.OrderItemService;
-import com.example.webapp.service.OrderService;
-import com.example.webapp.service.ProductService;
-import com.example.webapp.service.UserService;
+import com.example.webapp.model.*;
+import com.example.webapp.service.*;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -32,13 +24,13 @@ public class CheckoutController {
     private final UserService userService;
     private final OrderService orderService;
     private final OrderItemService orderItemService;
-    private final ProductService productService; // ✅ NEW
+    private final ProductService productService;
 
     public CheckoutController(CartService cartService,
                               UserService userService,
                               OrderService orderService,
                               OrderItemService orderItemService,
-                              ProductService productService) { // ✅ include in constructor
+                              ProductService productService) {
         this.cartService = cartService;
         this.userService = userService;
         this.orderService = orderService;
@@ -61,12 +53,11 @@ public class CheckoutController {
             return "checkout";
         }
 
-        model.addAttribute("cartItems", cartItems);
-
         double totalPrice = cartItems.stream()
                 .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
                 .sum();
 
+        model.addAttribute("cartItems", cartItems);
         model.addAttribute("totalPrice", totalPrice);
         model.addAttribute("shipping", new ShippingForm());
         model.addAttribute("user", userService.findByEmail(email));
@@ -79,7 +70,9 @@ public class CheckoutController {
     @Transactional
     public String placeOrder(@Valid @ModelAttribute("shipping") ShippingForm shippingForm,
                              BindingResult bindingResult,
-                             Principal principal, Model model) {
+                             Principal principal,
+                             Model model) {
+
         if (principal == null) {
             return "redirect:/login";
         }
@@ -102,12 +95,7 @@ public class CheckoutController {
         }
 
         try {
-            // Calculate total price
-            double totalPrice = cartItems.stream()
-                    .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
-                    .sum();
-
-            // Save order
+            // ------------------- CREATE ORDER -------------------
             Order order = new Order();
             order.setUserEmail(email);
             order.setFullName(shippingForm.getFullName());
@@ -116,34 +104,47 @@ public class CheckoutController {
             order.setPostalCode(shippingForm.getPostalCode());
             order.setCountry(shippingForm.getCountry());
             order.setPhone(shippingForm.getPhone());
+
+            double totalPrice = cartItems.stream()
+                    .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
+                    .sum();
             order.setTotalAmount(totalPrice);
-            orderService.saveOrder(order);
 
-            // Save each order item and reduce stock
-            for (CartItem item : cartItems) {
-                Product product = item.getProduct();
+            // Initialize order items list
+            List<OrderItem> orderItems = new ArrayList<>();
+            order.setItems(orderItems);
 
-                // ✅ Reduce product stock count safely
-                int newStock = Math.max(product.getStockCount() - item.getQuantity(), 0);
+            // ------------------- CREATE ORDER ITEMS -------------------
+            for (CartItem cartItem : cartItems) {
+                Product product = cartItem.getProduct();
+
+                // Reduce stock safely
+                int newStock = Math.max(product.getStockCount() - cartItem.getQuantity(), 0);
                 product.setStockCount(newStock);
                 productService.saveProduct(product);
 
-                // ✅ Save order item
+                // Create order item
                 OrderItem orderItem = new OrderItem();
                 orderItem.setOrder(order);
                 orderItem.setProductId(product.getId());
                 orderItem.setProductName(product.getName());
-                orderItem.setQuantity(item.getQuantity());
+                orderItem.setQuantity(cartItem.getQuantity());
                 orderItem.setPrice(product.getPrice());
-                orderItemService.saveOrderItem(orderItem);
+
+                // Add to order's list
+                orderItems.add(orderItem);
             }
 
-            // ✅ Clear the user's cart
+            // ------------------- SAVE ORDER & ORDER ITEMS -------------------
+            orderService.saveOrder(order); // CascadeType.ALL will save orderItems
+
+            // ------------------- CLEAR CART -------------------
             cartService.clearCart(email);
 
-            // ✅ Prepare payment info
+            // ------------------- PREPARE PAYMENT -------------------
             PaymentForm paymentForm = new PaymentForm();
             paymentForm.setOrderId(order.getId());
+
             model.addAttribute("order", order);
             model.addAttribute("paymentForm", paymentForm);
             model.addAttribute("user", userService.findByEmail(email));

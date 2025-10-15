@@ -90,8 +90,10 @@ public class FeedbackController {
     public String allFeedbacks(Model model) {
         List<Feedback> feedbacks = service.getAllFeedbacks();
         model.addAttribute("feedbacks", feedbacks);
+        model.addAttribute("feedback", new Feedback()); // ✅ add this line
         return "all-feedbacks";
     }
+
 
 
 

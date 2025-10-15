@@ -13,7 +13,7 @@ public class Feedback {
 
     private String name;
     private String email;
-    private int rating;
+    private Integer rating;
     private String category;
 
     @Column(columnDefinition = "TEXT")
