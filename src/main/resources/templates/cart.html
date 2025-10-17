@@ -49,71 +49,104 @@
 
         /* Navbar Styles */
         .navbar-custom {
-            background: var(--bg-secondary);
-            backdrop-filter: blur(10px);
-            box-shadow: var(--shadow-sm);
-            padding: 1rem 0;
-            transition: all 0.3s ease;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            padding: 0.8rem 0;
             position: sticky;
             top: 0;
             z-index: 1000;
+            border-bottom: 2px solid rgba(0, 217, 255, 0.15);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] .navbar-custom {
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
         .navbar-brand {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--text-primary) !important;
-            transition: transform 0.3s ease;
-        }
-
-        .navbar-brand:hover {
-            transform: translateY(-2px);
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: white !important;
+            padding: 8px 15px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
         }
 
         .brand-icon {
-            width: 45px;
-            height: 45px;
-            background: var(--primary-gradient);
-            border-radius: 12px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-color), #667eea);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 1.3rem;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 217, 255, 0.4);
+            animation: brandPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes brandPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(0, 217, 255, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 6px 25px rgba(0, 217, 255, 0.6); }
+        }
+
+        .brand-text {
+            letter-spacing: 1px;
         }
 
         .brand-accent {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--accent-color);
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+        }
+
+        [data-theme="light"] .navbar-brand {
+            color: #1a1a2e !important;
+        }
+
+        [data-theme="light"] .brand-accent {
+            color: #0d6efd;
+            text-shadow: 0 0 20px rgba(13, 110, 253, 0.3);
+        }
+
+        .navbar-nav {
+            gap: 5px;
         }
 
         .nav-link {
-            color: var(--text-secondary) !important;
-            padding: 0.6rem 1.2rem !important;
+            color: rgba(255, 255, 255, 0.85) !important;
+            padding: 10px 18px !important;
             border-radius: 10px;
             transition: all 0.3s ease;
-            font-weight: 600;
+            position: relative;
             display: flex;
             align-items: center;
             gap: 8px;
-            position: relative;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        [data-theme="light"] .nav-link {
+            color: rgba(26, 26, 46, 0.85) !important;
         }
 
         .nav-link:hover {
-            color: var(--accent-color) !important;
-            background: rgba(102, 126, 234, 0.1);
+            color: white !important;
             transform: translateY(-2px);
         }
 
-        .nav-link.active {
+        [data-theme="light"] .nav-link:hover {
             color: var(--accent-color) !important;
-            background: rgba(102, 126, 234, 0.15);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.2), rgba(102, 126, 234, 0.2));
+            color: var(--accent-color) !important;
+            box-shadow: 0 4px 15px rgba(0, 217, 255, 0.2);
         }
 
         .cart-link {
@@ -655,7 +688,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/index}">
+                    <a class="nav-link" th:href="@{/}">
                         <i class="fas fa-home"></i>
                         <span>Home</span>
                     </a>
@@ -700,15 +733,6 @@
 </nav>
 
 <div class="cart-container">
-    <!-- Breadcrumb -->
-    <nav class="breadcrumb-nav" aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a th:href="@{/index}"><i class="fas fa-home"></i> Home</a></li>
-            <li class="breadcrumb-item"><a th:href="@{/products}">Products</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Shopping Cart</li>
-        </ol>
-    </nav>
-
     <!-- Page Header -->
     <div class="page-header">
         <h1><i class="fas fa-shopping-cart"></i> Your Shopping Cart</h1>

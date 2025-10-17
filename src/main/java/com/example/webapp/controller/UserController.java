@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,17 +27,21 @@ public class UserController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @GetMapping("/")
-    public String index() {
-        return "index";
+    // Login page
+    @GetMapping("/login")  // full path = /user/login
+    public String loginForm(Model model) {
+        model.addAttribute("user", new User());
+        return "login";  // login.html
     }
 
+    // Registration page
     @GetMapping("/register")
     public String registerForm(Model model) {
         model.addAttribute("user", new User());
         return "register";
     }
 
+    // Handle registration
     @PostMapping("/register")
     public String registerUser(@ModelAttribute User user, Model model) {
         try {
@@ -45,13 +50,10 @@ public class UserController {
                 return "register";
             }
 
-            // Hash password
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setUsername(user.getEmail()); // username = email
 
             // Generate OTP
-            String otp = String.valueOf((int)(Math.random()*900000) + 100000);
-
+            String otp = String.valueOf((int)(Math.random() * 900000) + 100000);
             otpStorage.put(user.getEmail(), otp);
             pendingUsers.put(user.getEmail(), user);
 
@@ -67,6 +69,7 @@ public class UserController {
         }
     }
 
+    // OTP verification
     @PostMapping("/verify-otp")
     public String verifyOtp(@RequestParam String email,
                             @RequestParam String otp,
@@ -86,11 +89,5 @@ public class UserController {
         model.addAttribute("email", email);
         model.addAttribute("error", "Invalid OTP! Try again.");
         return "verify-otp";
-    }
-
-    @GetMapping("/login")
-    public String loginForm(Model model) {
-        model.addAttribute("user", new User());
-        return "login";
     }
 }

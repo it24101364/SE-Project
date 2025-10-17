@@ -46,18 +46,30 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register", "/verify-otp", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/", "/login", "/register", "/verify-otp",
+                                "/css/**", "/js/**", "/images/**",
+                                "/products/**").permitAll() // Products public
+                        .requestMatchers("/cart/**", "/checkout/**", "/order/**").authenticated() // Only logged-in
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .usernameParameter("username") // keep "username" since form uses name="username"
+                        .usernameParameter("email")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/products", true)
+                        .defaultSuccessUrl("/", true)
                         .permitAll()
                 )
-                .logout(logout -> logout.permitAll());
+                .logout(logout -> logout
+                        .logoutUrl("/logout")           // URL to trigger logout
+                        .logoutSuccessUrl("/login?logout") // Redirect after logout
+                        .invalidateHttpSession(true)    // Invalidate session
+                        .clearAuthentication(true)      // Clear authentication
+                        .deleteCookies("JSESSIONID")    // Delete session cookie
+                        .permitAll()
+                );
+
 
         return http.build();
     }
+
 }

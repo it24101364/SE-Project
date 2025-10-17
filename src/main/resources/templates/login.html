@@ -196,7 +196,7 @@
 
     <form th:action="@{/login}" th:object="${user}" method="post">
         <div class="input-group">
-            <input type="text" name="username" placeholder="Email" required />
+            <input type="text" th:field="*{email}" placeholder="Email" required />
             <div class="input-icon"></div>
         </div>
 
@@ -207,6 +207,7 @@
 
         <button type="submit">Login</button>
     </form>
+
 
     <p th:text="${error}" class="error-message" th:if="${error}"></p>
 

@@ -2,6 +2,8 @@ package com.example.webapp.model;
 
 import jakarta.persistence.*;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "products")
 public class Product {
@@ -20,6 +22,10 @@ public class Product {
 
     @Column(name = "category")
     private String category;  // ADD THIS
+
+    @Column(nullable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt = new Date(); // auto-set on creation
 
     // Add getter and setter
     public String getCategory() {

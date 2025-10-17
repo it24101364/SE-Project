@@ -61,24 +61,29 @@ public class CartService {
         cartRepository.save(item);
     }
 
-    // ✅ Final, correct version
     public void updateQuantity(Long cartId, int quantity) {
         CartItem item = cartRepository.findById(cartId).orElseThrow();
         Product product = item.getProduct();
 
-        // Check against stock
         if (quantity > product.getStockCount()) {
             throw new IllegalArgumentException(
                     "Quantity exceeds available stock (" + product.getStockCount() + ")"
             );
         }
 
-        // Prevent zero or negative quantity
         if (quantity < 1) {
             throw new IllegalArgumentException("Quantity must be at least 1");
         }
 
         item.setQuantity(quantity);
         cartRepository.save(item);
+    }
+
+    // ✅ New Method: Get total number of items in user's cart
+    public int getCartItemCount(String userEmail) {
+        List<CartItem> items = cartRepository.findByUserEmail(userEmail);
+        return items.stream()
+                .mapToInt(CartItem::getQuantity)
+                .sum();
     }
 }
