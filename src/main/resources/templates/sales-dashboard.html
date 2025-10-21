@@ -179,7 +179,7 @@
             <div class="card metric-card text-white bg-primary">
                 <div class="card-body">
                     <h5>Total Sales</h5>
-                    <h3 th:text="'$' + ${#numbers.formatDecimal(totalSales, 1, 2)}">$0.00</h3>
+                    <h2 th:text="'Rs' + ${#numbers.formatDecimal(totalSales, 1, 2)}">$0.00</h2>
                 </div>
             </div>
         </div>
@@ -187,7 +187,7 @@
             <div class="card metric-card text-white bg-success">
                 <div class="card-body">
                     <h5>Total Units Sold</h5>
-                    <h3 th:text="${totalUnitsSold}">0</h3>
+                    <h2 th:text="${totalUnitsSold}">0</h2>
                 </div>
             </div>
         </div>
@@ -195,7 +195,7 @@
             <div class="card metric-card text-white bg-info">
                 <div class="card-body">
                     <h5>Average Order Value</h5>
-                    <h3 th:text="'$' + ${#numbers.formatDecimal(averageOrderValue, 1, 2)}">$0.00</h3>
+                    <h2 th:text="'Rs' + ${#numbers.formatDecimal(averageOrderValue, 1, 2)}">$0.00</h2>
                 </div>
             </div>
         </div>
@@ -203,7 +203,7 @@
             <div class="card metric-card text-white bg-warning">
                 <div class="card-body">
                     <h5>Filtered Total</h5>
-                    <h3 th:text="'$' + ${#numbers.formatDecimal(filteredTotal, 1, 2)}">$0.00</h3>
+                    <h2 th:text="'Rs' + ${#numbers.formatDecimal(filteredTotal, 1, 2)}">$0.00</h2>
                 </div>
             </div>
         </div>

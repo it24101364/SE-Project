@@ -56,9 +56,11 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .usernameParameter("email")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/", true)
+                        .defaultSuccessUrl("/", false)  // 🔹 redirect only if login is successful
+                        .failureUrl("/login?error=true") // 🔹 show error on failure
                         .permitAll()
                 )
+
                 .logout(logout -> logout
                         .logoutUrl("/logout")           // URL to trigger logout
                         .logoutSuccessUrl("/login?logout") // Redirect after logout

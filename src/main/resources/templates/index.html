@@ -849,10 +849,799 @@
             height: 160px;
         }
     }
+
+    /* WhatsApp Widget */
+    #whatsapp-widget {
+        position: fixed;
+        bottom: 140px;
+        right: 20px;
+        z-index: 9999;
+        font-family: Arial, sans-serif;
+    }
+
+    #whatsapp-button {
+        width: 45px;
+        height: 45px;
+        background-color: #25D366;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        transition: transform 0.3s ease;
+    }
+
+    #whatsapp-button:hover {
+        transform: scale(1.1);
+    }
+
+    #whatsapp-chat {
+        display: flex;
+        flex-direction: column;
+        width: 200px;
+        max-width: 90vw;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        overflow: hidden;
+        position: absolute;
+        bottom: -108px;
+        right: 70px;
+        transform: translateY(120%);
+        opacity: 0;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+        cursor: pointer;
+        pointer-events: none;
+    }
+
+    #whatsapp-chat.show {
+        transform: translateY(0);
+        opacity: 0.8;
+        pointer-events: auto;
+    }
+
+    #chat-header {
+        background: #25D366;
+        color: white;
+        padding: 10px;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #chat-body {
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    #chat-input {
+        width: 100%;
+        height: 60px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        padding: 5px;
+        resize: none;
+    }
+
+    #send-btn {
+        margin-top: 5px;
+        background: #25D366;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        padding: 8px;
+    }
+
+    #send-btn:hover {
+        background: #1ebe5d;
+        opacity: 1;
+    }
+
+    /* Feedback Section */
+    .feedback-section {
+        padding: 50px 0;
+        background: var(--bg-secondary);
+        backdrop-filter: blur(10px);
+        position: relative;
+        border-top: 1px solid rgba(0, 217, 255, 0.2);
+        border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+        transition: background 0.3s ease;
+    }
+
+    .feedback-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: var(--bg-card);
+        padding: 35px;
+        border-radius: 25px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 10px 40px var(--shadow-color);
+        transition: all 0.3s ease;
+    }
+
+    [data-theme="light"] .feedback-container {
+        background: white;
+    }
+
+    .feedback-title {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .feedback-title h2 {
+        font-size: 2rem;
+        font-weight: bold;
+        background: linear-gradient(135deg, var(--text-primary), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+    }
+
+    .feedback-title p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+    }
+
+    .form-control, .form-select {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        padding: 12px 20px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    [data-theme="light"] .form-control,
+    [data-theme="light"] .form-select {
+        background: #f8f9fa;
+    }
+
+    .form-control:focus, .form-select:focus {
+        background: var(--bg-card);
+        border-color: var(--accent-color);
+        box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+        color: var(--text-primary);
+    }
+
+    [data-theme="light"] .form-control:focus,
+    [data-theme="light"] .form-select:focus {
+        background: white;
+    }
+
+    .form-control::placeholder {
+        color: var(--text-secondary);
+    }
+
+    .form-select option {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+    }
+
+    .form-label {
+        color: var(--text-primary);
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    .rating-stars {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin: 20px 0;
+    }
+
+    .star {
+        font-size: 2rem;
+        color: rgba(255, 255, 255, 0.3);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .star:hover, .star.active {
+        color: #ffc107;
+        transform: scale(1.2);
+        text-shadow: 0 0 20px #ffc107;
+    }
+
+    .btn-submit-feedback {
+        background: linear-gradient(135deg, var(--accent-color), #667eea);
+        border: none;
+        color: white;
+        padding: 15px 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .btn-submit-feedback:hover {
+        background: linear-gradient(135deg, #667eea, var(--accent-color));
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 217, 255, 0.5);
+    }
+
+    /* Section Headers - Common Styling */
+    .section-header {
+        text-align: center;
+        margin-bottom: 50px;
+        animation: fadeInUp 1s ease;
+    }
+
+    .section-badge {
+        display: inline-flex;
+        align-items: center;
+        background: linear-gradient(135deg, var(--accent-color), #667eea);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        box-shadow: 0 4px 15px rgba(0, 217, 255, 0.3);
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: var(--text-primary);
+        margin-bottom: 15px;
+        line-height: 1.2;
+    }
+
+    .section-subtitle {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Why Choose Us Section */
+    .why-choose-us {
+        padding: 80px 0;
+        background: var(--bg-primary);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-box {
+        background: var(--bg-card);
+        padding: 40px 30px;
+        border-radius: 20px;
+        border: 1px solid var(--border-color);
+        text-align: center;
+        transition: all 0.4s ease;
+        height: 100%;
+        box-shadow: 0 5px 20px var(--shadow-color);
+    }
+
+    [data-theme="light"] .feature-box {
+        background: white;
+    }
+
+    .feature-box:hover {
+        transform: translateY(-10px);
+        border-color: var(--accent-color);
+        box-shadow: 0 15px 40px rgba(0, 217, 255, 0.3);
+    }
+
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 25px;
+        background: linear-gradient(135deg, var(--accent-color), #667eea);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        box-shadow: 0 8px 25px rgba(0, 217, 255, 0.4);
+        transition: all 0.4s ease;
+    }
+
+    .feature-box:hover .feature-icon {
+        transform: rotateY(360deg);
+        box-shadow: 0 12px 35px rgba(0, 217, 255, 0.6);
+    }
+
+    .feature-box h4 {
+        color: var(--text-primary);
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .feature-box p {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* Trusted Brands Section */
+    .trusted-brands {
+        padding: 80px 0;
+        background: var(--bg-secondary);
+        position: relative;
+    }
+
+    .brands-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 25px;
+        margin-top: 50px;
+    }
+
+    .brand-card {
+        background: var(--bg-card);
+        padding: 40px 20px;
+        border-radius: 15px;
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.4s ease;
+        cursor: pointer;
+        box-shadow: 0 5px 20px var(--shadow-color);
+    }
+
+    [data-theme="light"] .brand-card {
+        background: white;
+    }
+
+    .brand-card:hover {
+        transform: translateY(-8px) scale(1.05);
+        border-color: var(--accent-color);
+        box-shadow: 0 12px 35px rgba(0, 217, 255, 0.4);
+    }
+
+    .brand-logo {
+        text-align: center;
+    }
+
+    .brand-logo i {
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, var(--accent-color), #667eea);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        display: block;
+        margin-bottom: 10px;
+        transition: all 0.4s ease;
+    }
+
+    .brand-card:hover .brand-logo i {
+        transform: scale(1.2);
+    }
+
+    .brand-logo span {
+        display: block;
+        color: var(--text-primary);
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    /* Customer Testimonials Section */
+    .testimonials-section {
+        padding: 80px 0;
+        background: var(--bg-primary);
+        position: relative;
+    }
+
+    .testimonial-card {
+        background: var(--bg-card);
+        padding: 30px;
+        border-radius: 20px;
+        border: 1px solid var(--border-color);
+        transition: all 0.4s ease;
+        height: 100%;
+        box-shadow: 0 5px 20px var(--shadow-color);
+    }
+
+    [data-theme="light"] .testimonial-card {
+        background: white;
+    }
+
+    .testimonial-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--accent-color);
+        box-shadow: 0 15px 40px rgba(0, 217, 255, 0.3);
+    }
+
+    .testimonial-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .testimonial-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent-color), #667eea);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        flex-shrink: 0;
+        box-shadow: 0 4px 15px rgba(0, 217, 255, 0.4);
+    }
+
+    .testimonial-info h5 {
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .testimonial-rating {
+        color: #ffc107;
+        font-size: 0.9rem;
+    }
+
+    .testimonial-text {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.7;
+        margin-bottom: 20px;
+        font-style: italic;
+    }
+
+    .testimonial-date {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Newsletter Section */
+    .newsletter-section {
+        padding: 80px 0;
+        background: linear-gradient(135deg, #667eea 0%, var(--accent-color) 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .newsletter-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+        opacity: 0.3;
+    }
+
+    .newsletter-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        padding: 60px 50px;
+        border-radius: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        position: relative;
+        z-index: 1;
+    }
+
+    .newsletter-content {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .newsletter-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 25px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: white;
+    }
+
+    .newsletter-content h2 {
+        color: white;
+        font-size: 2.2rem;
+        font-weight: 900;
+        margin-bottom: 15px;
+    }
+
+    .newsletter-content p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .newsletter-form {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .newsletter-input-group {
+        display: flex;
+        align-items: center;
+        background: white;
+        border-radius: 50px;
+        padding: 8px 8px 8px 25px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        position: relative;
+    }
+
+    .newsletter-input-group i {
+        color: var(--accent-color);
+        font-size: 1.2rem;
+        margin-right: 15px;
+    }
+
+    .newsletter-input-group input {
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: 12px 10px;
+        font-size: 1rem;
+        color: #1a1a2e;
+        background: transparent;
+    }
+
+    .newsletter-input-group input::placeholder {
+        color: rgba(26, 26, 46, 0.5);
+    }
+
+    .btn-subscribe {
+        background: linear-gradient(135deg, #667eea, var(--accent-color));
+        color: white;
+        border: none;
+        padding: 12px 35px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        white-space: nowrap;
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-subscribe:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+    }
+
+    .newsletter-note {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.85rem;
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* FAQ Section */
+    .faq-section {
+        padding: 80px 0;
+        background: var(--bg-secondary);
+        position: relative;
+    }
+
+    .faq-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .accordion-item {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 15px;
+        margin-bottom: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    [data-theme="light"] .accordion-item {
+        background: white;
+    }
+
+    .accordion-item:hover {
+        border-color: var(--accent-color);
+        box-shadow: 0 5px 20px rgba(0, 217, 255, 0.2);
+    }
+
+    .accordion-button {
+        background: var(--bg-card);
+        color: var(--text-primary);
+        border: none;
+        padding: 20px 25px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        text-align: left;
+        transition: all 0.3s ease;
+    }
+
+    [data-theme="light"] .accordion-button {
+        background: white;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(102, 126, 234, 0.1));
+        color: var(--accent-color);
+        box-shadow: none;
+    }
+
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: var(--accent-color);
+    }
+
+    .accordion-button::after {
+        content: '\f107';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        margin-left: auto;
+        transition: transform 0.3s ease;
+    }
+
+    .accordion-button:not(.collapsed)::after {
+        transform: rotate(180deg);
+    }
+
+    .accordion-button i {
+        color: var(--accent-color);
+    }
+
+    .accordion-body {
+        padding: 0 25px 25px 25px;
+        color: var(--text-secondary);
+        font-size: 1rem;
+        line-height: 1.7;
+        background: var(--bg-card);
+    }
+
+    [data-theme="light"] .accordion-body {
+        background: white;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .section-title {
+            font-size: 1.8rem;
+        }
+
+        .section-subtitle {
+            font-size: 0.95rem;
+        }
+
+        .newsletter-container {
+            padding: 40px 25px;
+        }
+
+        .newsletter-content h2 {
+            font-size: 1.6rem;
+        }
+
+        .newsletter-input-group {
+            flex-direction: column;
+            padding: 15px;
+            border-radius: 20px;
+        }
+
+        .newsletter-input-group input {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .btn-subscribe {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .brands-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    .star {
+        color: gray;
+        cursor: pointer;
+    }
+
+    .brand-logo {
+        background: var(--bg-card);
+        padding: 30px;
+        border-radius: 15px;
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        height: 120px;
+        cursor: pointer;
+    }
+
+    [data-theme="light"] .brand-logo {
+        background: white;
+    }
+
+    .brand-logo:hover {
+        transform: scale(1.05);
+        border-color: var(--accent-color);
+        box-shadow: 0 8px 25px rgba(0, 217, 255, 0.2);
+    }
+
+    .brand-logo img {
+        max-width: 85%;
+        max-height: 70px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        filter: grayscale(80%) opacity(0.7);
+        transition: all 0.3s ease;
+    }
+
+    .brand-logo:hover img {
+        filter: grayscale(0%) opacity(1);
+        transform: scale(1.1);
+    }
+
+    /* Variation for different sized logos */
+    .brand-logo.large img {
+        max-width: 90%;
+        max-height: 75px;
+    }
+
+    .brand-logo.small img {
+        max-width: 70%;
+        max-height: 55px;
+    }
+
 </style>
 <body>
 <div class="tech-background">
     <div class="circuit-board"></div>
+</div>
+
+<!-- Success/Error Messages -->
+<div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert"
+     style="position: fixed; top: 80px; right: 20px; z-index: 9999; min-width: 300px;">
+    <i class="fas fa-check-circle me-2"></i>
+    <span th:text="${success}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+
+<div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert"
+     style="position: fixed; top: 80px; right: 20px; z-index: 9999; min-width: 300px;">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    <span th:text="${error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+
+<div th:if="${info}" class="alert alert-info alert-dismissible fade show" role="alert"
+     style="position: fixed; top: 80px; right: 20px; z-index: 9999; min-width: 300px;">
+    <i class="fas fa-info-circle me-2"></i>
+    <span th:text="${info}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 </div>
 
 <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
@@ -862,6 +1651,24 @@
 <button class="go-to-top" id="goToTop" aria-label="Go to top">
     <i class="fas fa-arrow-up"></i>
 </button>
+
+<div id="whatsapp-widget">
+    <div id="whatsapp-button">
+        <i class="bi bi-whatsapp"></i>
+    </div>
+
+    <!-- Chat Box -->
+    <div id="whatsapp-chat">
+        <div id="chat-header">
+            <span>Chat with us</span>
+            <span id="chat-close">&times;</span>
+        </div>
+        <div id="chat-body">
+            <textarea id="chat-input" placeholder="Type your message..."></textarea>
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+</div>
 
 <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
     <div class="container-fluid">
@@ -1039,6 +1846,293 @@
         <div class="floating-shape shape-1"></div>
         <div class="floating-shape shape-2"></div>
         <div class="floating-shape shape-3"></div>
+    </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="why-choose-us">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-badge">
+                <i class="fas fa-award me-2"></i>Why Choose Us
+            </div>
+            <h2 class="section-title">What Makes Us <span class="gradient-text">Different</span></h2>
+            <p class="section-subtitle">Experience excellence in every aspect of your shopping journey</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <h4>Authentic Products</h4>
+                    <p>100% genuine products from authorized distributors with warranty</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <h4>Fast Delivery</h4>
+                    <p>Express shipping within 24-48 hours to your doorstep</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h4>24/7 Support</h4>
+                    <p>Round-the-clock customer support for all your queries</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="fas fa-undo-alt"></i>
+                    </div>
+                    <h4>Easy Returns</h4>
+                    <p>Hassle-free 7-day return policy with full refund</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <h4>Best Prices</h4>
+                    <p>Competitive pricing with regular discounts and offers</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h4>Secure Payment</h4>
+                    <p>SSL encrypted transactions for safe and secure checkout</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Trusted Brands Section -->
+<section class="trusted-brands">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-badge">
+                <i class="fas fa-handshake me-2"></i>Our Partners
+            </div>
+            <h2 class="section-title">Trusted <span class="gradient-text">Brands</span></h2>
+            <p class="section-subtitle">We partner with industry-leading manufacturers</p>
+        </div>
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-2 col-md-4 col-6">
+                <div class="brand-logo">
+                    <img src="https://nxtbld.com/wp-content/uploads/2018/05/intel-logo-new.png" alt="Intel">
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-6">
+                <div class="brand-logo">
+                    <img src="https://logos-world.net/wp-content/uploads/2020/03/AMD-Symbol.png" alt="AMD">
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-6">
+                <div class="brand-logo">
+                    <img height="280px" width="280px" src="https://www.nvidia.com/en-us/about-nvidia/legal-info/logo-brand-usage/_jcr_content/root/responsivegrid/nv_container_392921705/nv_container/nv_image.coreimg.100.1070.png/1703060329053/nvidia-logo-vert.png" alt="NVIDIA">
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-6">
+                <div class="brand-logo">
+                    <img src="https://cdn.freebiesupply.com/images/large/2x/asus-logo-transparent.png" alt="ASUS">
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-6">
+                <div class="brand-logo">
+                    <img src="https://1000logos.net/wp-content/uploads/2018/10/MSI-Logo.png" alt="MSI">
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-6">
+                <div class="brand-logo">
+                    <img src="https://logos-world.net/wp-content/uploads/2020/11/Logitech-Emblem.png" alt="Logitech">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="feedback-section" id="feedback">
+    <div class="container">
+        <div class="feedback-container">
+            <div class="feedback-title">
+                <h2><i class="fas fa-comments me-2"></i>We Value Your Feedback</h2>
+                <p>Help us improve your shopping experience</p>
+            </div>
+            <form th:action="@{/feedback/submit}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <div class="mb-4">
+                    <label for="customerName" class="form-label"><i class="fas fa-user me-2"></i>Your Name</label>
+                    <input type="text" class="form-control" id="customerName" name="name" placeholder="Enter your name" required>
+                </div>
+                <div class="mb-4">
+                    <label for="customerEmail" class="form-label"><i class="fas fa-envelope me-2"></i>Email Address</label>
+                    <input type="email" class="form-control" id="customerEmail" name="email" placeholder="your.email@example.com" required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label"><i class="fas fa-star me-2"></i>Rate Your Experience</label>
+                    <div class="rating-stars" id="ratingStars">
+                        <i class="fas fa-star star" data-rating="1"></i>
+                        <i class="fas fa-star star" data-rating="2"></i>
+                        <i class="fas fa-star star" data-rating="3"></i>
+                        <i class="fas fa-star star" data-rating="4"></i>
+                        <i class="fas fa-star star" data-rating="5"></i>
+                    </div>
+                    <input type="hidden" id="rating" name="rating" value="0">
+                </div>
+                <div class="mb-4">
+                    <label for="feedbackCategory" class="form-label"><i class="fas fa-list me-2"></i>Feedback Category</label>
+                    <select class="form-select" id="feedbackCategory" name="category" required>
+                        <option value="">Select a category</option>
+                        <option value="product">Product Quality</option>
+                        <option value="service">Customer Service</option>
+                        <option value="delivery">Delivery Experience</option>
+                        <option value="website">Website Experience</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="feedbackMessage" class="form-label"><i class="fas fa-comment-dots me-2"></i>Your Feedback</label>
+                    <textarea class="form-control" id="feedbackMessage" name="message" rows="5" placeholder="Share your thoughts..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-submit-feedback">
+                    <i class="fas fa-paper-plane me-2"></i>Submit Feedback
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+<!-- Newsletter Section -->
+<section class="newsletter-section">
+    <div class="container">
+        <div class="newsletter-container">
+            <div class="newsletter-content">
+                <div class="newsletter-icon">
+                    <i class="fas fa-envelope-open-text"></i>
+                </div>
+                <h2>Stay Updated with Latest Deals</h2>
+                <p>Subscribe to our newsletter and get exclusive offers, tech news, and product updates delivered to your inbox!</p>
+            </div>
+            <form class="newsletter-form" id="newsletterForm" th:action="@{/api/newsletter/subscribe}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" th:if="${_csrf}" />
+                <div class="newsletter-input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Enter your email address" required>
+                    <button type="submit" class="btn-subscribe">
+                        <span>Subscribe</span>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <p class="newsletter-note">
+                    <i class="fas fa-shield-alt me-2"></i>We respect your privacy. Unsubscribe anytime.
+                </p>
+            </form>
+        </div>
+    </div>
+</section>
+<!-- FAQ Section -->
+<section class="faq-section">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-badge">
+                <i class="fas fa-question-circle me-2"></i>FAQ
+            </div>
+            <h2 class="section-title">Frequently Asked <span class="gradient-text">Questions</span></h2>
+            <p class="section-subtitle">Find answers to common questions about our products and services</p>
+        </div>
+        <div class="faq-container">
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h3 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            <i class="fas fa-box-open me-3"></i>
+                            Do you sell genuine products?
+                        </button>
+                    </h3>
+                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Yes, all our products are 100% authentic and sourced directly from authorized distributors. We provide manufacturer warranty and certificates of authenticity with every purchase.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h3 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            <i class="fas fa-shipping-fast me-3"></i>
+                            What are your delivery options?
+                        </button>
+                    </h3>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            We offer island-wide delivery within 24-48 hours for Colombo and suburbs, and 2-3 business days for other areas. Express delivery options are also available for urgent orders.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h3 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            <i class="fas fa-undo-alt me-3"></i>
+                            What is your return policy?
+                        </button>
+                    </h3>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            We offer a 7-day return policy for unopened products in original packaging. For defective items, we provide replacement or full refund within the warranty period as per manufacturer guidelines.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h3 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                            <i class="fas fa-credit-card me-3"></i>
+                            What payment methods do you accept?
+                        </button>
+                    </h3>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            We accept all major credit/debit cards, online banking transfers, and cash on delivery. All online transactions are secured with SSL encryption for your safety.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h3 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                            <i class="fas fa-shield-alt me-3"></i>
+                            Do your products come with warranty?
+                        </button>
+                    </h3>
+                    <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Yes, all products come with manufacturer warranty ranging from 1 to 5 years depending on the product type. We also provide after-sales support and warranty claim assistance.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h3 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
+                            <i class="fas fa-headset me-3"></i>
+                            How can I contact customer support?
+                        </button>
+                    </h3>
+                    <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Our customer support team is available 24/7 via WhatsApp, email (info@pcpro.lk), or phone (+94 77 123 4567). You can also use the chat widget on our website for instant assistance.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -1271,6 +2365,187 @@
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         });
+    });
+
+    // whatsapp
+
+    const whatsappBtn = document.getElementById('whatsapp-button');
+    const whatsappChat = document.getElementById('whatsapp-chat');
+    const chatClose = document.getElementById('chat-close');
+    const sendBtn = document.getElementById('send-btn');
+    const chatInput = document.getElementById('chat-input');
+
+    let typing = false;
+    let popupCount = 0; // Counter for automatic popups
+    const maxPopups = 3; // Limit to 3 times
+
+    // Open chat box when icon clicked
+    whatsappBtn.addEventListener('click', () => {
+        whatsappChat.classList.add('show');
+        chatInput.focus();
+    });
+
+    // Close chat box manually
+    chatClose.addEventListener('click', () => {
+        whatsappChat.classList.remove('show');
+    });
+
+    // Detect typing
+    chatInput.addEventListener('focus', () => typing = true);
+    chatInput.addEventListener('blur', () => typing = false);
+
+    // Send message to WhatsApp
+    sendBtn.addEventListener('click', () => {
+        const message = encodeURIComponent(chatInput.value.trim());
+        if (message) {
+            const phone = '94763848430'; // Replace with your number
+            window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+            chatInput.value = '';
+            whatsappChat.classList.remove('show');
+        }
+    });
+
+    // Automatic pop-up and hide
+    function autoPopup() {
+        if (popupCount >= maxPopups) return; // Stop after 3 times
+        if (!typing && !whatsappChat.classList.contains('show')) {
+            whatsappChat.classList.add('show'); // show chat
+            popupCount++; // Increase count
+            setTimeout(() => {
+                if (!typing) {
+                    whatsappChat.classList.remove('show'); // hide chat
+                }
+            }, 5000); // hide after 8 seconds
+        }
+    }
+
+    // Start auto-popup after 5 seconds
+    setTimeout(autoPopup, 10000);
+    // Repeat the pop-up every 20 seconds
+    const popupInterval = setInterval(() => {
+        if (popupCount >= maxPopups) clearInterval(popupInterval); // Stop interval after 3 times
+        else autoPopup();
+    }, 20000);
+
+    // Rating stars
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('rating');
+    let selectedRating = 0;
+
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            selectedRating = parseInt(this.getAttribute('data-rating'));
+            ratingInput.value = selectedRating;
+            updateStars(selectedRating);
+        });
+        star.addEventListener('mouseenter', function() {
+            const hoverRating = parseInt(this.getAttribute('data-rating'));
+            updateStars(hoverRating);
+        });
+    });
+
+    document.getElementById('ratingStars').addEventListener('mouseleave', function() {
+        updateStars(selectedRating);
+    });
+
+    function updateStars(rating) {
+        stars.forEach(star => {
+            const starRating = parseInt(star.getAttribute('data-rating'));
+            if (starRating <= rating) {
+                star.classList.add('active');
+            } else {
+                star.classList.remove('active');
+            }
+        });
+    }
+
+    // // Newsletter Form Submission
+    // document.getElementById('newsletterForm').addEventListener('submit', function(e) {
+    //     e.preventDefault();
+    //     const emailInput = this.querySelector('input[type="email"]');
+    //     const email = emailInput.value;
+    //     const submitBtn = this.querySelector('.btn-subscribe');
+    //
+    //     // Basic email validation
+    //     if (!email || !email.includes('@')) {
+    //         alert('❌ Please enter a valid email address!');
+    //         return;
+    //     }
+    //
+    //     // Disable button during "submission"
+    //     submitBtn.disabled = true;
+    //     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Subscribing...';
+    //
+    //     // Simulate processing delay for better UX
+    //     setTimeout(() => {
+    //         // Show success message
+    //         alert('✅ Thank you for subscribing! You will receive updates at ' + email);
+    //
+    //         // Reset form
+    //         this.reset();
+    //
+    //         // Re-enable button
+    //         submitBtn.disabled = false;
+    //         submitBtn.innerHTML = '<span>Subscribe</span><i class="fas fa-paper-plane"></i>';
+    //
+    //         // Optional: Store in localStorage to track subscriptions
+    //         localStorage.setItem('newsletterSubscribed', 'true');
+    //         localStorage.setItem('subscriberEmail', email);
+    //
+    //     }, 1000); // 1 second delay for better feel
+    // });
+    //
+    // // Optional: Check if user already subscribed on page load
+    // window.addEventListener('DOMContentLoaded', function() {
+    //     const isSubscribed = localStorage.getItem('newsletterSubscribed');
+    //     const subscriberEmail = localStorage.getItem('subscriberEmail');
+    //
+    //     if (isSubscribed === 'true' && subscriberEmail) {
+    //         const newsletterInput = document.querySelector('#newsletterForm input[type="email"]');
+    //         if (newsletterInput) {
+    //             newsletterInput.value = subscriberEmail;
+    //             newsletterInput.placeholder = 'Already subscribed ✓';
+    //         }
+    //     }
+    // });
+
+    // Smooth accordion animation
+    document.querySelectorAll('.accordion-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            if (icon) {
+                setTimeout(() => {
+                    if (this.classList.contains('collapsed')) {
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                }, 100);
+            }
+        });
+    });
+
+    // Animate elements on scroll (Intersection Observer)
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Observe elements for animation
+    document.querySelectorAll('.feature-box, .brand-card, .testimonial-card, .accordion-item').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'all 0.6s ease';
+        observer.observe(el);
     });
 </script>
 
