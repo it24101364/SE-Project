@@ -2,6 +2,8 @@ package com.example.webapp.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User {
@@ -13,6 +15,17 @@ public class User {
     private String username; // optional, can store same as email
     private String password;
     private String email;
+
+    private String resetToken; // New
+    private LocalDateTime tokenExpiry; // New
+
+    // Getters and Setters
+    public String getResetToken() { return resetToken; }
+    public void setResetToken(String resetToken) { this.resetToken = resetToken; }
+
+    public LocalDateTime getTokenExpiry() { return tokenExpiry; }
+    public void setTokenExpiry(LocalDateTime tokenExpiry) { this.tokenExpiry = tokenExpiry; }
+
 
     // Getters and setters
     public Long getId() { return id; }

@@ -7,9 +7,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 @Configuration
 public class SecurityConfig {
@@ -25,7 +28,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // ✅ Connect CustomUserDetailsService + PasswordEncoder
     @Bean
     public DaoAuthenticationProvider authProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -34,7 +36,6 @@ public class SecurityConfig {
         return provider;
     }
 
-    // ✅ Build AuthenticationManager using our provider
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder auth = http.getSharedObject(AuthenticationManagerBuilder.class);
@@ -44,34 +45,48 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        // CSRF Handler for Thymeleaf
+        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
+        requestHandler.setCsrfRequestAttributeName("_csrf");
+
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/register", "/verify-otp",
+                        .requestMatchers(
+                                "/", "/login", "/register", "/verify-otp",
+                                "/forgot-password", "/reset-password",
                                 "/css/**", "/js/**", "/images/**",
-                                "/products/**").permitAll() // Products public
-                        .requestMatchers("/cart/**", "/checkout/**", "/order/**").authenticated() // Only logged-in
+                                "/webjars/**", "/favicon.ico"
+                        ).permitAll()
+                        .requestMatchers("/products", "/products/").permitAll()
+                        .requestMatchers("/products/**").authenticated()
+                        .requestMatchers("/cart/**", "/checkout/**", "/order/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
                         .usernameParameter("email")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/", false)  // 🔹 redirect only if login is successful
-                        .failureUrl("/login?error=true") // 🔹 show error on failure
+                        .defaultSuccessUrl("/", true)
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
-
                 .logout(logout -> logout
-                        .logoutUrl("/logout")           // URL to trigger logout
-                        .logoutSuccessUrl("/login?logout") // Redirect after logout
-                        .invalidateHttpSession(true)    // Invalidate session
-                        .clearAuthentication(true)      // Clear authentication
-                        .deleteCookies("JSESSIONID")    // Delete session cookie
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
                         .permitAll()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                )
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(new HttpSessionCsrfTokenRepository())
+                        .csrfTokenRequestHandler(requestHandler)
                 );
-
 
         return http.build();
     }
-
 }

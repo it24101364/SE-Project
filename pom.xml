@@ -49,7 +49,11 @@
             <artifactId>spring-security-crypto</artifactId>
         </dependency>
 
-
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity6</artifactId>
+            <version>3.1.2.RELEASE</version>
+        </dependency>
 
         <!--&lt;!&ndash;         SQL Server JDBC driver&ndash;&gt;-->
 <!--        <dependency>-->

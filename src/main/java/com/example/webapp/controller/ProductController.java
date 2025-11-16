@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -67,7 +68,7 @@ public class ProductController {
             products.sort(Comparator.comparing(Product::getPrice).reversed());
         }
 
-        model.addAttribute("products", products);
+        model.addAttribute("products", products != null ? products : new ArrayList<>());
 
         // Get all unique categories
         List<String> categories = productService.getAllCategories();

@@ -9,12 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -29,26 +28,18 @@ public class HomeController {
     @Autowired
     private CartService cartService;
 
-    /**
-     * Home page mapping
-     */
     @GetMapping("/")  // Home page
-    public String index(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public String index(Model model, Principal principal) {
         User user = null;
+        int cartItemCount = 0;
 
-        if (authentication != null && authentication.isAuthenticated()
-                && !authentication.getPrincipal().equals("anonymousUser")) {
-            String username = authentication.getName();
-            user = userService.findByUsername(username);
+        if (principal != null) {
+            String email = principal.getName(); // this is the logged-in email
+            user = userService.findByEmail(email); // fetch user by email
+            cartItemCount = cartService.getCartItemCount(email);
         }
 
         model.addAttribute("user", user);
-
-        int cartItemCount = 0;
-        if (user != null) {
-            cartItemCount = cartService.getCartItemCount(user.getEmail());
-        }
         model.addAttribute("cartItemCount", cartItemCount);
 
         // Featured products (top 6)
@@ -62,5 +53,4 @@ public class HomeController {
 
         return "index";
     }
-
 }

@@ -183,6 +183,25 @@
                 font-size: 0.9rem;
             }
         }
+
+        .forgot-password-link {
+            text-align: right;
+            margin-top: 0.5rem;
+        }
+
+        .forgot-password-link a {
+            color: #3182ce; /* Blue color */
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        .forgot-password-link a:hover {
+            color: #4299e1; /* Lighter blue on hover */
+            text-decoration: underline;
+            transform: translateY(-1px);
+        }
+
     </style>
 </head>
 <body>
@@ -208,6 +227,10 @@
 
         <div class="input-group">
             <input type="password" th:field="*{password}" placeholder="Password" required />
+        </div>
+        <!-- Forgot Password link -->
+        <div class="forgot-password-link">
+            <a th:href="@{/forgot-password}">Forgot Password?</a>
         </div>
 
         <button type="submit">Login</button>
