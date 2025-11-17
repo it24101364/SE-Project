@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Management</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 30px;
+        }
+        h2 {
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+        }
+        table th {
+            background: #2b6cb0;
+            color: white;
+        }
+        .btn {
+            padding: 6px 12px;
+            text-decoration: none;
+            color: white;
+            border-radius: 4px;
+        }
+        .delete { background: #e53e3e; }
+        .search-container {
+            margin-bottom: 20px;
+        }
+        .nav-link { color: rgba(255, 255, 255, 0.8) !important; transition: color 0.3s ease; }
+        .nav-link:hover { color: #667eea !important; }
+        .navbar-text { color: rgba(255, 255, 255, 0.9) !important; }
+        .nav-link.active {
+            color: #667eea !important;
+            font-weight: 600;
+        }
+
+        .navbar {
+            background: rgba(0, 0, 0, 0.8) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .container-fluid { max-width: 1400px; }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="#">Admin Dashboard</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link " th:classappend="${page == 'sales' ? ' active' : ''}" th:href="@{/sales/dashboard}">
+                        <i class="fas fa-chart-line me-1"></i> Sales Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${page == 'feedback' ? ' active' : ''}" th:href="@{/feedback/dashboard}">
+                        <i class="fas fa-comments me-1"></i> Feedback Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:classappend="${page == 'stock' ? ' active' : ''}" th:href="@{/stock/dashboard}">
+                        <i class="fas fa-boxes me-1"></i> Stock Dashboard
+                    </a>
+                </li>
+                <!-- New Order & Payment Dashboard nav item -->
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${page == 'orders' ? ' active' : ''}" th:href="@{/orders/dashboard}">
+                        <i class="fas fa-receipt me-1"></i> Orders Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/users">
+                        <i class="bi bi-people-fill"></i> User Dashboard
+                    </a>
+                </li>
+
+            </ul>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3" th:text="'Admin: ' + ${session.adminEmail}"></span>
+                <a class="nav-link" th:href="@{/admin-logout}"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<h2>User Management Dashboard</h2>
+
+<div class="search-container">
+    <form th:action="@{/admin/users}" method="get">
+        <input type="text" name="search" placeholder="Search by username or email" th:value="${search}">
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="u : ${users}">
+        <td th:text="${u.id}"></td>
+        <td th:text="${u.username}"></td>
+        <td th:text="${u.email}"></td>
+
+        <td>
+            <a th:href="@{'/admin/users/delete/' + ${u.id}}" class="btn delete">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
