@@ -1,7 +1,6 @@
 package com.example.webapp.model;
 
 import jakarta.persistence.*;
-
 import java.util.Date;
 
 @Entity
@@ -21,28 +20,11 @@ public class Product {
     private Integer stockCount;
 
     @Column(name = "category")
-    private String category;  // ADD THIS
+    private String category;
 
     @Column(nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date(); // auto-set on creation
-
-    // Add getter and setter
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-    // Add getter and setter
-    public Integer getStockCount() {
-        return stockCount;
-    }
-
-    public void setStockCount(Integer stockCount) {
-        this.stockCount = stockCount;
-    }
 
     // Getters & Setters
     public Long getId() { return id; }
@@ -59,4 +41,14 @@ public class Product {
 
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public Integer getStockCount() { return stockCount; }
+    public void setStockCount(Integer stockCount) { this.stockCount = stockCount; }
+
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
+
+    // ADD THIS MISSING GETTER AND SETTER
+    public Date getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
 }

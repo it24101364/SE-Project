@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login</title>
     <meta charset="UTF-8">
+    <title>Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -29,6 +30,18 @@
             width: 100%;
             max-width: 400px;
             backdrop-filter: blur(10px);
+            animation: slideIn 0.6s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .login-header {
@@ -37,9 +50,17 @@
         }
 
         .login-icon {
-            font-size: 3rem;
-            color: #4a5568;
-            margin-bottom: 1rem;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2.5rem;
+            color: white;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
         }
 
         h2 {
@@ -65,184 +86,217 @@
             position: relative;
         }
 
-        input[type="text"],
-        input[type="password"] {
+        .input-group i {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            color: #718096;
+            font-size: 1.1rem;
+            z-index: 1;
+        }
+
+        input {
             width: 100%;
             padding: 1rem 1rem 1rem 3rem;
             border: 2px solid #e2e8f0;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 1rem;
-            transition: all 0.3s ease;
             background: #f7fafc;
+            transition: all 0.3s ease;
         }
 
-        input[type="text"]:focus,
-        input[type="password"]:focus {
-            outline: none;
-            border-color: #4299e1;
+        input:focus {
+            border-color: #667eea;
             background: white;
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            outline: none;
+            transform: translateY(-2px);
         }
 
-        .input-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #a0aec0;
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-danger {
+            background-color: #fed7d7;
+            color: #c53030;
+            border-left: 4px solid #e53e3e;
+        }
+
+        .alert-success {
+            background-color: #c6f6d5;
+            color: #22543d;
+            border-left: 4px solid #38a169;
+        }
+
+        .alert i {
             font-size: 1.2rem;
-        }
-
-        input[type="text"] + .input-icon::before {
-            content: "👤";
-        }
-
-        input[type="password"] + .input-icon::before {
-            content: "🔒";
         }
 
         button {
             padding: 1rem;
-            background: linear-gradient(135deg, #4299e1, #3182ce);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 1rem;
+            border-radius: 10px;
             font-weight: 600;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(66, 153, 225, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(66, 153, 225, 0.4);
-            background: linear-gradient(135deg, #3182ce, #2c5aa0);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
         }
 
-        button:active {
-            transform: translateY(0);
-        }
-
-        .error-message {
-            color: #e53e3e;
-            background: #fed7d7;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 4px solid #e53e3e;
-            margin: 1rem 0;
+        .admin-note {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            padding: 1rem;
+            border-radius: 10px;
             font-size: 0.9rem;
+            margin-top: 1.5rem;
+            border-left: 4px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
-        .register-link {
-            text-align: center;
+        .admin-note i {
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        .admin-note strong {
+            color: #2d3748;
+        }
+
+        .links-container {
+            display: flex;
+            justify-content: space-between;
             margin-top: 1.5rem;
             padding-top: 1.5rem;
-            border-top: 1px solid #e2e8f0;
+            border-top: 2px solid #e2e8f0;
         }
 
-        .register-link a {
-            color: #4299e1;
+        .links-container a {
+            color: #667eea;
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .register-link a:hover {
-            color: #3182ce;
-            text-decoration: underline;
-        }
-
-        .tech-pattern {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.1;
-            background-image:
-                    radial-gradient(circle at 25% 25%, #4299e1 2px, transparent 2px),
-                    radial-gradient(circle at 75% 75%, #4299e1 2px, transparent 2px);
-            background-size: 50px 50px;
-            pointer-events: none;
-        }
-
-        @media (max-width: 480px) {
-            .login-container {
-                padding: 2rem 1.5rem;
-                margin: 1rem;
-            }
-
-            h2 {
-                font-size: 1.75rem;
-            }
-
-            input[type="text"],
-            input[type="password"] {
-                padding: 0.875rem 0.875rem 0.875rem 2.5rem;
-                font-size: 0.9rem;
-            }
-        }
-
-        .forgot-password-link {
-            text-align: right;
-            margin-top: 0.5rem;
-        }
-
-        .forgot-password-link a {
-            color: #3182ce; /* Blue color */
-            font-weight: 500;
-            text-decoration: none;
-            transition: color 0.3s ease, transform 0.2s ease;
-        }
-
-        .forgot-password-link a:hover {
-            color: #4299e1; /* Lighter blue on hover */
-            text-decoration: underline;
+        .links-container a:hover {
+            color: #764ba2;
             transform: translateY(-1px);
         }
 
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #718096;
+            font-size: 1.1rem;
+            z-index: 1;
+            transition: color 0.3s ease;
+        }
+
+        .toggle-password:hover {
+            color: #667eea;
+        }
     </style>
 </head>
 <body>
-<div class="tech-pattern"></div>
 <div class="login-container">
     <div class="login-header">
-        <div class="login-icon">⚙️</div>
-        <h2>Login</h2>
-        <p class="subtitle">Access your spare parts system</p>
+        <div class="login-icon">
+            <i class="fas fa-sign-in-alt"></i>
+        </div>
+        <h2>Welcome Back</h2>
+        <p class="subtitle">Sign in to access your account</p>
     </div>
 
-    <form th:action="@{/login}" th:object="${user}" method="post">
+    <form th:action="@{/login}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
         <div th:if="${param.error}" class="alert alert-danger">
-            Invalid email or password!
+            <i class="fas fa-exclamation-circle"></i>
+            <span>Invalid email or password!</span>
         </div>
+
         <div th:if="${param.logout}" class="alert alert-success">
-            You have been logged out successfully.
+            <i class="fas fa-check-circle"></i>
+            <span>You have been logged out successfully.</span>
         </div>
 
         <div class="input-group">
-            <input type="text" th:field="*{email}" placeholder="Email" required />
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="email" name="email" placeholder="Email Address" required autocomplete="off">
         </div>
 
         <div class="input-group">
-            <input type="password" th:field="*{password}" placeholder="Password" required />
-        </div>
-        <!-- Forgot Password link -->
-        <div class="forgot-password-link">
-            <a th:href="@{/forgot-password}">Forgot Password?</a>
+            <i class="fas fa-lock"></i>
+            <input type="password" id="password" name="password" placeholder="Password" required autocomplete="off">
+            <span class="toggle-password" onclick="togglePassword()">
+                <i class="fas fa-eye" id="toggleIcon"></i>
+            </span>
         </div>
 
-        <button type="submit">Login</button>
+        <button type="submit">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Login</span>
+        </button>
     </form>
 
+    <div class="admin-note">
+        <i class="fas fa-shield-alt"></i>
+        <div>
+            <strong>Admin Access:</strong> Use your admin credentials to access the admin dashboard.
+        </div>
+    </div>
 
-
-    <p th:text="${error}" class="error-message" th:if="${error}"></p>
-
-    <div class="register-link">
-        <a th:href="@{/register}">Don't have an account? Register</a>
+    <div class="links-container">
+        <a th:href="@{/register}">
+            <i class="fas fa-user-plus"></i>
+            Create Account
+        </a>
+        <a th:href="@{/forgot-password}">
+            <i class="fas fa-key"></i>
+            Forgot Password?
+        </a>
     </div>
 </div>
+
+<script>
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.getElementById('toggleIcon');
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
+    }
+</script>
 </body>
 </html>

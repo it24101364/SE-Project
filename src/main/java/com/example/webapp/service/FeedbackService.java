@@ -10,26 +10,57 @@ import java.util.Optional;
 @Service
 public class FeedbackService {
 
-    private final FeedbackRepository repository;
+    private final FeedbackRepository feedbackRepository;
 
-    public FeedbackService(FeedbackRepository repository) {
-        this.repository = repository;
-    }
-
-    public Feedback saveFeedback(Feedback feedback) {
-        return repository.save(feedback);
+    public FeedbackService(FeedbackRepository feedbackRepository) {
+        this.feedbackRepository = feedbackRepository;
     }
 
     public List<Feedback> getAllFeedbacks() {
-        return repository.findAll();
+        try {
+            List<Feedback> feedbacks = feedbackRepository.findAll();
+            // Sort by ID descending to show newest first
+            if (feedbacks != null) {
+                feedbacks.sort((f1, f2) -> f2.getId().compareTo(f1.getId()));
+            }
+            return feedbacks;
+        } catch (Exception e) {
+            // Log the error properly in production
+            System.err.println("Error fetching feedbacks: " + e.getMessage());
+            return List.of(); // Return empty list instead of null
+        }
     }
 
     public Optional<Feedback> getFeedbackById(Long id) {
-        return repository.findById(id);
+        return feedbackRepository.findById(id);
+    }
+
+    public Feedback saveFeedback(Feedback feedback) {
+        return feedbackRepository.save(feedback);
     }
 
     public void deleteFeedback(Long id) {
-        repository.deleteById(id);
+        feedbackRepository.deleteById(id);
+    }
+
+    // Additional useful methods
+    public List<Feedback> getFeedbacksByRating(Integer rating) {
+        return feedbackRepository.findByRating(rating);
+    }
+
+    public List<Feedback> getFeedbacksByCategory(String category) {
+        return feedbackRepository.findByCategory(category);
+    }
+
+    public List<Feedback> getFeedbacksPendingReply() {
+        return feedbackRepository.findByAdminReplyIsNull();
+    }
+
+    public long getTotalFeedbackCount() {
+        return feedbackRepository.count();
+    }
+
+    public long getFeedbackCountByRating(Integer rating) {
+        return feedbackRepository.countByRating(rating);
     }
 }
-

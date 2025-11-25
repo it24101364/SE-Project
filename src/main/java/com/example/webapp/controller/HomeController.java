@@ -34,21 +34,16 @@ public class HomeController {
         int cartItemCount = 0;
 
         if (principal != null) {
-            String email = principal.getName(); // this is the logged-in email
-            user = userService.findByEmail(email); // fetch user by email
+            String email = principal.getName();
+            user = userService.findByEmail(email);
             cartItemCount = cartService.getCartItemCount(email);
         }
 
         model.addAttribute("user", user);
         model.addAttribute("cartItemCount", cartItemCount);
 
-        // Featured products (top 6)
-        List<Product> featuredProducts = productRepository.findFeaturedProducts(6);
-        if (featuredProducts == null || featuredProducts.isEmpty()) {
-            Pageable pageable = PageRequest.of(0, 6);
-            Page<Product> products = productRepository.findAll(pageable);
-            featuredProducts = products.getContent();
-        }
+        // Featured products - get latest 6 products
+        List<Product> featuredProducts = productRepository.findLatestProducts(6);
         model.addAttribute("featuredProducts", featuredProducts);
 
         return "index";

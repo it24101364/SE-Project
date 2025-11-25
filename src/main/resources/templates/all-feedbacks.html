@@ -3,44 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Feedbacks</title>
+    <title>Customer Feedback Hub | Spare Parts Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <style>
     :root {
-        --primary-color: #6366f1;
-        --secondary-color: #8b5cf6;
-        --accent-color: #00d9ff;
-        --success-color: #10b981;
-        --danger-color: #ef4444;
-    }
-
-    /* Light Theme Variables */
-    [data-theme="light"] {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        --glass-bg: rgba(255, 255, 255, 0.08);
+        --glass-border: rgba(255, 255, 255, 0.12);
+        --text-primary: #1a1a1a;
+        --text-secondary: #666;
         --bg-primary: #ffffff;
         --bg-secondary: #f8fafc;
-        --bg-card: #ffffff;
-        --text-primary: #0f172a;
-        --text-secondary: #64748b;
-        --border-color: #e2e8f0;
-        --shadow-color: rgba(0, 0, 0, 0.08);
-        --particle-color: rgba(99, 102, 241, 0.15);
-        --circuit-opacity: 0.03;
     }
 
-    /* Dark Theme Variables */
     [data-theme="dark"] {
-        --bg-primary: #0a0e27;
-        --bg-secondary: #1a1a2e;
-        --bg-card: rgba(26, 26, 46, 0.8);
+        --glass-bg: rgba(15, 23, 42, 0.15);
+        --glass-border: rgba(255, 255, 255, 0.08);
         --text-primary: #ffffff;
         --text-secondary: #94a3b8;
-        --border-color: rgba(255, 255, 255, 0.1);
-        --shadow-color: rgba(0, 0, 0, 0.5);
-        --particle-color: rgba(0, 217, 255, 0.4);
-        --circuit-opacity: 0.05;
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
     }
 
     * {
@@ -50,285 +39,503 @@
     }
 
     body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-family: 'Inter', sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         overflow-x: hidden;
-        transition: background-color 0.3s ease;
-        min-height: 100vh;
+    }
+
+    /* Modern Glass Morphism */
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="light"] .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.8);
     }
 
     /* Animated Background */
-    .tech-background {
+    .animated-bg {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        z-index: -1;
-        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-        overflow: hidden;
-        transition: background 0.3s ease;
+        z-index: -2;
+        background:
+                radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(79, 172, 254, 0.05) 0%, transparent 50%);
+        animation: gradientShift 15s ease infinite;
     }
 
-    [data-theme="dark"] .tech-background {
-        background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+    @keyframes gradientShift {
+        0%, 100% { background-position: 0% 50%, 100% 50%, 50% 50%; }
+        50% { background-position: 100% 50%, 0% 50%, 80% 80%; }
     }
 
-    .circuit-board {
+    /* Floating Elements */
+    .floating-element {
         position: absolute;
-        width: 100%;
-        height: 100%;
-        opacity: var(--circuit-opacity);
-        background-image:
-                repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(99, 102, 241, 0.1) 50px, rgba(99, 102, 241, 0.1) 51px),
-                repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(99, 102, 241, 0.1) 50px, rgba(99, 102, 241, 0.1) 51px);
-        transition: opacity 0.3s ease;
-    }
-
-    .floating-particles {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-    }
-
-    .particle {
-        position: absolute;
-        background: var(--particle-color);
         border-radius: 50%;
-        animation: float 20s infinite;
-        transition: background 0.3s ease;
-        box-shadow: 0 0 20px var(--particle-color);
+        background: var(--accent-gradient);
+        filter: blur(40px);
+        opacity: 0.3;
+        animation: float 6s ease-in-out infinite;
     }
 
     @keyframes float {
-        0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
-        10% { opacity: 1; }
-        90% { opacity: 1; }
-        100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(180deg); }
     }
 
-    /* Enhanced Navbar with Perfect Visibility */
-    .navbar-custom {
-        background: rgba(15, 23, 42, 0.98) !important;
-        backdrop-filter: blur(20px) saturate(180%);
-        box-shadow: 0 4px 24px var(--shadow-color);
+    /* Enhanced Navigation */
+    .modern-nav {
+        background: var(--glass-bg) !important;
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--glass-border);
         padding: 1rem 0;
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        border-bottom: 1px solid rgba(99, 102, 241, 0.3);
         transition: all 0.3s ease;
     }
 
-    [data-theme="light"] .navbar-custom {
-        background: rgba(255, 255, 255, 0.98) !important;
-        border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-    }
-
-    .navbar-brand {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--accent-color) !important;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        transition: all 0.3s ease;
-    }
-
-    .navbar-brand i {
-        animation: pulse 2s infinite;
-        font-size: 1.6rem;
-    }
-
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.15); }
-    }
-
-    .navbar-brand:hover {
-        transform: translateY(-2px);
-        text-shadow: 0 0 20px var(--accent-color);
-    }
-
-    /* Perfect Nav Link Visibility */
-    .navbar-custom .nav-link {
-        color: #e2e8f0 !important;
-        font-weight: 600;
-        padding: 0.6rem 1.2rem !important;
-        border-radius: 10px;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin: 0 5px;
-        position: relative;
-    }
-
-    [data-theme="light"] .navbar-custom .nav-link {
-        color: #1e293b !important;
-    }
-
-    .navbar-custom .nav-link:hover {
-        color: #ffffff !important;
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-    }
-
-    [data-theme="light"] .navbar-custom .nav-link:hover {
-        color: #ffffff !important;
-    }
-
-    .navbar-custom .nav-link.active {
-        color: #ffffff !important;
-        background: linear-gradient(135deg, var(--accent-color), #667eea);
-        box-shadow: 0 4px 16px rgba(0, 217, 255, 0.5);
-        transform: scale(1.05);
-    }
-
-    .navbar-custom .nav-link i {
-        font-size: 1.1rem;
-    }
-
-    /* Navbar Toggler Fix */
-    .navbar-custom .navbar-toggler {
-        border: 2px solid rgba(99, 102, 241, 0.5);
-        padding: 8px 12px;
-        border-radius: 8px;
-    }
-
-    .navbar-custom .navbar-toggler:focus {
-        box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
-    }
-
-    .navbar-custom .navbar-toggler-icon {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-    }
-
-    [data-theme="light"] .navbar-custom .navbar-toggler-icon {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(15, 23, 42, 0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-    }
-
-    /* User Badge Enhancement */
-    .user-badge {
-        background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
-        padding: 10px 20px;
-        border-radius: 20px;
-        margin-right: 15px;
-        color: #ffffff;
-        border: 1px solid rgba(99, 102, 241, 0.4);
-        backdrop-filter: blur(10px);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-
-    [data-theme="light"] .user-badge {
-        color: #1e293b;
-        background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
-    }
-
-    .user-badge:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-    }
-
-    /* Theme Toggle Buttons */
-    .navbar-theme-toggle {
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        border: none;
-        color: white;
-        padding: 10px;
-        border-radius: 12px;
-        font-size: 1.2rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-left: 15px;
-        width: 45px;
-        height: 45px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-    }
-
-    .navbar-theme-toggle:hover {
-        transform: scale(1.1) rotate(180deg);
-        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
-    }
-
-    .theme-toggle {
-        position: fixed;
-        bottom: 100px;
-        right: 30px;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        border: none;
-        color: white;
-        font-size: 1.5rem;
-        cursor: pointer;
-        box-shadow: 0 5px 25px rgba(99, 102, 241, 0.4);
-        transition: all 0.3s ease;
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .theme-toggle:hover {
-        transform: scale(1.15) rotate(180deg);
-        box-shadow: 0 8px 35px rgba(99, 102, 241, 0.6);
-    }
-
-    /* Logout Button */
-    .logout-btn {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
-        border: none;
-        padding: 10px 25px;
-        border-radius: 20px;
-        color: white;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .logout-btn:hover {
-        background: linear-gradient(135deg, #dc2626, #ef4444);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
-        color: white;
-    }
-
-    /* Page Header */
-    .page-header {
-        text-align: center;
-        padding: 80px 0 40px;
-        position: relative;
-    }
-
-    .page-header h1 {
-        font-size: 3.5rem;
+    .nav-brand {
         font-weight: 800;
-        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        font-size: 1.5rem;
+        background: var(--primary-gradient);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        margin-bottom: 20px;
-        animation: fadeInUp 0.8s ease;
+    }
+
+    .nav-link-modern {
+        color: var(--text-primary) !important;
+        font-weight: 500;
+        padding: 0.75rem 1.5rem !important;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .nav-link-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: var(--primary-gradient);
+        transition: left 0.3s ease;
+        z-index: -1;
+    }
+
+    .nav-link-modern:hover::before {
+        left: 0;
+    }
+
+    .nav-link-modern:hover {
+        color: white !important;
+        transform: translateY(-2px);
+    }
+
+    /* Hero Section */
+    .hero-section {
+        min-height: 60vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-content {
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 800;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        font-weight: 400;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 3rem 0;
+    }
+
+    .stat-card {
+        padding: 2rem;
+        text-align: center;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Feedback Cards - Modern Design */
+    .feedback-grid {
+        display: grid;
+        gap: 2rem;
+        margin: 3rem 0;
+    }
+
+    .feedback-card-modern {
+        padding: 2.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feedback-card-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--primary-gradient);
+        transition: width 0.3s ease;
+    }
+
+    .feedback-card-modern:hover::before {
+        width: 8px;
+    }
+
+    .feedback-header-modern {
+        display: flex;
+        justify-content: between;
+        align-items: start;
+        margin-bottom: 1.5rem;
+        gap: 1rem;
+    }
+
+    .user-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--primary-gradient);
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 15px;
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 600;
     }
 
+    .user-info {
+        flex: 1;
+    }
+
+    .user-name {
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+
+    .user-email {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .rating-modern {
+        display: flex;
+        gap: 0.25rem;
+    }
+
+    .rating-modern i {
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+    }
+
+    .rating-modern i.active {
+        color: #FFD700;
+        text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        animation: starPulse 2s infinite;
+    }
+
+    @keyframes starPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+    }
+
+    .feedback-content {
+        color: var(--text-primary);
+        line-height: 1.7;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .category-tag {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: var(--accent-gradient);
+        color: white;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    /* Admin Reply Section */
+    .admin-reply-modern {
+        background: var(--success-gradient);
+        padding: 1.5rem;
+        border-radius: 16px;
+        margin-top: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .admin-reply-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+    }
+
+    .admin-reply-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .admin-reply-header i {
+        color: white;
+        font-size: 1.2rem;
+    }
+
+    .admin-reply-header span {
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .admin-reply-text {
+        color: white;
+        line-height: 1.6;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Feedback Form - Ultra Modern */
+    .feedback-form-section {
+        position: relative;
+        padding: 4rem 0;
+    }
+
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 3rem;
+    }
+
+    .form-title {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .form-title h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+    }
+
+    .form-title p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+    }
+
+    .form-group-modern {
+        margin-bottom: 2rem;
+    }
+
+    .form-label-modern {
+        display: block;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 1rem;
+    }
+
+    .form-input-modern {
+        width: 100%;
+        padding: 1rem 1.5rem;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .form-input-modern:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        transform: translateY(-2px);
+    }
+
+    /* Interactive Rating */
+    .interactive-rating {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin: 1.5rem 0;
+    }
+
+    .rating-star {
+        font-size: 2.5rem;
+        color: #e2e8f0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        padding: 0.5rem;
+    }
+
+    .rating-star:hover,
+    .rating-star.active {
+        color: #FFD700;
+        transform: scale(1.2) rotate(15deg);
+        text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+    }
+
+    /* Submit Button */
+    .submit-btn-modern {
+        width: 100%;
+        padding: 1.25rem 2rem;
+        background: var(--primary-gradient);
+        border: none;
+        border-radius: 16px;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .submit-btn-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .submit-btn-modern:hover::before {
+        left: 100%;
+    }
+
+    .submit-btn-modern:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1.5rem;
+        display: block;
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .empty-state p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .form-container {
+            padding: 2rem 1rem;
+        }
+
+        .feedback-card-modern {
+            padding: 1.5rem;
+        }
+
+        .feedback-header-modern {
+            flex-direction: column;
+            align-items: start;
+        }
+    }
+
+    /* Animations */
     @keyframes fadeInUp {
         from {
             opacity: 0;
@@ -340,808 +547,234 @@
         }
     }
 
-    .page-header::after {
-        content: '';
-        display: block;
-        width: 120px;
-        height: 5px;
-        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-        margin: 25px auto;
-        border-radius: 3px;
-        box-shadow: 0 0 30px var(--accent-color);
-        animation: glow 2s ease-in-out infinite;
-    }
-
-    @keyframes glow {
-        0%, 100% { box-shadow: 0 0 20px var(--accent-color); }
-        50% { box-shadow: 0 0 40px var(--accent-color); }
-    }
-
-    /* Modern Feedback Cards */
-    .feedback-card {
-        background: var(--bg-card);
-        backdrop-filter: blur(20px);
-        border: 1px solid var(--border-color);
-        border-radius: 24px;
-        padding: 35px;
-        margin-bottom: 30px;
-        box-shadow: 0 10px 40px var(--shadow-color);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-    }
-
-    [data-theme="light"] .feedback-card {
-        background: white;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px rgba(0, 0, 0, 0.08);
-    }
-
-    .feedback-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
-        transition: left 0.6s;
-    }
-
-    .feedback-card:hover {
-        transform: translateY(-8px) scale(1.01);
-        box-shadow: 0 20px 60px rgba(99, 102, 241, 0.25);
-        border-color: var(--primary-color);
-    }
-
-    .feedback-card:hover::before {
-        left: 100%;
-    }
-
-    .feedback-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 25px;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-
-    .user-name {
-        font-weight: 700;
-        font-size: 1.3rem;
-        color: var(--text-primary);
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .user-name i {
-        color: var(--accent-color);
-        font-size: 1.5rem;
-        padding: 10px;
-        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
-        border-radius: 12px;
-    }
-
-    .rating-display {
-        display: flex;
-        gap: 6px;
-    }
-
-    .rating-display i {
-        font-size: 1.4rem;
-        transition: all 0.3s ease;
-    }
-
-    .rating-display i.text-yellow-400 {
-        color: #fbbf24;
-        text-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
-        animation: starPulse 2s ease-in-out infinite;
-    }
-
-    @keyframes starPulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-    }
-
-    .rating-display i.text-gray-300 {
-        color: rgba(148, 163, 184, 0.3);
-    }
-
-    [data-theme="dark"] .rating-display i.text-gray-300 {
-        color: rgba(255, 255, 255, 0.15);
-    }
-
-    .feedback-message {
-        color: var(--text-secondary);
-        font-size: 1.1rem;
-        line-height: 1.8;
-        margin-bottom: 25px;
-        padding: 20px;
-        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
-        border-left: 4px solid var(--primary-color);
-        border-radius: 12px;
-    }
-
-    .admin-reply-section {
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.05));
-        padding: 25px;
-        border-radius: 16px;
-        margin-top: 25px;
-        border: 1px solid rgba(16, 185, 129, 0.2);
-        position: relative;
-    }
-
-    .admin-reply-header {
-        font-weight: 700;
-        color: var(--success-color);
-        margin-bottom: 15px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 1.15rem;
-    }
-
-    .admin-reply-header i {
-        font-size: 1.3rem;
-    }
-
-    .admin-reply-text {
-        color: var(--text-secondary);
-        line-height: 1.7;
-        font-size: 1.05rem;
-    }
-
-    /* No Feedback State */
-    .no-feedback {
-        text-align: center;
-        padding: 80px 40px;
-        background: var(--bg-card);
-        border-radius: 24px;
-        border: 2px dashed var(--border-color);
-        box-shadow: 0 10px 40px var(--shadow-color);
-        animation: fadeInUp 0.8s ease;
-    }
-
-    [data-theme="light"] .no-feedback {
-        background: white;
-    }
-
-    .no-feedback i {
-        font-size: 5rem;
-        color: var(--primary-color);
-        margin-bottom: 25px;
-        opacity: 0.6;
-        animation: float-icon 3s ease-in-out infinite;
-    }
-
-    @keyframes float-icon {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
-    }
-
-    .no-feedback p {
-        color: var(--text-secondary);
-        font-size: 1.3rem;
-        font-weight: 500;
-    }
-
-    /* Feedback Form Section */
-    .feedback-section {
-        padding: 100px 0;
-        background: var(--bg-secondary);
-        backdrop-filter: blur(20px);
-        position: relative;
-        border-top: 1px solid var(--border-color);
-        border-bottom: 1px solid var(--border-color);
-        transition: background 0.3s ease;
-        margin-top: 60px;
-    }
-
-    .feedback-container {
-        max-width: 900px;
-        margin: 0 auto;
-        background: var(--bg-card);
-        padding: 60px;
-        border-radius: 30px;
-        border: 1px solid var(--border-color);
-        box-shadow: 0 20px 60px var(--shadow-color);
-        transition: all 0.3s ease;
-    }
-
-    [data-theme="light"] .feedback-container {
-        background: white;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 60px rgba(0, 0, 0, 0.1);
-    }
-
-    .feedback-title {
-        text-align: center;
-        margin-bottom: 50px;
-    }
-
-    .feedback-title h2 {
-        font-size: 2.8rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 15px;
-    }
-
-    .feedback-title p {
-        color: var(--text-secondary);
-        font-size: 1.2rem;
-        font-weight: 500;
-    }
-
-    /* Form Styling */
-    .form-control, .form-select {
-        background: var(--bg-secondary);
-        border: 2px solid var(--border-color);
-        color: var(--text-primary);
-        padding: 14px 20px;
-        border-radius: 14px;
-        transition: all 0.3s ease;
-        font-size: 1rem;
-    }
-
-    [data-theme="light"] .form-control,
-    [data-theme="light"] .form-select {
-        background: #f8fafc;
-    }
-
-    .form-control:focus, .form-select:focus {
-        background: var(--bg-card);
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
-        color: var(--text-primary);
-        transform: scale(1.01);
-    }
-
-    [data-theme="light"] .form-control:focus,
-    [data-theme="light"] .form-select:focus {
-        background: white;
-    }
-
-    .form-label {
-        color: var(--text-primary);
-        font-weight: 600;
-        margin-bottom: 12px;
-        font-size: 1.05rem;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    /* Star Rating */
-    .rating-stars {
-        display: flex;
-        gap: 15px;
-        justify-content: center;
-        margin: 30px 0;
-    }
-
-    .star {
-        font-size: 2.5rem;
-        color: rgba(148, 163, 184, 0.3);
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    [data-theme="light"] .star {
-        color: rgba(100, 116, 139, 0.3);
-    }
-
-    .star:hover, .star.active {
-        color: #fbbf24;
-        transform: scale(1.3) rotate(15deg);
-        text-shadow: 0 0 25px #fbbf24;
-    }
-
-    /* Submit Button */
-    .btn-submit-feedback {
-        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-        border: none;
-        color: white;
-        padding: 18px 60px;
-        font-size: 1.15rem;
-        font-weight: 700;
-        border-radius: 50px;
-        transition: all 0.3s ease;
-        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
-        width: 100%;
-        margin-top: 30px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    .btn-submit-feedback:hover {
-        background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-        transform: translateY(-5px);
-        box-shadow: 0 15px 50px rgba(99, 102, 241, 0.6);
-    }
-
-    /* Go to Top Button */
-    .go-to-top {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        border: none;
-        color: white;
-        font-size: 1.5rem;
-        cursor: pointer;
-        box-shadow: 0 5px 25px rgba(99, 102, 241, 0.4);
-        transition: all 0.3s ease;
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        visibility: hidden;
-    }
-
-    .go-to-top.show {
-        opacity: 1;
-        visibility: visible;
-    }
-
-    .go-to-top:hover {
-        transform: scale(1.15) translateY(-5px);
-        box-shadow: 0 10px 40px rgba(99, 102, 241, 0.6);
-    }
-
-    /* Footer */
-    .footer {
-        background: var(--bg-secondary);
-        backdrop-filter: blur(20px);
-        color: var(--text-primary);
-        padding: 80px 0 30px;
-        position: relative;
-        border-top: 1px solid var(--border-color);
-        transition: all 0.3s ease;
-        margin-top: 100px;
-    }
-
-    .footer h5 {
-        color: var(--primary-color);
-        margin-bottom: 30px;
-        font-weight: 700;
-        font-size: 1.3rem;
-    }
-
-    .footer-links {
-        list-style: none;
-        padding: 0;
-    }
-
-    .footer-links li {
-        margin-bottom: 15px;
-    }
-
-    .footer-links a {
-        color: var(--text-secondary);
-        text-decoration: none;
-        transition: all 0.3s ease;
-        display: inline-block;
-        font-weight: 500;
-    }
-
-    .footer-links a:hover {
-        color: var(--primary-color);
-        padding-left: 10px;
-        text-shadow: 0 0 10px var(--primary-color);
-    }
-
-    .social-icons a {
-        color: var(--text-primary);
-        font-size: 1.6rem;
-        margin-right: 20px;
-        transition: all 0.3s ease;
-        display: inline-block;
-    }
-
-    .social-icons a:hover {
-        color: var(--accent-color);
-        transform: translateY(-5px) rotate(360deg);
-        text-shadow: 0 0 20px var(--accent-color);
-    }
-
-    .footer-bottom {
-        border-top: 1px solid var(--border-color);
-        margin-top: 50px;
-        padding-top: 30px;
-        text-align: center;
-        color: var(--text-secondary);
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .page-header h1 {
-            font-size: 2.5rem;
-        }
-
-        .feedback-container {
-            padding: 40px 25px;
-        }
-
-        .feedback-card {
-            padding: 25px;
-        }
-
-        .navbar-custom .nav-link {
-            margin: 5px 0;
-        }
-
-        .user-badge {
-            margin: 10px 0;
-        }
-
-        .logout-btn {
-            margin-top: 10px;
-            width: 100%;
-            justify-content: center;
-        }
-    }
-
-    /* Smooth Animations */
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    .feedback-card {
+    .animate-fade-in-up {
         animation: fadeInUp 0.6s ease forwards;
     }
 
-    .feedback-card:nth-child(1) { animation-delay: 0.1s; }
-    .feedback-card:nth-child(2) { animation-delay: 0.2s; }
-    .feedback-card:nth-child(3) { animation-delay: 0.3s; }
-    .feedback-card:nth-child(4) { animation-delay: 0.4s; }
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
 </style>
 <body>
-<!-- Animated Tech Background -->
-<div class="tech-background">
-    <div class="circuit-board"></div>
-    <div class="floating-particles" id="particles"></div>
-</div>
+<!-- Animated Background -->
+<div class="animated-bg"></div>
 
-<!-- Theme Toggle Button -->
-<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-    <i class="fas fa-moon" id="themeIcon"></i>
-</button>
+<!-- Floating Elements -->
+<div class="floating-element" style="width: 300px; height: 300px; top: 10%; left: 5%;"></div>
+<div class="floating-element" style="width: 200px; height: 200px; top: 60%; right: 10%;"></div>
+<div class="floating-element" style="width: 150px; height: 150px; bottom: 20%; left: 20%;"></div>
 
-<!-- Go to Top Button -->
-<button class="go-to-top" id="goToTop" aria-label="Go to top">
-    <i class="fas fa-arrow-up"></i>
-</button>
-
-<!-- Enhanced Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-custom">
-    <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/index}">
-            <i class="fas fa-microchip"></i> Spare Parts Store
+<!-- Modern Navigation -->
+<nav class="navbar navbar-expand-lg modern-nav">
+    <div class="container">
+        <a class="navbar-brand nav-brand" th:href="@{/index}">
+            <i class="fas fa-cube me-2"></i>SPARE PARTS
         </a>
-        <button
-                class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarNav"
-                aria-controls="navbarNav"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-        >
-            <span class="navbar-toggler-icon"></span>
-        </button>
 
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/index}"><i class="fas fa-home"></i> Home</a>
+                    <a class="nav-link nav-link-modern" th:href="@{/index}">
+                        <i class="fas fa-home me-2"></i>Home
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/products}"><i class="fas fa-box-open"></i> Products</a>
+                    <a class="nav-link nav-link-modern" th:href="@{/products}">
+                        <i class="fas fa-box me-2"></i>Products
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/cart}"><i class="fas fa-shopping-cart"></i> Cart</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" th:href="@{/feedback}"><i class="fas fa-comments"></i> Feedback</a>
+                    <a class="nav-link nav-link-modern active" th:href="@{/feedback}">
+                        <i class="fas fa-comment-dots me-2"></i>Feedback
+                    </a>
                 </li>
             </ul>
-
-            <div class="d-flex align-items-center flex-wrap">
-                <span class="user-badge">
-                    <i class="fas fa-user-circle"></i>
-                    <span th:text="${user != null ? user.username : 'Guest'}">Guest</span>
-                </span>
-
-                <button class="navbar-theme-toggle" id="navbarThemeToggle" aria-label="Toggle theme">
-                    <i class="fas fa-moon" id="navbarThemeIcon"></i>
-                </button>
-
-                <a class="btn logout-btn" th:href="@{/login}">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </a>
-            </div>
         </div>
     </div>
 </nav>
 
-<div class="max-w-4xl mx-auto py-8 px-4">
-    <!-- Page Header -->
-    <div class="page-header">
-        <h1><i class="fas fa-comments"></i>Customer Feedbacks</h1>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title animate-fade-in-up">
+                Share Your Experience
+            </h1>
+            <p class="hero-subtitle animate-fade-in-up delay-100">
+                Your feedback helps us deliver exceptional service and improve your shopping journey
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="container">
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+        <div class="stat-card glass-card animate-fade-in-up">
+            <div class="stat-number" th:text="${feedbacks != null ? feedbacks.size() : 0}">0</div>
+            <div class="stat-label">Total Feedbacks</div>
+        </div>
+        <div class="stat-card glass-card animate-fade-in-up delay-100">
+            <div class="stat-number" th:text="${fiveStarCount}">0</div>
+            <div class="stat-label">5-Star Ratings</div>
+        </div>
+        <div class="stat-card glass-card animate-fade-in-up delay-200">
+            <div class="stat-number" th:text="${pendingReplies}">0</div>
+            <div class="stat-label">Pending Replies</div>
+        </div>
     </div>
 
-    <!-- No Feedback Message -->
-    <div th:if="${feedbacks.isEmpty()}" class="no-feedback">
-        <i class="fas fa-comment-slash"></i>
-        <p>No feedbacks yet. Be the first to share your experience!</p>
-    </div>
-
-    <!-- Feedback Cards -->
-    <div th:each="feedback : ${feedbacks}" class="feedback-card">
-        <div class="feedback-header">
-            <span class="user-name">
-                <i class="fas fa-user-circle"></i>
-                <span th:text="${feedback.name}">User Name</span>
-            </span>
-            <div class="rating-display">
-                <span th:each="i : ${#numbers.sequence(1,5)}">
-                    <i class="fas fa-star" th:classappend="${i <= feedback.rating} ? 'text-yellow-400' : 'text-gray-300'"></i>
-                </span>
-            </div>
+    <!-- Feedback Grid -->
+    <div class="feedback-grid">
+        <!-- Empty State -->
+        <div th:if="${feedbacks == null || feedbacks.isEmpty()}" class="empty-state glass-card">
+            <i class="fas fa-comments"></i>
+            <h3>No Feedback Yet</h3>
+            <p>Be the first to share your experience with us!</p>
         </div>
 
-        <p class="feedback-message" th:text="${feedback.message}">Feedback message here</p>
+        <!-- Feedback Cards -->
+        <div th:each="feedback, iter : ${feedbacks}"
+             class="feedback-card-modern glass-card animate-fade-in-up"
+             th:classappend="${iter.index > 0 ? 'delay-' + (iter.index * 100) : ''}">
 
-        <div th:if="${feedback.adminReply != null}" class="admin-reply-section">
-            <div class="admin-reply-header">
-                <i class="fas fa-reply"></i>
-                <span>Admin Reply:</span>
+            <div class="feedback-header-modern">
+                <div class="user-avatar">
+                    <span th:text="${#strings.substring(feedback.name, 0, 1).toUpperCase()}">U</span>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" th:text="${feedback.name}">User Name</div>
+                    <div class="user-email" th:text="${feedback.email}">user@example.com</div>
+                </div>
+                <div class="rating-modern">
+                    <span th:each="i : ${#numbers.sequence(1,5)}">
+                        <i class="fas fa-star" th:classappend="${i <= feedback.rating} ? 'active' : ''"></i>
+                    </span>
+                </div>
             </div>
-            <p class="admin-reply-text" th:text="${feedback.adminReply}">Reply here</p>
+
+            <div class="category-tag" th:text="${feedback.category}">Category</div>
+
+            <p class="feedback-content" th:text="${feedback.message}">
+                Feedback message content goes here...
+            </p>
+
+            <!-- Admin Reply -->
+            <div th:if="${feedback.adminReply != null}" class="admin-reply-modern">
+                <div class="admin-reply-header">
+                    <i class="fas fa-reply-all"></i>
+                    <span>Admin Response</span>
+                </div>
+                <p class="admin-reply-text" th:text="${feedback.adminReply}">
+                    Admin reply content goes here...
+                </p>
+            </div>
         </div>
     </div>
 
     <!-- Feedback Form Section -->
-    <section class="feedback-section" id="feedback">
-        <div class="container">
-            <div class="feedback-container">
-                <div class="feedback-title">
-                    <h2><i class="fas fa-comments me-2"></i>We Value Your Feedback</h2>
-                    <p>Help us improve your shopping experience</p>
-                </div>
-                <form id="feedbackForm" th:action="@{/feedback/submit}" method="post">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-
-                    <div class="mb-4">
-                        <label for="customerName" class="form-label">
-                            <i class="fas fa-user"></i>Your Name
-                        </label>
-                        <input type="text" class="form-control" id="customerName" name="name" placeholder="Enter your name" required>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="customerEmail" class="form-label">
-                            <i class="fas fa-envelope"></i>Email Address
-                        </label>
-                        <input type="email" class="form-control" id="customerEmail" name="email" placeholder="your.email@example.com" required>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label">
-                            <i class="fas fa-star"></i>Rate Your Experience
-                        </label>
-                        <div class="rating-stars" id="ratingStars">
-                            <i class="fas fa-star star" data-rating="1"></i>
-                            <i class="fas fa-star star" data-rating="2"></i>
-                            <i class="fas fa-star star" data-rating="3"></i>
-                            <i class="fas fa-star star" data-rating="4"></i>
-                            <i class="fas fa-star star" data-rating="5"></i>
-                        </div>
-                        <input type="hidden" id="rating" name="rating" value="0">
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="feedbackCategory" class="form-label">
-                            <i class="fas fa-list"></i>Feedback Category
-                        </label>
-                        <select class="form-select" id="feedbackCategory" name="category" required>
-                            <option value="">Select a category</option>
-                            <option value="product">Product Quality</option>
-                            <option value="service">Customer Service</option>
-                            <option value="delivery">Delivery Experience</option>
-                            <option value="website">Website Experience</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="feedbackMessage" class="form-label">
-                            <i class="fas fa-comment-dots"></i>Your Feedback
-                        </label>
-                        <textarea class="form-control" id="feedbackMessage" name="message" rows="5" placeholder="Share your thoughts..." required></textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-submit-feedback">
-                        <i class="fas fa-paper-plane me-2"></i>Submit Feedback
-                    </button>
-                </form>
+    <section class="feedback-form-section">
+        <div class="form-container glass-card">
+            <div class="form-title">
+                <h2>Share Your Thoughts</h2>
+                <p>We value your opinion and are committed to improving your experience</p>
             </div>
+
+            <form id="feedbackForm" th:action="@{/feedback/submit}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group-modern">
+                            <label class="form-label-modern" for="customerName">
+                                <i class="fas fa-user me-2"></i>Your Name
+                            </label>
+                            <input type="text" class="form-input-modern" id="customerName" name="name"
+                                   placeholder="Enter your full name" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group-modern">
+                            <label class="form-label-modern" for="customerEmail">
+                                <i class="fas fa-envelope me-2"></i>Email Address
+                            </label>
+                            <input type="email" class="form-input-modern" id="customerEmail" name="email"
+                                   placeholder="your.email@example.com" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group-modern">
+                    <label class="form-label-modern">
+                        <i class="fas fa-star me-2"></i>How would you rate your experience?
+                    </label>
+                    <div class="interactive-rating" id="ratingStars">
+                        <i class="fas fa-star rating-star" data-rating="1"></i>
+                        <i class="fas fa-star rating-star" data-rating="2"></i>
+                        <i class="fas fa-star rating-star" data-rating="3"></i>
+                        <i class="fas fa-star rating-star" data-rating="4"></i>
+                        <i class="fas fa-star rating-star" data-rating="5"></i>
+                    </div>
+                    <input type="hidden" id="rating" name="rating" value="0">
+                </div>
+
+                <div class="form-group-modern">
+                    <label class="form-label-modern" for="feedbackCategory">
+                        <i class="fas fa-tag me-2"></i>Category
+                    </label>
+                    <select class="form-input-modern" id="feedbackCategory" name="category" required>
+                        <option value="">Select a category</option>
+                        <option value="product">Product Quality</option>
+                        <option value="service">Customer Service</option>
+                        <option value="delivery">Delivery Experience</option>
+                        <option value="website">Website Experience</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group-modern">
+                    <label class="form-label-modern" for="feedbackMessage">
+                        <i class="fas fa-comment-alt me-2"></i>Your Feedback
+                    </label>
+                    <textarea class="form-input-modern" id="feedbackMessage" name="message"
+                              rows="5" placeholder="Tell us about your experience..." required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn-modern">
+                    <i class="fas fa-paper-plane me-2"></i>Submit Feedback
+                </button>
+            </form>
         </div>
     </section>
 </div>
 
-<!-- Footer -->
-<footer class="footer">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-4 col-md-6 mb-4">
-                <h5><i class="fas fa-microchip me-2"></i>Spare Parts Store</h5>
-                <p class="mt-3">Your trusted source for premium computer components and spare parts. Quality products, competitive prices, and excellent customer service.</p>
-                <div class="social-icons mt-4">
-                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                </div>
-            </div>
-
-            <div class="col-lg-2 col-md-6 mb-4">
-                <h5>Quick Links</h5>
-                <ul class="footer-links">
-                    <li><a th:href="@{/index}">Home</a></li>
-                    <li><a th:href="@{/products}">Products</a></li>
-                    <li><a th:href="@{/cart}">Cart</a></li>
-                    <li><a th:href="@{/feedback}">Feedback</a></li>
-                </ul>
-            </div>
-
-            <div class="col-lg-3 col-md-6 mb-4">
-                <h5>Categories</h5>
-                <ul class="footer-links">
-                    <li><a href="#">Processors</a></li>
-                    <li><a href="#">Graphics Cards</a></li>
-                    <li><a href="#">Memory (RAM)</a></li>
-                    <li><a href="#">Storage Devices</a></li>
-                    <li><a href="#">Motherboards</a></li>
-                </ul>
-            </div>
-
-            <div class="col-lg-3 col-md-6 mb-4">
-                <h5>Contact Info</h5>
-                <ul class="footer-links">
-                    <li><i class="fas fa-map-marker-alt me-2"></i>123 Tech Street, City</li>
-                    <li><i class="fas fa-phone me-2"></i>+94 77 123 4567</li>
-                    <li><i class="fas fa-envelope me-2"></i>info@spareparts.lk</li>
-                    <li><i class="fas fa-clock me-2"></i>Mon-Sat: 9AM - 8PM</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            <p class="mb-0">&copy; 2025 Spare Parts Store. All Rights Reserved. | Designed with <i class="fas fa-heart text-danger"></i> for Tech Enthusiasts</p>
-        </div>
-    </div>
-</footer>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Theme Toggle Functionality
-    const themeToggle = document.getElementById('themeToggle');
-    const navbarThemeToggle = document.getElementById('navbarThemeToggle');
-    const themeIcon = document.getElementById('themeIcon');
-    const navbarThemeIcon = document.getElementById('navbarThemeIcon');
-    const html = document.documentElement;
-
-    // Check for saved theme preference or default to 'light'
-    const currentTheme = localStorage.getItem('theme') || 'light';
-    html.setAttribute('data-theme', currentTheme);
-    updateThemeIcon(currentTheme);
-
-    // Theme toggle for fixed button
-    themeToggle.addEventListener('click', function() {
-        toggleTheme();
-    });
-
-    // Theme toggle for navbar button
-    navbarThemeToggle.addEventListener('click', function() {
-        toggleTheme();
-    });
-
-    function toggleTheme() {
-        const currentTheme = html.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
-        html.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        updateThemeIcon(newTheme);
-    }
-
-    function updateThemeIcon(theme) {
-        if (theme === 'dark') {
-            themeIcon.className = 'fas fa-sun';
-            navbarThemeIcon.className = 'fas fa-sun';
-        } else {
-            themeIcon.className = 'fas fa-moon';
-            navbarThemeIcon.className = 'fas fa-moon';
-        }
-    }
-
-    // Go to Top Button Functionality
-    const goToTopBtn = document.getElementById('goToTop');
-
-    window.addEventListener('scroll', function() {
-        if (window.scrollY > 300) {
-            goToTopBtn.classList.add('show');
-        } else {
-            goToTopBtn.classList.remove('show');
-        }
-
-        // Navbar scroll effect
-        const navbar = document.querySelector('.navbar-custom');
-        if (window.scrollY > 50) {
-            navbar.style.boxShadow = '0 8px 40px rgba(0, 0, 0, 0.3)';
-        } else {
-            navbar.style.boxShadow = '0 4px 24px rgba(0, 0, 0, 0.2)';
-        }
-    });
-
-    goToTopBtn.addEventListener('click', function() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    });
-
-    // Floating Particles Animation
-    function createParticles() {
-        const particlesContainer = document.getElementById('particles');
-        const particleCount = 40;
-
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.width = Math.random() * 5 + 2 + 'px';
-            particle.style.height = particle.style.width;
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDuration = Math.random() * 10 + 15 + 's';
-            particle.style.animationDelay = Math.random() * 5 + 's';
-            particlesContainer.appendChild(particle);
-        }
-    }
-    createParticles();
-
-    // Rating stars functionality
-    const stars = document.querySelectorAll('.star');
+    // Interactive Rating System
+    const ratingStars = document.querySelectorAll('.rating-star');
     const ratingInput = document.getElementById('rating');
-    let selectedRating = 0;
+    let currentRating = 0;
 
-    stars.forEach(star => {
+    ratingStars.forEach(star => {
         star.addEventListener('click', function() {
-            selectedRating = parseInt(this.getAttribute('data-rating'));
-            ratingInput.value = selectedRating;
-            updateStars(selectedRating);
+            currentRating = parseInt(this.getAttribute('data-rating'));
+            ratingInput.value = currentRating;
+            updateRatingStars(currentRating);
         });
 
         star.addEventListener('mouseenter', function() {
             const hoverRating = parseInt(this.getAttribute('data-rating'));
-            updateStars(hoverRating);
+            updateRatingStars(hoverRating);
         });
     });
 
     document.getElementById('ratingStars').addEventListener('mouseleave', function() {
-        updateStars(selectedRating);
+        updateRatingStars(currentRating);
     });
 
-    function updateStars(rating) {
-        stars.forEach(star => {
+    function updateRatingStars(rating) {
+        ratingStars.forEach(star => {
             const starRating = parseInt(star.getAttribute('data-rating'));
             if (starRating <= rating) {
                 star.classList.add('active');
@@ -1151,28 +784,99 @@
         });
     }
 
-    // Form validation
+    // Form Validation
     document.getElementById('feedbackForm').addEventListener('submit', function(e) {
-        if (selectedRating === 0) {
+        if (currentRating === 0) {
             e.preventDefault();
-            alert('Please select a rating before submitting!');
+            showNotification('Please select a rating before submitting!', 'error');
             return false;
         }
+
+        showNotification('Thank you for your feedback!', 'success');
     });
 
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+    // Notification System
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background: ${type === 'success' ? '#10b981' : '#ef4444'};
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1000;
+            animation: slideInRight 0.3s ease;
+        `;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    // Scroll Animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animationPlayState = 'running';
             }
         });
+    }, observerOptions);
+
+    document.querySelectorAll('.animate-fade-in-up').forEach(el => {
+        observer.observe(el);
     });
+
+    // Theme Toggle (Simplified)
+    const themeToggle = document.createElement('button');
+    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+    themeToggle.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+        cursor: pointer;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+
+    themeToggle.addEventListener('click', toggleTheme);
+    document.body.appendChild(themeToggle);
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute('data-theme') || 'light';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+
+        const icon = themeToggle.querySelector('i');
+        icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+
+    // Initialize theme
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    const icon = themeToggle.querySelector('i');
+    icon.className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
 </script>
 </body>
 </html>

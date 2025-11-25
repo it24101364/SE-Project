@@ -7,30 +7,37 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Design System Variables */
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            --danger-gradient: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
-            --accent-color: #667eea;
-            --text-primary: #1a202c;
-            --text-secondary: #718096;
-            --bg-primary: #f7fafc;
-            --bg-secondary: #ffffff;
-            --border-color: #e2e8f0;
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
-            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
-        }
-
-        [data-theme="dark"] {
-            --text-primary: #f7fafc;
-            --text-secondary: #cbd5e0;
-            --bg-primary: #1a202c;
-            --bg-secondary: #2d3748;
-            --border-color: #4a5568;
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --primary-50: #f0f4ff;
+            --primary-100: #e0e9ff;
+            --primary-500: #6366f1;
+            --primary-600: #4f46e5;
+            --primary-700: #4338ca;
+            --secondary-500: #8b5cf6;
+            --secondary-600: #7c3aed;
+            --success-500: #10b981;
+            --success-600: #059669;
+            --warning-500: #f59e0b;
+            --warning-600: #d97706;
+            --danger-500: #ef4444;
+            --danger-600: #dc2626;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
         }
 
         * {
@@ -40,113 +47,65 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            transition: background-color 0.3s ease, color 0.3s ease;
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--primary-50) 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             min-height: 100vh;
+            color: var(--gray-900);
         }
 
-        /* Navbar Styles */
+        /* Navbar */
         .navbar-custom {
-            background: rgba(10, 14, 39, 0.95);
-            backdrop-filter: blur(20px);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-            padding: 0.8rem 0;
+            background: white;
+            box-shadow: var(--shadow-md);
+            padding: 1rem 0;
             position: sticky;
             top: 0;
             z-index: 1000;
-            border-bottom: 2px solid rgba(0, 217, 255, 0.15);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        [data-theme="light"] .navbar-custom {
-            background: rgba(255, 255, 255, 0.95);
-            border-bottom: 2px solid rgba(0, 0, 0, 0.08);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
         .navbar-brand {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 1.4rem;
-            font-weight: 900;
-            color: white !important;
-            padding: 8px 15px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900) !important;
         }
 
         .brand-icon {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, var(--accent-color), #667eea);
-            border-radius: 10px;
+            background: var(--primary-500);
+            border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 15px rgba(0, 217, 255, 0.4);
-            animation: brandPulse 3s ease-in-out infinite;
-        }
-
-        @keyframes brandPulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(0, 217, 255, 0.4); }
-            50% { transform: scale(1.05); box-shadow: 0 6px 25px rgba(0, 217, 255, 0.6); }
-        }
-
-        .brand-text {
-            letter-spacing: 1px;
+            color: white;
         }
 
         .brand-accent {
-            color: var(--accent-color);
-            text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
-        }
-
-        [data-theme="light"] .navbar-brand {
-            color: #1a1a2e !important;
-        }
-
-        [data-theme="light"] .brand-accent {
-            color: #0d6efd;
-            text-shadow: 0 0 20px rgba(13, 110, 253, 0.3);
-        }
-
-        .navbar-nav {
-            gap: 5px;
+            color: var(--primary-500);
         }
 
         .nav-link {
-            color: rgba(255, 255, 255, 0.85) !important;
-            padding: 10px 18px !important;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            position: relative;
+            color: var(--gray-700) !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 0.5rem;
             font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        [data-theme="light"] .nav-link {
-            color: rgba(26, 26, 46, 0.85) !important;
         }
 
         .nav-link:hover {
-            color: white !important;
-            transform: translateY(-2px);
-        }
-
-        [data-theme="light"] .nav-link:hover {
-            color: var(--accent-color) !important;
+            background: var(--gray-100);
+            color: var(--primary-500) !important;
         }
 
         .nav-link.active {
-            background: linear-gradient(135deg, rgba(0, 217, 255, 0.2), rgba(102, 126, 234, 0.2));
-            color: var(--accent-color) !important;
-            box-shadow: 0 4px 15px rgba(0, 217, 255, 0.2);
+            background: var(--primary-100);
+            color: var(--primary-600) !important;
         }
 
         .cart-link {
@@ -155,96 +114,52 @@
 
         .cart-count {
             position: absolute;
-            top: 0;
-            right: 4px;
-            background: var(--danger-gradient);
+            top: -5px;
+            right: -5px;
+            background: var(--danger-500);
             color: white;
             font-size: 0.7rem;
             font-weight: 700;
             padding: 2px 6px;
-            border-radius: 10px;
-            min-width: 20px;
+            border-radius: 100px;
+            min-width: 18px;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(238, 9, 121, 0.4);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        /* Theme Toggle */
-        .theme-toggle {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            background: var(--bg-primary);
-            border: 2px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: var(--text-primary);
-            font-size: 1.2rem;
-        }
-
-        .theme-toggle:hover {
-            transform: rotate(180deg) scale(1.1);
-            background: var(--primary-gradient);
-            color: white;
-            border-color: transparent;
-        }
-
-        .navbar-actions {
-            display: flex;
-            align-items: center;
-            gap: 15px;
         }
 
         .user-badge {
-            background: rgba(102, 126, 234, 0.1);
-            padding: 10px 20px;
-            border-radius: 25px;
-            color: var(--text-primary);
-            border: 2px solid rgba(102, 126, 234, 0.2);
+            background: var(--gray-100);
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0.5rem;
             font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .user-badge:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
         }
 
         .username-text {
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--primary-500);
         }
 
         .logout-btn {
-            background: var(--danger-gradient);
+            background: var(--danger-500);
             border: none;
-            padding: 10px 24px;
-            border-radius: 25px;
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
             color: white !important;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 0.5rem;
         }
 
         .logout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(238, 9, 121, 0.4);
+            background: var(--danger-600);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
 
         /* Container */
@@ -254,156 +169,120 @@
             padding: 2rem 1rem;
         }
 
-        /* Breadcrumb */
-        .breadcrumb-nav {
-            background: var(--bg-secondary);
-            padding: 1rem 1.5rem;
-            border-radius: 15px;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
-        }
-
-        .breadcrumb {
-            margin: 0;
-            background: transparent;
-        }
-
-        .breadcrumb-item a {
-            color: var(--accent-color);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .breadcrumb-item a:hover {
-            color: #764ba2;
-        }
-
         /* Page Header */
         .page-header {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
             text-align: center;
-            margin-bottom: 3rem;
-            animation: fadeInDown 0.6s ease;
         }
 
         .page-header h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
             margin-bottom: 0.5rem;
         }
 
         .page-header p {
-            color: var(--text-secondary);
-            font-size: 1.2rem;
+            color: var(--gray-500);
+            margin: 0;
         }
 
         /* Empty Cart */
         .empty-cart {
-            background: var(--bg-secondary);
-            padding: 5rem 2rem;
-            border-radius: 20px;
+            background: white;
+            padding: 4rem 2rem;
+            border-radius: var(--radius-xl);
             text-align: center;
             box-shadow: var(--shadow-md);
-            animation: fadeInUp 0.6s ease;
         }
 
         .empty-cart-icon {
-            font-size: 6rem;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 5rem;
+            color: var(--gray-300);
             margin-bottom: 1.5rem;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
         }
 
         .empty-cart h3 {
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-            font-size: 2rem;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
             font-weight: 700;
         }
 
-        /* Cart Card */
-        .cart-card {
-            background: var(--bg-secondary);
-            border-radius: 20px;
-            box-shadow: var(--shadow-md);
-            overflow: hidden;
+        .empty-cart p {
+            color: var(--gray-500);
             margin-bottom: 2rem;
-            animation: fadeInUp 0.6s ease;
         }
 
-        .cart-header {
-            background: var(--primary-gradient);
-            color: white;
-            padding: 1.5rem 2rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .cart-header h4 {
-            margin: 0;
-            font-weight: 700;
-            font-size: 1.3rem;
-        }
-
-        /* Cart Table */
-        .cart-table {
-            margin: 0;
-            color: var(--text-primary);
-        }
-
-        .cart-table thead {
-            background: rgba(102, 126, 234, 0.05);
-        }
-
-        .cart-table thead th {
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
             border: none;
-            color: var(--text-primary);
-            font-weight: 700;
-            padding: 1.2rem 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .card-header h4 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        /* Table */
+        .table {
+            margin: 0;
+        }
+
+        .table thead {
+            background: var(--gray-800);
+        }
+
+        .table thead th {
+            color: white;
+            font-weight: 600;
             text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            border: none;
+            padding: 1rem;
         }
 
-        .cart-table tbody tr {
-            border-bottom: 1px solid var(--border-color);
-            transition: all 0.3s ease;
+        .table tbody tr {
+            border-bottom: 1px solid var(--gray-200);
+            transition: background 0.2s ease;
         }
 
-        .cart-table tbody tr:hover {
-            background: rgba(102, 126, 234, 0.05);
-            transform: scale(1.01);
+        .table tbody tr:hover {
+            background: var(--gray-50);
         }
 
-        .cart-table tbody td {
+        .table tbody td {
             padding: 1.5rem 1rem;
             vertical-align: middle;
         }
 
         .product-name {
             font-weight: 700;
-            color: var(--text-primary);
-            font-size: 1.1rem;
+            color: var(--gray-900);
+            font-size: 1rem;
         }
 
         .product-price {
-            font-size: 1.2rem;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 1.125rem;
+            color: var(--primary-500);
             font-weight: 700;
         }
 
@@ -411,83 +290,111 @@
         .quantity-control {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0.5rem;
         }
 
         .quantity-input {
             width: 80px;
             text-align: center;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 10px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            padding: 0.5rem;
             font-weight: 700;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            transition: all 0.3s ease;
         }
 
         .quantity-input:focus {
-            border-color: var(--accent-color);
+            border-color: var(--primary-500);
             outline: none;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
         /* Buttons */
-        .btn-update {
-            background: var(--primary-gradient);
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 12px;
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            border-radius: var(--radius-md);
             font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-update:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-            color: white;
-        }
-
-        .btn-remove {
-            background: var(--danger-gradient);
+            font-size: 0.875rem;
             border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
         }
 
-        .btn-remove:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(238, 9, 121, 0.4);
+        .btn-primary {
+            background: var(--primary-500);
             color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-600);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+            color: var(--gray-700);
+        }
+
+        .btn-success {
+            background: var(--success-500);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: var(--success-600);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-500);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-600);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.8125rem;
         }
 
         /* Cart Summary */
         .cart-summary {
-            background: var(--bg-secondary);
-            border-radius: 20px;
+            background: white;
+            border-radius: var(--radius-lg);
             padding: 2rem;
             box-shadow: var(--shadow-md);
             position: sticky;
             top: 100px;
-            animation: fadeInUp 0.6s ease 0.2s both;
         }
 
         .cart-summary h4 {
-            color: var(--text-primary);
+            color: var(--gray-900);
             margin-bottom: 1.5rem;
-            font-weight: 800;
-            font-size: 1.5rem;
+            font-weight: 700;
+            font-size: 1.25rem;
         }
 
         .summary-row {
             display: flex;
             justify-content: space-between;
             padding: 1rem 0;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--gray-200);
         }
 
         .summary-row:last-child {
@@ -495,31 +402,28 @@
         }
 
         .summary-label {
-            font-size: 1rem;
-            color: var(--text-secondary);
+            font-size: 0.875rem;
+            color: var(--gray-500);
             font-weight: 600;
         }
 
         .summary-value {
-            font-size: 1rem;
+            font-size: 0.875rem;
             font-weight: 700;
-            color: var(--text-primary);
+            color: var(--gray-900);
         }
 
         .total-row {
             margin-top: 1rem;
             padding-top: 1.5rem !important;
-            border-top: 3px solid var(--accent-color) !important;
+            border-top: 2px solid var(--primary-500) !important;
         }
 
         .total-row .summary-label,
         .total-row .summary-value {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 800;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--primary-500);
         }
 
         /* Action Buttons */
@@ -531,49 +435,48 @@
         }
 
         .btn-checkout {
-            background: var(--success-gradient);
+            background: var(--success-500);
             border: none;
             color: white;
             padding: 1rem 2rem;
-            border-radius: 15px;
+            border-radius: var(--radius-md);
             font-weight: 700;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
+            font-size: 1rem;
+            transition: all 0.2s ease;
             text-decoration: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 0.5rem;
         }
 
         .btn-checkout:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.4);
+            background: var(--success-600);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
             color: white;
         }
 
         .btn-back {
             background: transparent;
-            border: 2px solid var(--border-color);
-            color: var(--text-primary);
+            border: 2px solid var(--gray-300);
+            color: var(--gray-700);
             padding: 1rem 2rem;
-            border-radius: 15px;
+            border-radius: var(--radius-md);
             font-weight: 700;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
+            font-size: 1rem;
+            transition: all 0.2s ease;
             text-decoration: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 0.5rem;
         }
 
         .btn-back:hover {
-            background: var(--primary-gradient);
-            color: white;
-            border-color: transparent;
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
+            background: var(--gray-100);
+            border-color: var(--gray-400);
+            color: var(--gray-900);
         }
 
         /* Trust Badges */
@@ -583,7 +486,7 @@
             gap: 1rem;
             margin-top: 2rem;
             padding-top: 2rem;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--gray-200);
         }
 
         .trust-badge {
@@ -591,79 +494,37 @@
         }
 
         .trust-badge i {
-            font-size: 2rem;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 1.5rem;
+            color: var(--primary-500);
             margin-bottom: 0.5rem;
         }
 
         .trust-badge p {
             margin: 0;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
+            font-size: 0.75rem;
+            color: var(--gray-500);
             font-weight: 600;
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         /* Responsive */
         @media (max-width: 991px) {
-            .navbar-actions {
-                margin-top: 1rem;
-                width: 100%;
-                flex-wrap: wrap;
-            }
-
-            .user-badge {
-                flex: 1;
-            }
-
-            .page-header h1 {
-                font-size: 2rem;
-            }
-
             .cart-summary {
                 position: static;
                 margin-top: 2rem;
             }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
         }
 
         @media (max-width: 768px) {
-            .cart-table {
-                font-size: 0.9rem;
+            .table {
+                font-size: 0.875rem;
             }
 
             .quantity-control {
                 flex-direction: column;
-                gap: 8px;
-            }
-
-            .btn-update,
-            .btn-remove {
-                width: 100%;
             }
 
             .trust-badges {
@@ -678,7 +539,7 @@
     <div class="container-fluid">
         <a class="navbar-brand" href="#">
             <span class="brand-icon"><i class="fas fa-laptop"></i></span>
-            <span class="brand-text">PCPro<span class="brand-accent">.lk</span></span>
+            <span>PCPro<span class="brand-accent">.lk</span></span>
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -689,43 +550,35 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/}">
-                        <i class="fas fa-home"></i>
-                        <span>Home</span>
+                        <i class="fas fa-home"></i> Home
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/products}">
-                        <i class="fas fa-box-open"></i>
-                        <span>Products</span>
+                        <i class="fas fa-box-open"></i> Products
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link cart-link active" th:href="@{/cart}">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Cart</span>
+                        <i class="fas fa-shopping-cart"></i> Cart
                         <span class="cart-count" th:text="${cartItemCount}">0</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/feedback/all}">
-                        <i class="fas fa-comments"></i>
-                        <span>Feedback</span>
+                        <i class="fas fa-comments"></i> Feedback
                     </a>
                 </li>
             </ul>
 
-            <div class="navbar-actions">
-                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                    <i class="fas fa-moon" id="theme-icon"></i>
-                </button>
+            <div class="d-flex align-items-center gap-2">
                 <div class="user-badge">
                     <i class="fas fa-user-circle"></i>
                     <span>Welcome,</span>
                     <span class="username-text" th:text="${user != null ? user.username : 'Guest'}">Guest</span>
                 </div>
                 <a class="logout-btn" th:href="@{/login}">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
+                    <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
             </div>
         </div>
@@ -735,7 +588,7 @@
 <div class="cart-container">
     <!-- Page Header -->
     <div class="page-header">
-        <h1><i class="fas fa-shopping-cart"></i> Your Shopping Cart</h1>
+        <h1><i class="fas fa-shopping-cart me-2"></i>Your Shopping Cart</h1>
         <p>Review your items before checkout</p>
     </div>
 
@@ -746,8 +599,8 @@
         </div>
         <h3>Your Cart is Empty</h3>
         <p>Looks like you haven't added any items to your cart yet.</p>
-        <a th:href="@{/products}" class="btn btn-checkout">
-            <i class="fas fa-shopping-bag"></i>Start Shopping
+        <a th:href="@{/products}" class="btn btn-success">
+            <i class="fas fa-shopping-bag"></i> Start Shopping
         </a>
     </div>
 
@@ -756,13 +609,12 @@
         <div class="row">
             <div class="col-lg-8">
                 <!-- Cart Items Card -->
-                <div class="cart-card">
-                    <div class="cart-header">
-                        <i class="fas fa-list"></i>
-                        <h4>Cart Items (<span th:text="${cartItems.size()}">0</span>)</h4>
+                <div class="card">
+                    <div class="card-header">
+                        <h4><i class="fas fa-list me-2"></i>Cart Items (<span th:text="${cartItems.size()}">0</span>)</h4>
                     </div>
                     <div class="table-responsive">
-                        <table class="table cart-table">
+                        <table class="table">
                             <thead>
                             <tr>
                                 <th>Product</th>
@@ -778,32 +630,24 @@
                                     <div class="product-name" th:text="${item.product.name}">Product Name</div>
                                 </td>
                                 <td>
-                                            <span class="product-price">
-                                                Rs. <span th:text="${#numbers.formatDecimal(item.product.price, 2, 0)}">0.00</span>
-                                            </span>
+                                    <span class="product-price">Rs. <span th:text="${#numbers.formatDecimal(item.product.price, 2, 0)}">0.00</span></span>
                                 </td>
                                 <td>
                                     <form th:action="@{/cart/update/{cartId}(cartId=${item.cartId})}" method="post" class="quantity-control">
-                                        <input type="number"
-                                               name="quantity"
-                                               th:value="${item.quantity}"
-                                               min="1"
-                                               th:attr="max=${item.product.stockCount}"
-                                               class="form-control quantity-input">
-                                        <button type="submit" class="btn btn-update">
+                                        <input type="number" name="quantity" th:value="${item.quantity}" min="1"
+                                               th:attr="max=${item.product.stockCount}" class="form-control quantity-input">
+                                        <button type="submit" class="btn btn-primary btn-sm">
                                             <i class="fas fa-sync-alt"></i> Update
                                         </button>
                                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                                     </form>
                                 </td>
                                 <td>
-                                            <span class="product-price">
-                                                Rs. <span th:text="${#numbers.formatDecimal(item.product.price * item.quantity, 2, 0)}">0.00</span>
-                                            </span>
+                                    <span class="product-price">Rs. <span th:text="${#numbers.formatDecimal(item.product.price * item.quantity, 2, 0)}">0.00</span></span>
                                 </td>
                                 <td>
                                     <form th:action="@{/cart/remove/{cartId}(cartId=${item.cartId})}" method="post">
-                                        <button type="submit" class="btn btn-remove">
+                                        <button type="submit" class="btn btn-danger btn-sm">
                                             <i class="fas fa-trash-alt"></i> Remove
                                         </button>
                                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -819,7 +663,7 @@
             <div class="col-lg-4">
                 <!-- Cart Summary -->
                 <div class="cart-summary">
-                    <h4><i class="fas fa-file-invoice-dollar"></i> Order Summary</h4>
+                    <h4><i class="fas fa-file-invoice-dollar me-2"></i>Order Summary</h4>
 
                     <div class="summary-row">
                         <span class="summary-label">Items</span>
@@ -833,7 +677,7 @@
 
                     <div class="summary-row">
                         <span class="summary-label">Shipping</span>
-                        <span class="summary-value" style="color: #11998e; font-weight: 700;">FREE</span>
+                        <span class="summary-value" style="color: var(--success-500);">FREE</span>
                     </div>
 
                     <div class="summary-row total-row">
@@ -842,11 +686,11 @@
                     </div>
 
                     <div class="action-buttons">
-                        <a th:href="@{/checkout}" class="btn btn-checkout">
-                            <i class="fas fa-lock"></i>Secure Checkout
+                        <a th:href="@{/checkout}" class="btn-checkout">
+                            <i class="fas fa-lock"></i> Secure Checkout
                         </a>
-                        <a th:href="@{/products}" class="btn btn-back">
-                            <i class="fas fa-arrow-left"></i>Continue Shopping
+                        <a th:href="@{/products}" class="btn-back">
+                            <i class="fas fa-arrow-left"></i> Continue Shopping
                         </a>
                     </div>
 
@@ -871,92 +715,6 @@
     </div>
 </div>
 
-<script>
-    // Theme Toggle Functionality
-    function toggleTheme() {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        const themeIcon = document.getElementById('theme-icon');
-
-        html.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-
-        // Update icon
-        if (newTheme === 'dark') {
-            themeIcon.className = 'fas fa-sun';
-        } else {
-            themeIcon.className = 'fas fa-moon';
-        }
-    }
-
-    // Load saved theme on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        const html = document.documentElement;
-        const themeIcon = document.getElementById('theme-icon');
-
-        html.setAttribute('data-theme', savedTheme);
-
-        if (savedTheme === 'dark') {
-            themeIcon.className = 'fas fa-sun';
-        } else {
-            themeIcon.className = 'fas fa-moon';
-        }
-
-        // Navbar scroll effect
-        window.addEventListener('scroll', function() {
-            const navbar = document.querySelector('.navbar-custom');
-            if (window.scrollY > 50) {
-                navbar.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.15)';
-            } else {
-                navbar.style.boxShadow = 'var(--shadow-sm)';
-            }
-        });
-
-        // Add smooth animations to cart items
-        const cartRows = document.querySelectorAll('.cart-table tbody tr');
-        cartRows.forEach((row, index) => {
-            row.style.animation = `fadeInUp 0.6s ease ${index * 0.1}s both`;
-        });
-
-        // Update button click animations
-        const updateBtns = document.querySAll('.btn-update');
-        updateBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
-            });
-        });
-
-        // Remove button confirmation
-        const removeBtns = document.querySelectorAll('.btn-remove');
-        removeBtns.forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                if (!confirm('Are you sure you want to remove this item from your cart?')) {
-                    e.preventDefault();
-                }
-            });
-        });
-    });
-
-    // Quantity input validation
-    document.addEventListener('DOMContentLoaded', function() {
-        const quantityInputs = document.querySelectorAll('.quantity-input');
-        quantityInputs.forEach(input => {
-            input.addEventListener('input', function() {
-                const min = parseInt(this.getAttribute('min'));
-                const max = parseInt(this.getAttribute('max'));
-                let value = parseInt(this.value);
-
-                if (value < min) {
-                    this.value = min;
-                } else if (value > max) {
-                    this.value = max;
-                    alert(`Maximum available stock is ${max}`);
-                }
-            });
-        });
-    });
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

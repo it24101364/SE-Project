@@ -1,6 +1,7 @@
 package com.example.webapp.model;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -13,7 +14,9 @@ public class Feedback {
 
     private String name;
     private String email;
-    private Integer rating;
+
+    private Integer rating;   // FIXED
+
     private String category;
 
     @Column(columnDefinition = "TEXT")
@@ -24,7 +27,7 @@ public class Feedback {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Getters & Setters
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -34,8 +37,8 @@ public class Feedback {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public int getRating() { return rating; }
-    public void setRating(int rating) { this.rating = rating; }
+    public Integer getRating() { return rating; }   // FIXED
+    public void setRating(Integer rating) { this.rating = rating; }  // FIXED
 
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
@@ -49,4 +52,3 @@ public class Feedback {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }
-

@@ -7,7 +7,7 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
-@RequestMapping("/sales")
+@RequestMapping("/admin/sales")
 public class SalesController {
 
     private final SaleService saleService;
@@ -27,16 +27,15 @@ public class SalesController {
         this.saleService = saleService;
     }
 
+    // ---------------- SALES DASHBOARD ----------------
     @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
-        if (session.getAttribute("adminEmail") == null) {
-            return "redirect:/admin-login";
-        }
-
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'SALES_MANAGER')") // FIXED: Added SUPER_ADMIN
+    public String dashboard(Model model) {
         addAnalyticsData(model);
         model.addAttribute("sales", saleService.getAllSales());
         model.addAttribute("filteredTotal", saleService.getTotalSales());
 
+        // Add chart data
         model.addAttribute("productNames", saleService.getTopSellingProductsNames());
         model.addAttribute("productSalesAmounts", saleService.getTopSellingProductsAmounts());
         model.addAttribute("months", saleService.getMonthlySalesMonths());
@@ -45,29 +44,27 @@ public class SalesController {
         return "sales-dashboard";
     }
 
+    // ---------------- FILTER SALES BY DATE ----------------
     @GetMapping("/filter")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'SALES_MANAGER')") // FIXED: Added SUPER_ADMIN
     public String filter(@RequestParam String startDate,
                          @RequestParam String endDate,
-                         HttpSession session,
                          Model model) {
-        if (session.getAttribute("adminEmail") == null) {
-            return "redirect:/admin-login";
-        }
 
-        LocalDate startLocalDate = LocalDate.parse(startDate.replace(",", ""));
-        LocalDate endLocalDate = LocalDate.parse(endDate.replace(",", ""));
-        LocalDateTime start = startLocalDate.atStartOfDay();
-        LocalDateTime end = endLocalDate.atTime(23, 59, 59);
+        LocalDateTime start = LocalDate.parse(startDate).atStartOfDay();
+        LocalDateTime end = LocalDate.parse(endDate).atTime(23, 59, 59);
 
         List<Sale> filteredSales = saleService.getSalesByDate(start, end);
         model.addAttribute("sales", filteredSales);
         model.addAttribute("filteredTotal", saleService.getTotalSales(filteredSales));
 
+        // Chart data for filtered results
         model.addAttribute("productNames", saleService.getTopSellingProductsNames(filteredSales));
         model.addAttribute("productSalesAmounts", saleService.getTopSellingProductsAmounts(filteredSales));
         model.addAttribute("months", saleService.getMonthlySalesMonths(filteredSales));
         model.addAttribute("monthlyAmounts", saleService.getMonthlySalesAmounts(filteredSales));
 
+        // Analytics summary
         model.addAttribute("totalSales", saleService.getTotalSales(filteredSales));
         model.addAttribute("totalUnitsSold", saleService.getTotalUnitsSold(filteredSales));
         model.addAttribute("averageOrderValue", saleService.getAverageOrderValue(filteredSales));
@@ -78,93 +75,64 @@ public class SalesController {
         return "sales-dashboard";
     }
 
+    // ---------------- UPDATE SALE (GET) ----------------
     @GetMapping("/update/{id}")
-    public String updateSaleForm(@PathVariable Long id, HttpSession session, Model model) {
-        if (session.getAttribute("adminEmail") == null) {
-            return "redirect:/admin-login";
-        }
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'SALES_MANAGER')") // FIXED: Added SUPER_ADMIN
+    public String updateSaleForm(@PathVariable Long id, Model model) {
         Sale sale = saleService.getSaleById(id);
         model.addAttribute("sale", sale);
         return "sales-update-form";
     }
 
+    // ---------------- UPDATE SALE (POST) ----------------
     @PostMapping("/update")
-    public String updateSale(@ModelAttribute Sale sale, HttpSession session) {
-        if (session.getAttribute("adminEmail") == null) {
-            return "redirect:/admin-login";
-        }
-
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'SALES_MANAGER')") // FIXED: Added SUPER_ADMIN
+    public String updateSale(@ModelAttribute Sale sale) {
         sale.setTotalAmount(sale.getQuantity() * sale.getPrice());
-        saleService.updateSale(sale); // ✅ Adjusts stock automatically
-
-        return "redirect:/sales/dashboard";
+        saleService.updateSale(sale);
+        return "redirect:/admin/sales/dashboard";
     }
 
+    // ---------------- DELETE SALE ----------------
     @GetMapping("/delete/{id}")
-    public String deleteSale(@PathVariable Long id, HttpSession session) {
-        if (session.getAttribute("adminEmail") == null) {
-            return "redirect:/admin-login";
-        }
-
-        saleService.deleteSale(id); // ✅ Restores product stock automatically
-
-        return "redirect:/sales/dashboard";
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'SALES_MANAGER')") // FIXED: Added SUPER_ADMIN
+    public String deleteSale(@PathVariable Long id) {
+        saleService.deleteSale(id);
+        return "redirect:/admin/sales/dashboard";
     }
 
+    // ---------------- PDF REPORT ----------------
     @GetMapping("/report-pdf")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'SALES_MANAGER')") // FIXED: Added SUPER_ADMIN
     public void generatePdfReport(@RequestParam(required = false) String startDate,
                                   @RequestParam(required = false) String endDate,
-                                  HttpServletResponse response,
-                                  HttpSession session) {
+                                  HttpServletResponse response) {
         try {
-            // Check authentication
-            if (session.getAttribute("adminEmail") == null) {
-                response.sendRedirect("/admin-login");
-                return;
-            }
-
             List<Sale> sales;
             double totalAmount;
             String reportRange = "All Time";
 
-            // Handle date filtering
-            if (startDate != null && !startDate.isEmpty() && endDate != null && !endDate.isEmpty()) {
-                try {
-                    // Remove any commas and parse dates
-                    LocalDate startLocalDate = LocalDate.parse(startDate.replace(",", "").trim());
-                    LocalDate endLocalDate = LocalDate.parse(endDate.replace(",", "").trim());
-                    LocalDateTime start = startLocalDate.atStartOfDay();
-                    LocalDateTime end = endLocalDate.atTime(23, 59, 59);
+            if (startDate != null && !startDate.isEmpty() &&
+                    endDate != null && !endDate.isEmpty()) {
 
-                    sales = saleService.getSalesByDate(start, end);
-                    totalAmount = saleService.getTotalSalesByDate(start, end);
-                    reportRange = "From " + startLocalDate + " to " + endLocalDate;
-                } catch (Exception e) {
-                    System.err.println("Error parsing dates: " + e.getMessage());
-                    e.printStackTrace();
-                    sales = saleService.getAllSales();
-                    totalAmount = saleService.getTotalSales();
-                }
+                LocalDateTime start = LocalDate.parse(startDate).atStartOfDay();
+                LocalDateTime end = LocalDate.parse(endDate).atTime(23, 59, 59);
+
+                sales = saleService.getSalesByDate(start, end);
+                totalAmount = saleService.getTotalSales(sales);
+                reportRange = "From " + startDate + " to " + endDate;
             } else {
                 sales = saleService.getAllSales();
                 totalAmount = saleService.getTotalSales();
             }
 
-            // Set response headers
             response.setContentType("application/pdf");
             response.setHeader("Content-Disposition", "attachment; filename=sales-report.pdf");
 
-            // Prevent caching
-            response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-            response.setHeader("Pragma", "no-cache");
-            response.setHeader("Expires", "0");
-
-            // Create PDF document
             Document document = new Document();
             PdfWriter.getInstance(document, response.getOutputStream());
             document.open();
 
-            // Add content
             document.add(new Paragraph("Sales Report"));
             document.add(new Paragraph("Report Period: " + reportRange));
             document.add(new Paragraph("Generated At: " +
@@ -172,11 +140,8 @@ public class SalesController {
             document.add(new Paragraph("Total Amount: $" + String.format("%.2f", totalAmount)));
             document.add(new Paragraph(" "));
 
-            // Create table
             PdfPTable table = new PdfPTable(6);
             table.setWidthPercentage(100);
-
-            // Add headers
             table.addCell("Order ID");
             table.addCell("Product");
             table.addCell("Quantity");
@@ -184,7 +149,6 @@ public class SalesController {
             table.addCell("Total");
             table.addCell("Date");
 
-            // Add data
             for (Sale sale : sales) {
                 table.addCell(String.valueOf(sale.getOrderId()));
                 table.addCell(sale.getProductName());
@@ -196,30 +160,17 @@ public class SalesController {
 
             document.add(table);
             document.close();
-
-            // Flush the response
             response.getOutputStream().flush();
 
         } catch (Exception e) {
-            System.err.println("Error generating PDF report: " + e.getMessage());
             e.printStackTrace();
-
-            try {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                        "Error generating PDF report: " + e.getMessage());
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
         }
     }
 
-
+    // ---------------- HELPER ----------------
     private void addAnalyticsData(Model model) {
         model.addAttribute("totalSales", saleService.getTotalSales());
         model.addAttribute("totalUnitsSold", saleService.getTotalUnitsSold());
         model.addAttribute("averageOrderValue", saleService.getAverageOrderValue());
-        model.addAttribute("salesByProduct", saleService.getSalesByProduct());
-        model.addAttribute("topSellingProducts", saleService.getTopSellingProducts());
-        model.addAttribute("monthlySales", saleService.getMonthlySales());
     }
 }

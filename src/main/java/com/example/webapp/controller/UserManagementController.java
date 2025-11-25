@@ -2,7 +2,7 @@ package com.example.webapp.controller;
 
 import com.example.webapp.model.User;
 import com.example.webapp.repository.UserRepository;
-import jakarta.servlet.http.HttpSession;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/admin/users")
 public class UserManagementController {
 
     private final UserRepository userRepo;
@@ -20,38 +20,25 @@ public class UserManagementController {
     }
 
     // ---------------- LIST USERS ----------------
-    @GetMapping("/users")
+    @GetMapping
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'USER_MANAGER')") // FIXED: Added SUPER_ADMIN
     public String viewUsers(Model model,
-                            HttpSession session,
                             @RequestParam(required = false) String search) {
 
-        // Check if admin is logged in
-        if (session.getAttribute("adminEmail") == null) {
-            return "redirect:/admin-login";
-        }
-
-        List<User> users;
-
-        if (search != null && !search.isEmpty()) {
-            users = userRepo.searchUsers(search.toLowerCase());
-            model.addAttribute("search", search);
-        } else {
-            users = userRepo.findAll();
-        }
+        List<User> users = (search != null && !search.isEmpty())
+                ? userRepo.searchUsers(search.toLowerCase())
+                : userRepo.findAll();
 
         model.addAttribute("users", users);
+        model.addAttribute("search", search);
 
-        // NO SUBFOLDER — return template directly
-        return "user-dashboard";
+        return "user-dashboard"; // Make sure this matches your HTML file name
     }
 
     // ---------------- DELETE USER ----------------
-    @GetMapping("/users/delete/{id}")
-    public String deleteUser(@PathVariable Long id, HttpSession session) {
-
-        if (session.getAttribute("adminEmail") == null)
-            return "redirect:/admin-login";
-
+    @GetMapping("/delete/{id}")
+    @PreAuthorize("hasAnyAuthority('SUPER_ADMIN', 'USER_MANAGER')") // FIXED: Added SUPER_ADMIN
+    public String deleteUser(@PathVariable Long id) {
         userRepo.deleteById(id);
         return "redirect:/admin/users";
     }

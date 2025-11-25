@@ -4,6 +4,7 @@
     <title>Verify OTP</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -13,7 +14,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #4299e1 0%, #3182ce 50%, #2c5aa0 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -23,111 +24,250 @@
 
         .otp-container {
             background: rgba(255, 255, 255, 0.95);
-            padding: 2rem;
+            padding: 2.5rem;
             border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
             text-align: center;
-            max-width: 400px;
+            max-width: 450px;
             width: 100%;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
+            animation: slideIn 0.6s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .otp-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2.5rem;
+            color: white;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
         }
 
         h2 {
             color: #2d3748;
             font-size: 2rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             font-weight: 700;
         }
 
-        p {
+        .description {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .description p {
             color: #4a5568;
-            font-size: 1.1rem;
-            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .description i {
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        .description strong {
+            color: #2d3748;
         }
 
         .otp-boxes {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 1.5rem;
+            gap: 12px;
+            margin-bottom: 2rem;
         }
 
         .otp-input {
-            width: 45px;
-            height: 55px;
+            width: 55px;
+            height: 65px;
             font-size: 2rem;
             text-align: center;
-            border: 2px solid #cbd5e0;
-            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
             outline: none;
-            transition: border-color 0.3s ease;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+            color: #2d3748;
+            font-weight: 600;
         }
 
         .otp-input:focus {
-            border-color: #4299e1;
-            box-shadow: 0 0 5px rgba(66, 153, 225, 0.3);
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
         }
 
         button {
-            padding: 0.75rem;
+            padding: 1rem 2rem;
             font-size: 1rem;
             font-weight: 600;
             color: white;
-            background: linear-gradient(135deg, #4299e1, #3182ce);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
             width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(66, 153, 225, 0.4);
-            background: linear-gradient(135deg, #3182ce, #2c5aa0);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
         }
 
         .error {
-            color: #e53e3e;
+            background-color: #fed7d7;
+            color: #c53030;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
             margin-top: 1rem;
+            border-left: 4px solid #e53e3e;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .error i {
+            font-size: 1.2rem;
+        }
+
+        .resend-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .resend-section p {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .resend-section a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .resend-section a:hover {
+            color: #764ba2;
+            transform: translateY(-1px);
+        }
+
+        .info-tip {
+            background: #f7fafc;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #718096;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .info-tip i {
+            color: #667eea;
         }
     </style>
 </head>
 <body>
 <div class="otp-container">
+    <div class="otp-icon">
+        <i class="fas fa-shield-alt"></i>
+    </div>
+
     <h2>Verify OTP</h2>
 
-    <p th:text="'An OTP has been sent to ' + ${email}"></p>
+    <div class="description">
+        <p>
+            <i class="fas fa-envelope"></i>
+            <span>An OTP has been sent to <strong th:text="${email}"></strong></span>
+        </p>
+    </div>
 
     <form th:action="@{/verify-otp}" method="post" onsubmit="combineOtp()">
         <input type="hidden" name="email" th:value="${email}">
         <input type="hidden" id="otpHidden" name="otp">
 
         <div class="otp-boxes">
-            <input maxlength="1" class="otp-input" id="d1" onkeyup="moveNext(this, 'd2')">
-            <input maxlength="1" class="otp-input" id="d2" onkeyup="moveNext(this, 'd3')" onkeydown="movePrev(event,this,'d1')">
-            <input maxlength="1" class="otp-input" id="d3" onkeyup="moveNext(this, 'd4')" onkeydown="movePrev(event,this,'d2')">
-            <input maxlength="1" class="otp-input" id="d4" onkeyup="moveNext(this, 'd5')" onkeydown="movePrev(event,this,'d3')">
-            <input maxlength="1" class="otp-input" id="d5" onkeyup="moveNext(this, 'd6')" onkeydown="movePrev(event,this,'d4')">
-            <input maxlength="1" class="otp-input" id="d6" onkeydown="movePrev(event,this,'d5')">
+            <input maxlength="1" class="otp-input" id="d1" onkeyup="moveNext(this, 'd2')" type="text" inputmode="numeric" pattern="[0-9]*">
+            <input maxlength="1" class="otp-input" id="d2" onkeyup="moveNext(this, 'd3')" onkeydown="movePrev(event,this,'d1')" type="text" inputmode="numeric" pattern="[0-9]*">
+            <input maxlength="1" class="otp-input" id="d3" onkeyup="moveNext(this, 'd4')" onkeydown="movePrev(event,this,'d2')" type="text" inputmode="numeric" pattern="[0-9]*">
+            <input maxlength="1" class="otp-input" id="d4" onkeyup="moveNext(this, 'd5')" onkeydown="movePrev(event,this,'d3')" type="text" inputmode="numeric" pattern="[0-9]*">
+            <input maxlength="1" class="otp-input" id="d5" onkeyup="moveNext(this, 'd6')" onkeydown="movePrev(event,this,'d4')" type="text" inputmode="numeric" pattern="[0-9]*">
+            <input maxlength="1" class="otp-input" id="d6" onkeydown="movePrev(event,this,'d5')" type="text" inputmode="numeric" pattern="[0-9]*">
         </div>
 
-        <button type="submit">Verify</button>
+        <button type="submit">
+            <i class="fas fa-check-circle"></i>
+            <span>Verify OTP</span>
+        </button>
+
+        <div class="info-tip">
+            <i class="fas fa-lightbulb"></i>
+            <span>Enter the 6-digit code sent to your email</span>
+        </div>
     </form>
 
-    <p th:if="${error}" th:text="${error}" class="error"></p>
+    <div th:if="${error}" class="error">
+        <i class="fas fa-exclamation-circle"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <div class="resend-section">
+        <p>Didn't receive the code?</p>
+        <a href="#" onclick="resendOtp(); return false;">
+            <i class="fas fa-redo"></i>
+            Resend OTP
+        </a>
+    </div>
 </div>
 
 <script>
     function moveNext(current, nextId) {
         if (current.value.length === 1) {
-            document.getElementById(nextId).focus();
+            document.getElementById(nextId)?.focus();
         }
     }
 
     function movePrev(event, current, prevId) {
         if (event.key === "Backspace" && current.value === "") {
-            document.getElementById(prevId).focus();
+            document.getElementById(prevId)?.focus();
         }
     }
 
@@ -142,6 +282,16 @@
 
         document.getElementById("otpHidden").value = otp;
     }
+
+    function resendOtp() {
+        // Add your resend OTP logic here
+        alert('OTP resent to your email!');
+    }
+
+    // Auto-focus first input on load
+    window.onload = function() {
+        document.getElementById('d1').focus();
+    };
 </script>
 
 </body>

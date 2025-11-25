@@ -129,7 +129,7 @@
 <div class="update-card">
     <h3>✏️ Update Sale</h3>
 
-    <form th:action="@{/sales/update}" th:object="${sale}" method="post">
+    <form th:action="@{/admin/sales/update}" th:object="${sale}" method="post">
         <input type="hidden" th:field="*{id}" />
         <input type="hidden" th:field="*{orderId}" />
         <input type="hidden" th:field="*{productId}" />
@@ -155,7 +155,10 @@
         </div>
 
         <div class="button-group">
-            <a th:href="@{/sales/dashboard}" class="btn btn-secondary">Cancel</a>
+            <a class="btn btn-secondary" th:href="@{/admin/sales/dashboard}">
+                <i class="fas fa-arrow-left"></i> Cancel
+            </a>
+
             <button type="submit" class="btn btn-primary">Save Changes</button>
         </div>
     </form>

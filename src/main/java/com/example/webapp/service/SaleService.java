@@ -1,5 +1,7 @@
 package com.example.webapp.service;
 
+import com.example.webapp.dto.MonthlySalesDTO;
+import com.example.webapp.dto.ProductSalesDTO;
 import com.example.webapp.model.Order;
 import com.example.webapp.model.OrderItem;
 import com.example.webapp.model.Product;
@@ -66,7 +68,6 @@ public class SaleService {
 
     @Transactional
     public void addSaleFromOrderItem(OrderItem item, Order order) {
-        // Create sale record
         Sale sale = new Sale();
         sale.setOrderId(order.getId());
         sale.setProductId(item.getProductId());
@@ -76,7 +77,6 @@ public class SaleService {
         sale.setTotalAmount(item.getQuantity() * item.getPrice());
         saleRepository.save(sale);
 
-        // Reduce product stock
         adjustProductStock(item.getProductId(), -item.getQuantity());
     }
 
@@ -89,14 +89,12 @@ public class SaleService {
         int newQty = updatedSale.getQuantity();
         int difference = newQty - oldQty;
 
-        // Update sale details
         existingSale.setQuantity(newQty);
         existingSale.setPrice(updatedSale.getPrice());
         existingSale.setTotalAmount(updatedSale.getTotalAmount());
         existingSale.setSaleDate(updatedSale.getSaleDate());
         saleRepository.save(existingSale);
 
-        // Adjust stock difference
         adjustProductStock(existingSale.getProductId(), -difference);
     }
 
@@ -105,24 +103,20 @@ public class SaleService {
         Sale sale = saleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sale not found"));
 
-        // Restore product stock
         adjustProductStock(sale.getProductId(), sale.getQuantity());
-
         saleRepository.deleteById(id);
     }
-
-    // ================= Helper Method =================
 
     private void adjustProductStock(Long productId, int quantityChange) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
         int newStock = product.getStockCount() + quantityChange;
-        product.setStockCount(Math.max(newStock, 0)); // no negative stock
+        product.setStockCount(Math.max(newStock, 0));
         productRepository.save(product);
     }
 
-    // ================= Analytics & DTO Methods =================
+    // ================= Analytics Maps =================
 
     public Map<String, Long> getTopSellingProductsMap() {
         return saleRepository.findAll().stream()
@@ -157,9 +151,9 @@ public class SaleService {
                 ));
     }
 
-    // DTO Methods for frontend charts
+    // ================= DTO Methods for Charts =================
 
-    public List<com.example.webapp.dto.ProductSalesDTO> getTopSellingProducts() {
+    public List<ProductSalesDTO> getTopSellingProducts() {
         Map<String, Double> map = getAllSales().stream()
                 .collect(Collectors.groupingBy(
                         Sale::getProductName,
@@ -167,7 +161,7 @@ public class SaleService {
                 ));
 
         return map.entrySet().stream()
-                .map(e -> new com.example.webapp.dto.ProductSalesDTO(e.getKey(), e.getValue()))
+                .map(e -> new ProductSalesDTO(e.getKey(), e.getValue()))
                 .sorted((a, b) -> Double.compare(b.getTotalAmount(), a.getTotalAmount()))
                 .limit(5)
                 .collect(Collectors.toList());
@@ -175,45 +169,50 @@ public class SaleService {
 
     public List<String> getTopSellingProductsNames() {
         return getTopSellingProducts().stream()
-                .map(com.example.webapp.dto.ProductSalesDTO::getProductName)
+                .map(ProductSalesDTO::getProductName)
                 .collect(Collectors.toList());
     }
 
     public List<Double> getTopSellingProductsAmounts() {
         return getTopSellingProducts().stream()
-                .map(com.example.webapp.dto.ProductSalesDTO::getTotalAmount)
+                .map(ProductSalesDTO::getTotalAmount)
                 .collect(Collectors.toList());
     }
 
-    public List<com.example.webapp.dto.MonthlySalesDTO> getMonthlySales() {
+    public List<MonthlySalesDTO> getMonthlySales() {
         Map<String, Double> monthMap = new TreeMap<>();
+
         getAllSales().forEach(sale -> {
             String month = sale.getSaleDate().getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
             monthMap.put(month, monthMap.getOrDefault(month, 0.0) + sale.getTotalAmount());
         });
 
         return monthMap.entrySet().stream()
-                .map(e -> new com.example.webapp.dto.MonthlySalesDTO(e.getKey(), e.getValue()))
+                .map(e -> new MonthlySalesDTO(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
     }
 
     public List<String> getMonthlySalesMonths() {
         return getMonthlySales().stream()
-                .map(com.example.webapp.dto.MonthlySalesDTO::getMonthName)
+                .map(MonthlySalesDTO::getMonthName)
                 .collect(Collectors.toList());
     }
 
     public List<Double> getMonthlySalesAmounts() {
         return getMonthlySales().stream()
-                .map(com.example.webapp.dto.MonthlySalesDTO::getTotalAmount)
+                .map(MonthlySalesDTO::getTotalAmount)
                 .collect(Collectors.toList());
     }
 
+    // ================= Get Sale By ID =================
+
     public Sale getSaleById(Long id) {
-        return saleRepository.findById(id).orElseThrow(() -> new RuntimeException("Sale not found"));
+        return saleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sale not found"));
     }
 
-    // For filtered reports (no change to stock)
+    // ================= Filtered Report Methods =================
+
     public List<String> getTopSellingProductsNames(List<Sale> sales) {
         return sales.stream()
                 .collect(Collectors.groupingBy(Sale::getProductName, Collectors.summingDouble(Sale::getTotalAmount)))

@@ -7,307 +7,434 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Design System Variables */
+        :root {
+            --primary-50: #f0f4ff;
+            --primary-100: #e0e9ff;
+            --primary-500: #6366f1;
+            --primary-600: #4f46e5;
+            --primary-700: #4338ca;
+            --secondary-500: #8b5cf6;
+            --secondary-600: #7c3aed;
+            --success-500: #10b981;
+            --success-600: #059669;
+            --warning-500: #f59e0b;
+            --warning-600: #d97706;
+            --danger-500: #ef4444;
+            --danger-600: #dc2626;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--primary-50) 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--gray-900);
+            padding: 2rem;
         }
-        .navbar {
-            background: rgba(0, 0, 0, 0.8) !important;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .container-fluid { max-width: 1400px; }
 
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.95);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .container-fluid {
+            max-width: 1400px;
+            margin: 0 auto;
         }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-        }
-        .card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 15px 15px 0 0 !important;
-            padding: 1.2rem;
-            font-weight: 600;
-            border: none;
-        }
-        .card-body { padding: 1.5rem; }
 
-        .metric-card {
-            border-radius: 15px;
-            padding: 1.5rem;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
+        /* Page Header */
+        .page-header {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .metric-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .metric-card:hover::before { opacity: 1; }
-        .metric-card.bg-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
-        .metric-card.bg-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important; }
-        .metric-card.bg-warning { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%) !important; }
-        .metric-card.bg-danger { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%) !important; }
-        .metric-card h5 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.5rem;
-            opacity: 0.9;
-        }
-        .metric-card h3 {
-            font-size: 2.2rem;
+
+        .page-header h1 {
+            font-size: 2rem;
             font-weight: 700;
+            color: var(--gray-900);
             margin: 0;
         }
 
+        /* Metrics Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            box-shadow: var(--shadow-md);
+            border-left: 4px solid var(--metric-color);
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .metric-card.primary { --metric-color: var(--primary-500); }
+        .metric-card.success { --metric-color: var(--success-500); }
+        .metric-card.warning { --metric-color: var(--warning-500); }
+        .metric-card.danger { --metric-color: var(--danger-500); }
+
+        .metric-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+            background: var(--metric-color);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            line-height: 1;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            border: none;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .card-header h5 {
+            margin: 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Form Controls */
         .form-control, .form-select {
-            border-radius: 10px;
-            border: 2px solid #e0e0e0;
-            padding: 0.6rem 1rem;
-            transition: all 0.3s ease;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-300);
+            padding: 0.625rem 1rem;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
         }
+
         .form-control:focus, .form-select:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            outline: none;
         }
+
         .form-label {
             font-weight: 600;
-            color: #333;
+            color: var(--gray-700);
+            font-size: 0.875rem;
             margin-bottom: 0.5rem;
         }
 
+        .form-check-input:checked {
+            background-color: var(--primary-500);
+            border-color: var(--primary-500);
+        }
+
+        /* Buttons */
         .btn {
-            border-radius: 10px;
-            padding: 0.6rem 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            border-radius: var(--radius-md);
             font-weight: 600;
-            transition: all 0.3s ease;
+            font-size: 0.875rem;
             border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
         }
+
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            background: var(--primary-500);
+            color: white;
         }
+
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            background: var(--primary-600);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
-        .btn-success {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
-        }
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(17, 153, 142, 0.6);
-        }
-        .btn-danger {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
-        }
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
-        }
-        .btn-warning {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-        }
+
         .btn-secondary {
-            background: #6c757d;
+            background: white;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        .btn-success {
+            background: var(--success-500);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: var(--success-600);
+        }
+
+        .btn-warning {
+            background: var(--warning-500);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: var(--warning-600);
+        }
+
+        .btn-danger {
+            background: var(--danger-500);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-600);
+        }
+
+        /* Table Styles */
+        .table-responsive {
+            border-radius: var(--radius-md);
+            overflow: hidden;
         }
 
         .table {
-            border-radius: 10px;
-            overflow: hidden;
+            margin: 0;
         }
+
+        .table thead {
+            background: var(--gray-800);
+        }
+
         .table thead th {
-            background: #000039;
             color: white;
             font-weight: 600;
             text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
             border: none;
             padding: 1rem;
         }
+
         .table tbody tr {
-            transition: all 0.3s ease;
+            border-bottom: 1px solid var(--gray-200);
+            transition: background 0.2s ease;
         }
+
         .table tbody tr:hover {
-            background-color: rgba(102, 126, 234, 0.1);
-            transform: scale(1.01);
+            background: var(--gray-50);
         }
+
         .table tbody td {
             padding: 1rem;
             vertical-align: middle;
         }
-        .table-striped tbody tr:nth-of-type(odd) {
-            background-color: rgba(0, 0, 0, 0.02);
-        }
 
-        .nav-link {
-            color: rgba(255, 255, 255, 0.8) !important;
-            transition: color 0.3s ease;
-        }
-        .nav-link:hover {
-            color: #667eea !important;
-        }
-        .nav-link.active {
-            color: #667eea !important;
-            font-weight: 600;
-        }
-        .navbar-text {
-            color: rgba(255, 255, 255, 0.9) !important;
-        }
-
-        .star-icon {
-            transition: all 0.2s ease;
-        }
-        .star-icon:hover {
-            transform: scale(1.2);
-        }
-
+        /* Badge Styles */
         .badge {
-            padding: 0.5rem 1rem;
-            border-radius: 10px;
+            padding: 0.375rem 0.75rem;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .badge.bg-info {
+            background: var(--primary-100) !important;
+            color: var(--primary-700);
+        }
+
+        /* Star Rating */
+        .star-rating i {
+            font-size: 1rem;
+        }
+
+        .star-rating i.text-warning {
+            color: var(--warning-500) !important;
+        }
+
+        .star-rating i.text-muted {
+            color: var(--gray-300) !important;
+        }
+
+        /* Reply Box */
+        .reply-box {
+            background: var(--success-50);
+            border-left: 3px solid var(--success-500);
+            padding: 0.75rem;
+            border-radius: var(--radius-sm);
+        }
+
+        /* User Avatar */
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-500);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
             font-weight: 600;
         }
 
-        .reply-box {
-            background: rgba(56, 239, 125, 0.1);
-            border-left: 4px solid #11998e;
-            padding: 0.75rem;
-            border-radius: 8px;
-        }
-
-        .form-check-input:checked {
-            background-color: #667eea;
-            border-color: #667eea;
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
-            .metric-card h3 { font-size: 1.8rem; }
+            body {
+                padding: 1rem;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand" href="#">Admin Dashboard</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link " th:classappend="${page == 'sales' ? ' active' : ''}" th:href="@{/sales/dashboard}">
-                        <i class="fas fa-chart-line me-1"></i> Sales Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" th:classappend="${page == 'feedback' ? ' active' : ''}" th:href="@{/feedback/dashboard}">
-                        <i class="fas fa-comments me-1"></i> Feedback Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:classappend="${page == 'stock' ? ' active' : ''}" th:href="@{/stock/dashboard}">
-                        <i class="fas fa-boxes me-1"></i> Stock Dashboard
-                    </a>
-                </li>
-                <!-- New Order & Payment Dashboard nav item -->
-                <li class="nav-item">
-                    <a class="nav-link" th:classappend="${page == 'orders' ? ' active' : ''}" th:href="@{/orders/dashboard}">
-                        <i class="fas fa-receipt me-1"></i> Orders Dashboard
-                    </a>
-                </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="/admin/users">
-                        <i class="bi bi-people-fill"></i> User Dashboard
-                    </a>
-                </li>
-
-            </ul>
-            <div class="navbar-nav ms-auto">
-                <span class="navbar-text me-3" th:text="'Admin: ' + ${session.adminEmail}"></span>
-                <a class="nav-link" th:href="@{/admin-logout}"><i class="fas fa-sign-out-alt me-1"></i> Logout</a>
-            </div>
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-comments me-2"></i>Feedback Management</h1>
+            <p class="text-muted mb-0">Manage and respond to customer feedback</p>
         </div>
+        <a th:href="@{/admin/dashboard}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
     </div>
-</nav>
 
-<div class="container-fluid mt-4">
     <!-- Key Metrics -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card metric-card text-white bg-primary">
-                <div class="card-body">
-                    <h5><i class="fas fa-comments me-2"></i>Total Feedbacks</h5>
-                    <h3 th:text="${#lists.size(feedbacks)}">0</h3>
-                    <small class="opacity-75">All time collected</small>
+    <div class="metrics-grid">
+        <div class="metric-card primary">
+            <div class="metric-header">
+                <div class="metric-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <div>
+                    <div class="metric-value" th:text="${feedbacks != null ? feedbacks.size() : 0}">0</div>
+                    <div class="metric-label">Total Feedbacks</div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="card metric-card text-white bg-success">
-                <div class="card-body">
-                    <h5><i class="fas fa-star me-2"></i>5-Star Ratings</h5>
-                    <h3 th:text="${fiveStarCount}">0</h3>
-                    <small class="opacity-75">Excellent feedback</small>
+
+        <div class="metric-card success">
+            <div class="metric-header">
+                <div class="metric-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div>
+                    <div class="metric-value" th:text="${fiveStarCount}">0</div>
+                    <div class="metric-label">5-Star Ratings</div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="card metric-card text-white bg-warning">
-                <div class="card-body">
-                    <h5><i class="fas fa-clock me-2"></i>Pending Replies</h5>
-                    <h3 th:text="${pendingReplies}">0</h3>
-                    <small class="opacity-75">Awaiting response</small>
+
+        <div class="metric-card warning">
+            <div class="metric-header">
+                <div class="metric-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div>
+                    <div class="metric-value" th:text="${pendingReplies}">0</div>
+                    <div class="metric-label">Pending Replies</div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="card metric-card text-white bg-danger">
-                <div class="card-body">
-                    <h5><i class="fas fa-chart-bar me-2"></i>Other Ratings</h5>
-                    <h3 th:text="${otherRatings}">0</h3>
-                    <small class="opacity-75">1-4 star reviews</small>
+
+        <div class="metric-card danger">
+            <div class="metric-header">
+                <div class="metric-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div>
+                    <div class="metric-value" th:text="${otherRatings}">0</div>
+                    <div class="metric-label">Other Ratings</div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Filter Section -->
-    <div class="card mb-4">
+    <div class="card">
+        <div class="card-header">
+            <h5><i class="fas fa-filter me-2"></i>Filter Feedback</h5>
+        </div>
         <div class="card-body">
-            <form th:action="@{/feedback/dashboard}" method="get" class="row g-3 align-items-end">
+            <form th:action="@{/feedback/dashboard}" method="get" class="row g-3">
                 <div class="col-md-3">
-                    <label class="form-label"><i class="fas fa-star text-warning me-1"></i> Rating</label>
+                    <label class="form-label">Rating</label>
                     <select name="rating" class="form-select">
                         <option value="">All Ratings</option>
                         <option value="5" th:selected="${rating == 5}">⭐⭐⭐⭐⭐ 5 Stars</option>
@@ -317,8 +444,9 @@
                         <option value="1" th:selected="${rating == 1}">⭐ 1 Star</option>
                     </select>
                 </div>
+
                 <div class="col-md-3">
-                    <label class="form-label"><i class="fas fa-tag text-info me-1"></i> Category</label>
+                    <label class="form-label">Category</label>
                     <select name="category" class="form-select">
                         <option value="">All Categories</option>
                         <option value="product" th:selected="${category == 'product'}">Product Quality</option>
@@ -328,20 +456,23 @@
                         <option value="other" th:selected="${category == 'other'}">Other</option>
                     </select>
                 </div>
+
                 <div class="col-md-3">
-                    <div class="form-check mt-4">
+                    <label class="form-label d-block">&nbsp;</label>
+                    <div class="form-check">
                         <input type="checkbox" name="pending" th:checked="${pending == 'true'}" value="true" class="form-check-input" id="pendingCheck">
                         <label class="form-check-label" for="pendingCheck">
-                            <i class="fas fa-reply text-danger me-1"></i> Pending Replies Only
+                            Pending Replies Only
                         </label>
                     </div>
                 </div>
-                <div class="col-md-3 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-filter me-1"></i> Apply Filter
+
+                <div class="col-md-3 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary flex-grow-1">
+                        <i class="fas fa-filter"></i> Apply
                     </button>
-                    <a href="/feedback/dashboard" class="btn btn-warning">
-                        <i class="fas fa-rotate-left me-1"></i> Reset
+                    <a th:href="@{/feedback/dashboard}" class="btn btn-secondary">
+                        <i class="fas fa-rotate-left"></i>
                     </a>
                 </div>
             </form>
@@ -349,61 +480,64 @@
     </div>
 
     <!-- Feedback Table -->
-    <div class="card mb-5">
+    <div class="card">
         <div class="card-header">
             <h5><i class="fas fa-table me-2"></i>Feedback Details</h5>
         </div>
-        <div class="card-body">
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-striped">
+                <table class="table">
                     <thead>
                     <tr>
-                        <th><i class="fas fa-user me-1"></i> Name</th>
-                        <th><i class="fas fa-envelope me-1"></i> Email</th>
-                        <th><i class="fas fa-star me-1"></i> Rating</th>
-                        <th><i class="fas fa-tag me-1"></i> Category</th>
-                        <th><i class="fas fa-comment me-1"></i> Message</th>
-                        <th><i class="fas fa-reply me-1"></i> Admin Reply</th>
-                        <th class="text-center"><i class="fas fa-cog me-1"></i> Actions</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Rating</th>
+                        <th>Category</th>
+                        <th>Message</th>
+                        <th>Admin Reply</th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="feedback : ${feedbacks}">
                         <td>
-                            <div class="d-flex align-items-center">
-                                <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-2">
-                                    <i class="fas fa-user text-primary"></i>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="user-avatar">
+                                    <i class="fas fa-user"></i>
                                 </div>
                                 <strong th:text="${feedback.name}">Name</strong>
                             </div>
                         </td>
                         <td th:text="${feedback.email}">Email</td>
                         <td>
+                            <div class="star-rating">
                                 <span th:each="i : ${#numbers.sequence(1,5)}">
-                                    <i class="fas fa-star star-icon" th:classappend="${i <= feedback.rating} ? 'text-warning' : 'text-muted'"></i>
+                                    <i class="fas fa-star" th:classappend="${i <= feedback.rating} ? 'text-warning' : 'text-muted'"></i>
                                 </span>
+                            </div>
                         </td>
                         <td>
                             <span class="badge bg-info" th:text="${feedback.category}">Category</span>
                         </td>
                         <td>
-                            <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;" th:text="${feedback.message}">Message</div>
+                            <div style="max-width: 300px;" th:text="${feedback.message}">Message</div>
                         </td>
                         <td>
                             <div th:if="${feedback.adminReply != null}" class="reply-box">
-                                <small class="text-muted d-block mb-1"><i class="fas fa-check-circle text-success me-1"></i>Replied:</small>
+                                <small class="text-muted d-block mb-1"><i class="fas fa-check-circle me-1"></i>Replied:</small>
                                 <span th:text="${feedback.adminReply}">Reply</span>
                             </div>
                             <form th:if="${feedback.adminReply == null}" th:action="@{/feedback/reply/{id}(id=${feedback.id})}" method="post" class="d-flex gap-2">
-                                <input type="text" name="reply" placeholder="Write reply..." class="form-control form-control-sm" style="min-width: 200px;">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                <input type="text" name="reply" placeholder="Write reply..." class="form-control form-control-sm" required>
                                 <button type="submit" class="btn btn-success btn-sm">
-                                    <i class="fas fa-paper-plane me-1"></i> Reply
+                                    <i class="fas fa-paper-plane"></i> Reply
                                 </button>
                             </form>
                         </td>
-                        <td class="text-center">
+                        <td>
                             <a th:href="@{/feedback/delete/{id}(id=${feedback.id})}" class="btn btn-danger btn-sm">
-                                <i class="fas fa-trash-alt me-1"></i> Delete
+                                <i class="fas fa-trash-alt"></i>
                             </a>
                         </td>
                     </tr>
